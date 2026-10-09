@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#a94f2e">
+  <meta name="description" content="A calm, local-first CV workspace. Write your story, make it yours and export it without an account.">
+  <title>ClearCV — your story, clearly</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a94f2e'/%3E%3Cpath d='M42 20a17 17 0 1 0 0 24M42 20v9h-9' stroke='%23fff' stroke-width='5' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="src/app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./" aria-label="ClearCV home"><span class="brand-mark">c<span>↗</span></span>ClearCV<span class="brand-tag">WORKSPACE</span></a>
+    <div class="header-actions">
+      <span id="save-status" class="save-status" role="status">Saved on this device</span>
+      <button id="export-json" class="button button-quiet" type="button">Export JSON</button>
+      <button id="import-json" class="button button-quiet" type="button">Import</button>
+      <button id="print-cv" class="button button-primary" type="button"><span aria-hidden="true">↗</span> Save as PDF</button>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
+    </div>
+  </header>
+  <aside class="rail" aria-label="Workspace navigation">
+    <button class="rail-button active" type="button" data-tab="content" aria-label="Edit content" title="Edit content"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4 10 14M18 13v7H4V6h7"/></svg><span>Write</span></button>
+    <button class="rail-button" type="button" data-tab="design" aria-label="Choose design" title="Choose design"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 10h16M10 10v10"/></svg><span>Style</span></button>
+    <button class="rail-button" type="button" data-tab="match" aria-label="Compare job keywords" title="Compare job keywords"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5M7 10l2 2 4-4"/></svg><span>Match</span></button>
+    <div class="rail-bottom"><span class="local-symbol" aria-hidden="true">⌁</span><span>Local<br>by design</span></div>
+  </aside>
+  <main class="workspace">
+    <section class="editor" aria-label="CV editor">
+      <div class="editor-heading"><span class="eyebrow">A LITTLE CLARITY GOES A LONG WAY</span><h1>Your next chapter<br>starts here<span>.</span></h1><p>Your experience. Your words. A CV that feels like you.</p></div>
+      <div class="editor-tabs" role="tablist" aria-label="Editor views">
+        <button id="tab-content" type="button" role="tab" data-tab="content" aria-selected="true" aria-controls="editor-panel">Content</button>
+        <button id="tab-design" type="button" role="tab" data-tab="design" aria-selected="false" aria-controls="editor-panel" tabindex="-1">Design</button>
+        <button id="tab-match" type="button" role="tab" data-tab="match" aria-selected="false" aria-controls="editor-panel" tabindex="-1">Job match</button>
+      </div>
+      <div id="editor-panel" role="tabpanel" aria-labelledby="tab-content"></div>
+      <div class="editor-footer"><p>✧ Your CV stays in this browser. Keep a JSON backup.</p><button id="new-cv" class="text-button" type="button">Start a blank CV</button><button id="load-example" class="text-button" type="button">Load example</button></div>
+    </section>
+    <section class="preview-area" aria-label="Live CV preview">
+      <div class="preview-toolbar"><span><span class="live-dot"></span> LIVE PREVIEW</span><span class="page-size">A4 · ready to print</span></div>
+      <div id="cv-preview" class="paper template-studio" aria-label="Your CV"></div>
+      <div class="preview-footer"><span>Made with your words, not a formula.</span><span>CLEARCV / 01</span></div>
+    </section>
+  </main>
+  <div id="notification" class="notification" role="status" aria-live="polite" hidden></div>
+  <dialog id="reset-dialog"><form method="dialog"><span class="eyebrow">A FRESH PAGE</span><h2 id="reset-title">Start again?</h2><p id="reset-message">This replaces the CV saved in this browser. Export a JSON backup first if you want to keep it.</p><div class="dialog-actions"><button value="cancel" class="button button-quiet">Keep my CV</button><button id="reset-confirm" value="confirm" class="button button-primary">Start a blank CV</button></div></form></dialog>
+  <noscript>ClearCV needs JavaScript to edit and save your CV. All processing happens in your browser.</noscript>
+</body>
+</html>

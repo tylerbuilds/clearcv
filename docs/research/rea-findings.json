@@ -1,0 +1,90 @@
+{
+  "method": "Independent reconstruction from anonymous publicly observable behaviour. REA evidence separates observed page content, static inferences and unknown internals.",
+  "tool": {
+    "name": "rea-agents",
+    "version": "6.2.0",
+    "upstream": "https://github.com/morluto/rea",
+    "upstream_revision": "6ce3288f3bd65a886e47905455ed5c9b661015e6",
+    "license": "MIT"
+  },
+  "publication_scope": "Summaries, provenance and receipt digests only. Raw site DOM, screenshots, third-party scripts, network logs and browser profiles are not included.",
+  "captured_at_utc": "2026-10-09T21:08:31.540795+00:00",
+  "project": "ClearCV",
+  "reference_product": "Enhancv",
+  "receipts": [
+    {
+      "source_url": "https://enhancv.com/features/",
+      "page_type": "Public feature catalogue",
+      "status": "observed",
+      "evidence_id": "ev_1e0bae7f8703bdd0d5a597e79bf5b7e01e62711345df79842dcf0c99f3461031",
+      "receipt_sha256": "5c1c066b8e644406fd02c400fd2b566f5219ac9f6e504b6cc0134dbb0a07c065",
+      "final_url": "https://enhancv.com/features/",
+      "artifacts": {
+        "screenshot": {
+          "state": "captured",
+          "sha256": "a83ccb6fc0207011dd14effceccdb44b53ec4db2569e341e6d75597c69c7f14c"
+        },
+        "dom": {
+          "state": "captured",
+          "sha256": "5885f1795af91da1893785a49474c737af8e4b19317e1fdb721fd41d890e9f15"
+        },
+        "accessibility": {
+          "state": "captured",
+          "sha256": "5248195f1b853f0f21c6e9bc0e5360efd81d9deb24ead28ca764e51f3b1d048f"
+        }
+      },
+      "observed_events": 314,
+      "dropped_events": 0,
+      "capture_completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "browser_cleanup": "terminated-owned-process"
+    },
+    {
+      "source_url": "https://app.enhancv.com/",
+      "page_type": "Anonymous application onboarding shell",
+      "status": "observed",
+      "evidence_id": "ev_bc0356395e8dd8930b4998de94331d28bf33851d34062315d443098fb38a4711",
+      "receipt_sha256": "1bf61c0e545ed546b5e0139e204620c26ac228964b003b4d77bea68c088fa2b5",
+      "final_url": "https://app.enhancv.com/onboarding#1",
+      "artifacts": {
+        "screenshot": {
+          "state": "captured",
+          "sha256": "f1abc37c8fdd794732fc6771848fef79e31b68978a395b406a750327581172d6"
+        },
+        "dom": {
+          "state": "captured",
+          "sha256": "1e103de00cae23cbc751b106fc27b58338c24bdddf1cc5c4bb899b1e36001eb6"
+        },
+        "accessibility": {
+          "state": "captured",
+          "sha256": "83e3c31ea4315230f4cede96e41671142a699817a5b33d30a716d241ba768918"
+        }
+      },
+      "observed_events": 549,
+      "dropped_events": 0,
+      "capture_completeness": {
+        "status": "complete",
+        "equality_eligible": true,
+        "missing_sections": [],
+        "truncated_sections": []
+      },
+      "browser_cleanup": "terminated-owned-process"
+    }
+  ],
+  "observations": [
+    "The public feature catalogue describes editable CV structure, content and visual styling, document feedback, role tailoring and a job application tracker.",
+    "The anonymous application redirects to a four-step onboarding flow. Its initial step offers an existing CV as a starting point or starting without one; login is available separately."
+  ],
+  "implementation_choices": [
+    "Use an independently designed CV document model, section controls, print/export layouts, local persistence and transparent deterministic keyword feedback."
+  ],
+  "unknowns": [
+    "Authenticated editor state transitions, service APIs, proprietary template designs, checker scoring and AI implementations have not been recovered.",
+    "The public catalogue advertises capabilities; it does not prove their internal behaviour or effectiveness.",
+    "The passive CDP application inspection did not finish within the investigation window and was stopped. No successful EnhanceCV static bundle analysis is claimed."
+  ]
+}
