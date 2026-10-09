@@ -1,6 +1,6 @@
 # Public feature map
 
-Research date: 9 October 2026. Target: [Enhancv public features page](https://enhancv.com/features/). This page was read without signing in. Public marketing claims are evidence of advertised capabilities, not proof of their internal implementation or effectiveness.
+Research date: 9 October 2026. The [free and premium parity ledger](parity-ledger.md) is the detailed capability record for the functional expansion; this page retains the initial public observation map. Target: [Enhancv public features page](https://enhancv.com/features/). This page was read without signing in. Public marketing claims are evidence of advertised capabilities, not proof of their internal implementation or effectiveness.
 
 REA tooling and pinned source are recorded in [rea-provenance.md](rea-provenance.md). REA/browser discovery receipts are added by the coordinating research workflow. Nothing here claims access to proprietary source code.
 
@@ -8,9 +8,9 @@ REA tooling and pinned source are recorded in [rea-provenance.md](rea-provenance
 | --- | --- | --- | --- |
 | CV content and styling | The page advertises customised structure, content and style. | Editable profile, experience, education and skills; original layouts and accent selection. | Implemented initial workflow. Templates are original; feature parity is not established. |
 | CV templates | The public navigation links a resume-template collection. | Three independently designed A4 text templates. | Implemented; no proprietary template assets copied. |
-| Feedback and tailoring | The page advertises AI tailoring, feedback and a resume checker. | Deterministic, local job-description token overlap with its method stated in the interface. | Implemented word comparison only. No AI, semantic matching, ATS testing or hiring prediction. |
-| Writing assistance | The page advertises generated objectives, headlines and bullet points. | Users write and edit their own content. | AI generation is outside this release. |
-| Career tools | Public navigation and feature sections advertise job tracking, interview help and translation. | Keep the initial release focused on composing and exporting a CV. | Not implemented. |
+| Feedback and tailoring | The page advertises AI tailoring, feedback and a resume checker. | Deterministic, local job-description token overlap with its method stated in the interface. | Exact word comparison and reviewable factual ordering are implemented. Optional configured AI produces reviewed candidates; semantic ATS testing and hiring predictions are not supplied. |
+| Writing assistance | The page advertises generated objectives, headlines and bullet points. | Users edit their own content; optional configured AI can generate reviewed summaries, bullets and letter bodies. | Actual configured runtime and UI qualification need separate receipts; no target model or effectiveness claim is adopted. |
+| Career tools | Public navigation and feature sections advertise job tracking, interview help and translation. | Local application stages, notes, dates and CV/letter linkage are implemented; optional AI translates a selected field. | External boards, automatic alerts, full-document translation and interviews remain gaps. |
 
 ## Implementation inferences
 

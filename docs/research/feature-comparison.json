@@ -1,0 +1,3926 @@
+{
+  "schema_version": 1,
+  "application": "clearcv",
+  "reference_product": "Enhancv",
+  "checked_at_utc": "2026-10-09T22:50:22.316659+00:00",
+  "tier_scope": [
+    "Seven-day builder trial",
+    "Free public generators/checker",
+    "Free job tracker",
+    "Pro monthly/quarterly/annual entitlements"
+  ],
+  "scope": "Every row of the frozen all-tier reference inventory mapped to current app source and available evidence. This is not a complete reference catalogue or parity percentage.",
+  "classification_definitions": {
+    "implemented-local-equivalent": "Source implements the stated independent local workflow. This does not assert original algorithms, content catalogue, scale or authenticated behaviour.",
+    "partial": "Real delivered subset exists; remaining gaps are named.",
+    "missing": "No implementation of this reference workflow found in the inspected app.",
+    "authenticated-behaviour-unverified": "Original authenticated behaviour cannot be established from available observations."
+  },
+  "counts": {
+    "reference_rows": 48,
+    "by_classification": {
+      "implemented-local-equivalent": 17,
+      "partial": 21,
+      "missing": 10
+    }
+  },
+  "verification_limits": [
+    "No tests or browser launched by this comparison task; existing receipts are reused with their own qualifications.",
+    "A test file proves test definitions exist; it does not prove those tests passed on this snapshot.",
+    "The optional capability-link backend does not implement authenticated account identity or automatic concurrent merging.",
+    "AI/provider samples, pure tests, browser outputs, platform CI and public deployment are separate proofs."
+  ],
+  "source_snapshot": {
+    "head": "5730e356d620233859fb400fc8518052822141a6",
+    "file_sha256": {
+      "scripts/ai.mjs": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652",
+      "scripts/browser-smoke.mjs": "85688fee1050c5b0ec82484c5c0a54c984379af8a6ef3de879271e2977f119c5",
+      "scripts/build.mjs": "6674614d03eda8492eaf32b50877bba92de9bd036f9b83990f2fbea4881cbf8a",
+      "scripts/prepare-assets.mjs": "500c1bb3d7cb9d9a3889a211ce0da8cdef9d53c36382dc8e9807818c51fc169e",
+      "scripts/serve.mjs": "07a2cb0aed2004e6f4aad62f775857b7332a16f103f1140665faa2e974afc4c2",
+      "scripts/workspace-backend.mjs": "1eb7f84754ca75d5634b60e8a76782933f8b1c21a1e138f0cdf1fd54bd0a30f3",
+      "src/ai-client.js": "64ac2a79ec0e2b20750bf1095403b4a026ad92f6f29fe92559461d871c89e06a",
+      "src/app.js": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118",
+      "src/cloud-client.mjs": "7ce383928b72c3e11ea250297d11c0e0ccca60dc297f920f1ef724d6f6ef4360",
+      "src/cloud-ui.js": "07c816cfe7874c988e2b04839fa2b9fac23eda7f0800a1e2f31794a09fea00d6",
+      "src/formats.js": "1bee9303614caf4e1c8636650d0c66e4db73b7cd25a9b074cb9996e1f6859f03",
+      "src/links.js": "b7bcf8b5533d020a65a45e8a40d5af035c390c0b71408bc57ba52fc6e1ac3310",
+      "src/model.js": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7",
+      "src/pdf-import.js": "03a165380b814d187b43a6fb62eb533f630aa2345a50497480c317ae01542ad7",
+      "src/review.js": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62",
+      "src/workspace.js": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2",
+      "tests/ai.test.js": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+      "tests/cloud-server-boundaries.test.mjs": "26f98900b5e1fb39d62b873eb65f102e23cce1b36246ae8795ab8580f6b37ca7",
+      "tests/formats.test.js": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+      "tests/links.test.js": "18239fc8166f12e4bc44144678d14574defe06b63baed8f2eb1484afcad2524c",
+      "tests/model.test.js": "ed586c3b15c5d5bd40c58a4927faea2a84903c6a04bea2ba2d0b056a60b70610",
+      "tests/review.test.js": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+      "tests/static-server.test.mjs": "8dce6e23c8ea50b9cb0ab0a8ff3a3f2fd2de049f20e56c1fd2c7eeb3959e665c",
+      "tests/workspace-backend.test.mjs": "63979955e4cb04a542931593ce21349b9c7d2b326989d52a53554d91e2b3c3d0",
+      "tests/workspace.test.js": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+      "index.html": "77347f636badc822781531aa14ed3c8a042f92ae0c81ec64cb06afce2f53c8b2",
+      "styles.css": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3",
+      "package.json": "a2617c4e60da0d565fe6449bf8489ba44d9dcc5be4a5e8f45d9870e69b0a5a25"
+    },
+    "qualification": "Frozen release working tree inspected after UI fixes; file hashes identify these contents independently of HEAD."
+  },
+  "reference_inventory": {
+    "file": "official-feature-inventory.json",
+    "sha256": "dc90a4d2e485dcb6a5cf62ecd90f47a52e910fd57c4e6c1a387933d624ff6fe1"
+  },
+  "comparison_input_sha256": "ce158d23dae1e7d6cb814dec6344098078ac883b80b5ff10cf747ee9e81cfc07",
+  "features": [
+    {
+      "reference_id": "cv-start",
+      "workflow": "resume",
+      "reference_feature": "Start with an existing CV or a new document",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/"
+      ],
+      "reference_acceptance_criteria": [
+        "Create both a blank document and an imported-document draft, with editable fields and durable saved state."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "New local CVs and review-first existing-file drafts.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 81,
+          "symbol_or_handler": "createDocument",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 537,
+          "symbol_or_handler": "renderLibrary",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "full master CV creates independent new CV with existing career and custom sections",
+            "passed": true,
+            "ms": 172
+          },
+          {
+            "name": "DOCX import extracts reviewed text and creates a separate CV",
+            "passed": true,
+            "ms": 144
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-sections",
+      "workflow": "resume",
+      "reference_feature": "Standard, personal and custom sections",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/resume-templates/",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "reference_acceptance_criteria": [
+        "Add standard and custom sections, rename or remove them, and preserve content through export and reload."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Profile, experience, education, skills and editable custom text sections.",
+      "remaining_gaps": [
+        "Specialised reference charts/icons and the full section catalogue are not reproduced."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 164,
+          "symbol_or_handler": "addCustomSection",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 475,
+          "symbol_or_handler": "renderCustomSections",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "custom content, renamed headings and section order persist in preview",
+            "passed": true,
+            "ms": 281
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-entries",
+      "workflow": "resume",
+      "reference_feature": "Add sections and repeatable entries",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Create, edit, reorder and delete multiple entries without overwriting neighbouring entries."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Independent add/edit/delete/move entries in supported collections.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 112,
+          "symbol_or_handler": "addItem",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/model.js",
+          "line": 120,
+          "symbol_or_handler": "updateItem",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/model.js",
+          "line": 135,
+          "symbol_or_handler": "moveItem",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/model.test.js",
+          "sha256": "ed586c3b15c5d5bd40c58a4927faea2a84903c6a04bea2ba2d0b056a60b70610",
+          "test_cases": [
+            {
+              "line": 5,
+              "name": "JSON round trip preserves user text and detaches state"
+            },
+            {
+              "line": 13,
+              "name": "add, edit, reorder and remove preserve immutable state and IDs"
+            },
+            {
+              "line": 29,
+              "name": "imports reject malformed or unexpected documents before replacing user work"
+            },
+            {
+              "line": 51,
+              "name": "section limits fail with actionable errors"
+            },
+            {
+              "line": 57,
+              "name": "keyword comparison is case-insensitive exact token overlap, not substring or an ATS score"
+            },
+            {
+              "line": 68,
+              "name": "every accepted document fits the same UTF-8 import and export limit"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-reorder",
+      "workflow": "resume",
+      "reference_feature": "Rearrange sections and content",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Move sections and entries; preview, exported reading order and reopened state agree."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Move supported sections and collection entries; hidden content retained.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 178,
+          "symbol_or_handler": "moveSection",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 520,
+          "symbol_or_handler": "renderSectionControls",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "custom content, renamed headings and section order persist in preview",
+            "passed": true,
+            "ms": 281
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-design",
+      "workflow": "resume",
+      "reference_feature": "Fonts, colours and backgrounds",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/resume-templates/"
+      ],
+      "reference_acceptance_criteria": [
+        "Change font, colours, spacing and background; preview and exported document preserve the choices."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Three original templates, accent colour, three font categories and spacing/margins.",
+      "remaining_gaps": [
+        "Custom background/branding editor and full design catalogue absent."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 203,
+          "symbol_or_handler": "renderDesign",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 490,
+          "symbol_or_handler": "renderLayoutControls",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-layout",
+      "workflow": "resume",
+      "reference_feature": "Single-column, two-column and multi-page layouts",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/resume-templates/",
+        "https://enhancv.com/uk/"
+      ],
+      "reference_acceptance_criteria": [
+        "Switch column layouts and paginate long content without overlaps, clipped text or lost entries."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Original template layouts and browser print pagination.",
+      "remaining_gaps": [
+        "No explicit page-break editor or controlled multi-page layout comparison with the original."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 274,
+          "symbol_or_handler": "renderPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "styles.css",
+          "line": 6,
+          "symbol_or_handler": "@media print",
+          "sha256": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3"
+        }
+      ],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-preview",
+      "workflow": "resume",
+      "reference_feature": "Preview before exporting",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Show accurate pagination and a preview that agrees with the exported PDF."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Immediate HTML preview with paper-size and typography controls.",
+      "remaining_gaps": [
+        "Preview is a flowing paper surface rather than verified page-by-page PDF pagination."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 274,
+          "symbol_or_handler": "renderPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-pdf",
+      "workflow": "export",
+      "reference_feature": "Export selectable-text PDF",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/linkedin-resume-builder/",
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "reference_acceptance_criteria": [
+        "Export a real PDF with selectable text, working links and correct page dimensions; parse it independently."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Browser-print CV PDF with selectable text and validated email/website annotations observed in native Linux export.",
+      "remaining_gaps": [
+        "Platform print/pagination and the full reference template catalogue remain separate qualifications."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 274,
+          "symbol_or_handler": "renderPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 858,
+          "symbol_or_handler": "contactElement",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/links.js",
+          "line": 2,
+          "symbol_or_handler": "safeContactHref",
+          "sha256": "b7bcf8b5533d020a65a45e8a40d5af035c390c0b71408bc57ba52fc6e1ac3310"
+        },
+        {
+          "file": "src/app.js",
+          "line": 385,
+          "symbol_or_handler": "window.print()",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/links.test.js",
+          "sha256": "18239fc8166f12e4bc44144678d14574defe06b63baed8f2eb1484afcad2524c",
+          "test_cases": [
+            {
+              "line": 5,
+              "name": "valid supplied contacts produce explicit safe schemes while visible text can remain unchanged"
+            },
+            {
+              "line": 11,
+              "name": "empty, unsafe and untrusted contacts are rendered as text, with no inferred links elsewhere"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          },
+          {
+            "name": "safe contact links remain clickable in preview and actual PDF annotations",
+            "passed": true,
+            "ms": 157
+          }
+        ],
+        "additional_proof_ids": [
+          "component-3"
+        ],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-txt",
+      "workflow": "export",
+      "reference_feature": "Export plain text",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/",
+        "https://enhancv.com/uk/"
+      ],
+      "reference_acceptance_criteria": [
+        "Export complete UTF-8 text in a coherent reading order, including all selected sections."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "UTF-8 visible-section CV or letter text export.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 187,
+          "symbol_or_handler": "plainTextDocument",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 675,
+          "symbol_or_handler": "#export-txt",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          },
+          {
+            "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
+            "passed": true,
+            "ms": 331
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-paper",
+      "workflow": "export",
+      "reference_feature": "Selectable paper sizing",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/uk/"
+      ],
+      "reference_acceptance_criteria": [
+        "Choose A4 or Letter and verify PDF page dimensions and pagination."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "A4 and Letter selections propagated to print styling.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 490,
+          "symbol_or_handler": "renderLayoutControls",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "styles.css",
+          "line": 6,
+          "symbol_or_handler": "@page",
+          "sha256": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3"
+        }
+      ],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "doc-dashboard",
+      "workflow": "documents",
+      "reference_feature": "Resume and cover-letter dashboard",
+      "documented_tier": "Multiple documents documented for Pro",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808816-pro-account-where-can-i-access-my-other-resumes-can-i-have-more-than-one-resume",
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "List, open, rename and delete multiple resumes and letters; maintain document isolation after reload."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Named local library containing CVs with their associated letters.",
+      "remaining_gaps": [
+        "Local bound: 25 CVs, 10 snapshots each and 4 MB workspace; no account dashboard."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 537,
+          "symbol_or_handler": "renderLibrary",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 19,
+          "symbol_or_handler": "validateWorkspace",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "duplicate CV edits independently and reload preserves active selection",
+            "passed": true,
+            "ms": 315
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "doc-new",
+      "workflow": "documents",
+      "reference_feature": "Create additional CVs and cover letters",
+      "documented_tier": "Pro",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808816-pro-account-where-can-i-access-my-other-resumes-can-i-have-more-than-one-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Create another document without replacing the existing one; persist both independently."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "New CV from full stored master and independent letter state.",
+      "remaining_gaps": [
+        "25-CV local bound differs from the documented Pro allowance."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 70,
+          "symbol_or_handler": "addDocument",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        },
+        {
+          "file": "src/app.js",
+          "line": 537,
+          "symbol_or_handler": "renderLibrary",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "full master CV creates independent new CV with existing career and custom sections",
+            "passed": true,
+            "ms": 172
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "doc-duplicate",
+      "workflow": "documents",
+      "reference_feature": "Duplicate independent job-specific document versions",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Duplicate a document, edit the copy and prove the original is unchanged."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Independent deep-copied CVs and their associated letters.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 75,
+          "symbol_or_handler": "duplicateDocument",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "duplicate CV edits independently and reload preserves active selection",
+            "passed": true,
+            "ms": 315
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "doc-master",
+      "workflow": "documents",
+      "reference_feature": "Keep comprehensive experience while tailoring versions",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "reference_acceptance_criteria": [
+        "Retain comprehensive master facts while creating independent role-specific versions; omitted material remains recoverable."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Full career master retained separately; independent copies and named recovery snapshots.",
+      "remaining_gaps": [
+        "Original master merge/revision algorithm unknown."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 85,
+          "symbol_or_handler": "saveSnapshot",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 91,
+          "symbol_or_handler": "restoreSnapshot",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        },
+        {
+          "file": "src/app.js",
+          "line": 537,
+          "symbol_or_handler": "renderLibrary",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "named snapshot restore retains the replaced CV as a recovery snapshot",
+            "passed": true,
+            "ms": 212
+          },
+          {
+            "name": "full master CV creates independent new CV with existing career and custom sections",
+            "passed": true,
+            "ms": 172
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "doc-cloud",
+      "workflow": "documents",
+      "reference_feature": "Persist documents across desktop and mobile",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/uk/"
+      ],
+      "reference_acceptance_criteria": [
+        "Save on one authenticated device, reopen on another, and resolve conflicting revisions without silent data loss."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Optional self-hosted active-CV save/open/refresh through capability links.",
+      "remaining_gaps": [
+        "No authenticated account identity or whole-library/master/job-tracker sync; explicit saves/refresh rather than automatic merge."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/cloud-ui.js",
+          "line": 5,
+          "symbol_or_handler": "createCloudUI",
+          "sha256": "07c816cfe7874c988e2b04839fa2b9fac23eda7f0800a1e2f31794a09fea00d6"
+        },
+        {
+          "file": "src/cloud-client.mjs",
+          "line": 36,
+          "symbol_or_handler": "createCloudClient",
+          "sha256": "7ce383928b72c3e11ea250297d11c0e0ccca60dc297f920f1ef724d6f6ef4360"
+        },
+        {
+          "file": "scripts/workspace-backend.mjs",
+          "line": 184,
+          "symbol_or_handler": "createWorkspaceHandler",
+          "sha256": "1eb7f84754ca75d5634b60e8a76782933f8b1c21a1e138f0cdf1fd54bd0a30f3"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace-backend.test.mjs",
+          "sha256": "63979955e4cb04a542931593ce21349b9c7d2b326989d52a53554d91e2b3c3d0",
+          "test_cases": [
+            {
+              "line": 44,
+              "name": "service is explicitly disabled by default and cannot create cloud documents"
+            },
+            {
+              "line": 57,
+              "name": "distinct capability roles persist hashes only; viewer cannot write or read old versions"
+            },
+            {
+              "line": 80,
+              "name": "permission rotation and revocation immediately invalidate old links without granting owner authority"
+            },
+            {
+              "line": 96,
+              "name": "concurrent updates reject the stale writer with a recoverable revision, and persist one exact document"
+            },
+            {
+              "line": 113,
+              "name": "comments, revision history and rotated permissions survive a real service restart"
+            },
+            {
+              "line": 133,
+              "name": "cross-origin writes, missing guard headers and invalid document complexity are rejected before persistence"
+            },
+            {
+              "line": 147,
+              "name": "strict application validators reject documents and service cannot acquire a second writer"
+            },
+            {
+              "line": 158,
+              "name": "workspace identifiers cannot escape storage, and symlinked records cannot reveal external data"
+            },
+            {
+              "line": 175,
+              "name": "document history is bounded and preserves the current version under many edits"
+            },
+            {
+              "line": 189,
+              "name": "large old document versions are trimmed to the history byte budget without dropping the current document"
+            },
+            {
+              "line": 204,
+              "name": "workspace count quota rejects a new document while keeping existing documents writable"
+            },
+            {
+              "line": 217,
+              "name": "crash-orphaned storage counts against the quota and remains preserved for operator recovery"
+            },
+            {
+              "line": 229,
+              "name": "browser client sends token headers only, enforces same-origin APIs and reports actionable conflicts"
+            },
+            {
+              "line": 255,
+              "name": "polling observes a real remote edit and stops after permission revocation"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-4",
+          "component-7",
+          "component-5"
+        ],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-import-file",
+      "workflow": "import",
+      "reference_feature": "Import PDF or DOCX resume content",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/cover-letter-generator/"
+      ],
+      "reference_acceptance_criteria": [
+        "Import representative PDF and DOCX fixtures into editable fields; report extraction failures and preserve the original file."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Bounded local DOCX and PDF text extraction, editable review, then independent CV draft.",
+      "remaining_gaps": [
+        "No semantic field mapping, image/layout reconstruction or scanned-PDF OCR."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/formats.js",
+          "line": 167,
+          "symbol_or_handler": "extractDocx",
+          "sha256": "1bee9303614caf4e1c8636650d0c66e4db73b7cd25a9b074cb9996e1f6859f03"
+        },
+        {
+          "file": "src/pdf-import.js",
+          "line": 2,
+          "symbol_or_handler": "extractPdf",
+          "sha256": "03a165380b814d187b43a6fb62eb533f630aa2345a50497480c317ae01542ad7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 537,
+          "symbol_or_handler": "renderLibrary",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "DOCX import extracts reviewed text and creates a separate CV",
+            "passed": true,
+            "ms": 144
+          },
+          {
+            "name": "actual selectable-text PDF import extracts locally for review and creates a separate CV",
+            "passed": true,
+            "ms": 1140
+          }
+        ],
+        "additional_proof_ids": [
+          "component-6"
+        ],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-import-linkedin",
+      "workflow": "import",
+      "reference_feature": "Import LinkedIn profile content",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/linkedin-resume-builder/"
+      ],
+      "reference_acceptance_criteria": [
+        "Use an authorised profile input to populate editable experience and education; show missing fields and revocation errors."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "No LinkedIn profile importer, authorised profile connector or external-profile parsing."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cover-edit",
+      "workflow": "cover-letter",
+      "reference_feature": "Editable header, greeting, body and closing",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/cover-letter-builder/"
+      ],
+      "reference_acceptance_criteria": [
+        "Edit greeting, body, closing and contact header; save and reopen the letter without flattening its fields."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Editable company, role, address, date, subject, salutation, body and closing.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 601,
+          "symbol_or_handler": "renderLetter",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/model.js",
+          "line": 28,
+          "symbol_or_handler": "validateDocument",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
+            "passed": true,
+            "ms": 331
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cover-design",
+      "workflow": "cover-letter",
+      "reference_feature": "Matching CV and cover-letter design",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/cover-letter-templates/"
+      ],
+      "reference_acceptance_criteria": [
+        "Apply matching resume and letter typography and colours and verify both exports."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Letter preview/print inherits CV typography and accent styling.",
+      "remaining_gaps": [
+        "Original template catalogue absent."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 616,
+          "symbol_or_handler": "renderLetterPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 274,
+          "symbol_or_handler": "renderPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
+            "passed": true,
+            "ms": 331
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cover-per-role",
+      "workflow": "cover-letter",
+      "reference_feature": "Separate tailored letters per application",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/cover-letter-templates/",
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "reference_acceptance_criteria": [
+        "Keep separate letters linked to different applications; changes to one letter do not alter another."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Separate letters exist in independently duplicated CV documents and can be linked via CV ID.",
+      "remaining_gaps": [
+        "One letter per CV, not independently versioned letters or immutable per-application letter snapshots."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 601,
+          "symbol_or_handler": "renderLetter",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 75,
+          "symbol_or_handler": "duplicateDocument",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
+            "passed": true,
+            "ms": 331
+          },
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cover-pdf",
+      "workflow": "cover-letter",
+      "reference_feature": "Preview and PDF export",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/cover-letter-builder/"
+      ],
+      "reference_acceptance_criteria": [
+        "Export the complete letter as a selectable-text PDF with the previewed layout."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Native letter print/PDF surface, TXT and independent DOCX additions.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 616,
+          "symbol_or_handler": "renderLetterPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 385,
+          "symbol_or_handler": "window.print()",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
+            "passed": true,
+            "ms": 331
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cover-ai",
+      "workflow": "ai",
+      "reference_feature": "Generate letter from resume and job ad",
+      "documented_tier": "Public plain-text generator advertised free without login",
+      "source_links": [
+        "https://enhancv.com/cover-letter-generator/"
+      ],
+      "reference_acceptance_criteria": [
+        "Submit resume facts and a job ad to a configured provider, receive an editable letter, then accept or reject it; handle cancellation and provider errors."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Configured real model can draft a reviewed letter body; a separately labelled factual rule starter exists.",
+      "remaining_gaps": [
+        "Generation receives selected text/context rather than an automatic full resume-to-letter workflow; every generated claim requires review."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/review.js",
+          "line": 231,
+          "symbol_or_handler": "coverLetterDraft",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        },
+        {
+          "file": "scripts/ai.mjs",
+          "line": 42,
+          "symbol_or_handler": "createAiHandler",
+          "sha256": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-1",
+          "component-8"
+        ],
+        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "check-structure",
+      "workflow": "checker",
+      "reference_feature": "Contact, sections, length and formatting checks",
+      "documented_tier": "Basic checker advertised free; deeper review paid",
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Run reproducible fixtures with missing contacts, missing sections and excessive length; report locations and explain rules."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Published deterministic contact, empty-entry, date and writing-length checks.",
+      "remaining_gaps": [
+        "No original parser, score weights, formatting/ATS engine equivalence or independently validated ATS compatibility."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/review.js",
+          "line": 71,
+          "symbol_or_handler": "reviewCV",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        },
+        {
+          "file": "src/review.js",
+          "line": 4,
+          "symbol_or_handler": "REVIEW_RULES",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "transparent review responds to corrections and hidden sections stay out of match text",
+            "passed": true,
+            "ms": 373
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "check-content",
+      "workflow": "checker",
+      "reference_feature": "Grammar, repetition and quantified achievement checks",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Identify fixture repetition and unquantified claims; show actionable edits and label rule-based checks honestly."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Exact repetition, duty openings, word/line bounds and prompts for supplied numerical evidence.",
+      "remaining_gaps": [
+        "No grammar engine, semantic repetition, factual verification or original AI content analysis."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/review.js",
+          "line": 71,
+          "symbol_or_handler": "reviewCV",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "transparent review responds to corrections and hidden sections stay out of match text",
+            "passed": true,
+            "ms": 373
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "check-jobmatch",
+      "workflow": "checker",
+      "reference_feature": "Missing job keywords and resume match feedback",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Compare resume and job-ad terms; show present and absent terms with supporting text and explain the independent scoring method."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Explainable exact-token overlap and absent terms without a hiring score.",
+      "remaining_gaps": [
+        "Independent token rules are not original match-score or semantic ATS algorithm parity."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 151,
+          "symbol_or_handler": "keywordFeedback",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/review.js",
+          "line": 190,
+          "symbol_or_handler": "tailoringSuggestions",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/model.test.js",
+          "sha256": "ed586c3b15c5d5bd40c58a4927faea2a84903c6a04bea2ba2d0b056a60b70610",
+          "test_cases": [
+            {
+              "line": 5,
+              "name": "JSON round trip preserves user text and detaches state"
+            },
+            {
+              "line": 13,
+              "name": "add, edit, reorder and remove preserve immutable state and IDs"
+            },
+            {
+              "line": 29,
+              "name": "imports reject malformed or unexpected documents before replacing user work"
+            },
+            {
+              "line": 51,
+              "name": "section limits fail with actionable errors"
+            },
+            {
+              "line": 57,
+              "name": "keyword comparison is case-insensitive exact token overlap, not substring or an ATS score"
+            },
+            {
+              "line": 68,
+              "name": "every accepted document fits the same UTF-8 import and export limit"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "transparent review responds to corrections and hidden sections stay out of match text",
+            "passed": true,
+            "ms": 373
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "check-human",
+      "workflow": "checker",
+      "reference_feature": "Career progression, gaps, bias and leadership review",
+      "documented_tier": "Paid deeper checker",
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Return grounded, reviewable feedback for career progression or gaps; distinguish uncertainty from facts and test for unsupported assertions."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "No career-progression, gap, bias or leadership assessment engine; existing rules do not implement these paid checks."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tailor-review",
+      "workflow": "tailoring",
+      "reference_feature": "Review suggested rewrites before applying or undoing",
+      "documented_tier": "AI tailoring documented in seven-day trial and paid plans",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "reference_acceptance_criteria": [
+        "Show proposed edits beside originals; accept, reject and undo individual changes while preserving factual claims."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Reviewed model summary into new tailored CV, field apply/undo and exact-token entry-order copy.",
+      "remaining_gaps": [
+        "No full-document semantic tailoring, individually proposed multi-section edits or factual-grounding guarantee."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 658,
+          "symbol_or_handler": "renderTailoring",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/review.js",
+          "line": 190,
+          "symbol_or_handler": "tailoringSuggestions",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "ai-writing",
+      "workflow": "ai",
+      "reference_feature": "Summary, bullets, headline and objective writing",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ai-resume-builder/",
+        "https://enhancv.com/features/"
+      ],
+      "reference_acceptance_criteria": [
+        "Generate editable summaries, bullets and headlines using only supplied experience; preserve numbers unless the user explicitly changes them."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Configured summary, headline, objective and bullet tasks with editable candidate, apply, cancel and undo.",
+      "remaining_gaps": [
+        "Retained real-model UI receipts cover summary, tailoring, interview notes and in-flight cancellation; headline/objective/translation and factual quality need expanded evidence."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "scripts/ai.mjs",
+          "line": 42,
+          "symbol_or_handler": "createAiHandler",
+          "sha256": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-1",
+          "component-8"
+        ],
+        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "ai-translation",
+      "workflow": "ai",
+      "reference_feature": "Translate CV content",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ai-resume-builder/"
+      ],
+      "reference_acceptance_criteria": [
+        "Translate selected content via a configured provider while preserving names, numbers and document structure; allow review and rollback."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Configured reviewed translation of selected summary, headline, experience or letter field.",
+      "remaining_gaps": [
+        "Whole-CV translation, language coverage and export/font fidelity remain unqualified."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "scripts/ai.mjs",
+          "line": 42,
+          "symbol_or_handler": "createAiHandler",
+          "sha256": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-1",
+          "component-8"
+        ],
+        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-records",
+      "workflow": "job-tracker",
+      "reference_feature": "Company, role, application date and posting record",
+      "documented_tier": "Unlimited applications advertised free",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Create, edit, search and reopen company, role, date and job-posting records with stable application identity."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Manual company, role, URL, date, notes and status records with stable IDs.",
+      "remaining_gaps": [
+        "Local application bound is 150; no source unlimited-account storage."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 101,
+          "symbol_or_handler": "addApplication",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 106,
+          "symbol_or_handler": "updateApplication",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        },
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-pipeline",
+      "workflow": "job-tracker",
+      "reference_feature": "Statuses, board movement and sorting",
+      "documented_tier": "Free tracker",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Move applications among statuses; filtering and persisted board order reflect the same record."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Supported status selector, status counts and filtered record list.",
+      "remaining_gaps": [
+        "No board drag movement or user-defined/sorted pipeline; statuses differ from the reference."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 5,
+          "symbol_or_handler": "JOB_STATUSES",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-resume",
+      "workflow": "job-tracker",
+      "reference_feature": "Attach the exact resume version sent",
+      "documented_tier": "Free tracker",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Attach and reopen the precise submitted resume revision after later changes to the master document."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Applications link an existing local CV ID and can reopen it.",
+      "remaining_gaps": [
+        "Link resolves mutable CV content, not the immutable exact revision sent; deleting the CV clears the link."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 19,
+          "symbol_or_handler": "validateWorkspace",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-letters",
+      "workflow": "job-tracker",
+      "reference_feature": "Link tailored cover letters",
+      "documented_tier": "Free tracker; document entitlements separate",
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Attach and reopen the application-specific cover letter without changing other applications."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Linked CV carries its current associated letter.",
+      "remaining_gaps": [
+        "No independently attached or immutable submitted letter; multiple applications sharing a CV share its current letter."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/app.js",
+          "line": 601,
+          "symbol_or_handler": "renderLetter",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-tasks",
+      "workflow": "job-tracker",
+      "reference_feature": "Tasks, completion and due dates",
+      "documented_tier": "Free tracker",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Create due-dated tasks, mark them complete and preserve completion and due dates after reload."
+      ],
+      "classification": "partial",
+      "delivered_scope": "One follow-up date and free-text next-step notes per application.",
+      "remaining_gaps": [
+        "No task records, multiple due dates or completion states."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 19,
+          "symbol_or_handler": "validateWorkspace",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-notes",
+      "workflow": "job-tracker",
+      "reference_feature": "Contacts, interview notes and offer details",
+      "documented_tier": "Free tracker",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Save contacts, interview notes and offer details on the correct application and retrieve them after reload."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Persistent free-text application notes.",
+      "remaining_gaps": [
+        "No structured contact, interview-event or offer model."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 626,
+          "symbol_or_handler": "renderJobs",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/workspace.js",
+          "line": 19,
+          "symbol_or_handler": "validateWorkspace",
+          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "job tracker status, dates, linked CV and filtering survive reload",
+            "passed": true,
+            "ms": 437
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-archive",
+      "workflow": "job-tracker",
+      "reference_feature": "Archive applications without losing history",
+      "documented_tier": "Free tracker",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Archive and restore an application while retaining notes, tasks and document links."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "No archive/restore state; removing an application deletes its record."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-fields",
+      "workflow": "job-tracker",
+      "reference_feature": "Custom fields and tracker columns",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Add typed custom fields and columns; edit, sort and preserve values across import and reload."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "Strict fixed application schema rejects custom fields; no custom columns."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-import",
+      "workflow": "job-tracker",
+      "reference_feature": "Import spreadsheet trackers",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Map spreadsheet columns to applications, preview validation errors and prevent silent duplicate or truncated records."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "JSON workspace merge exists, but spreadsheet/CSV tracker column mapping and duplicate reconciliation do not."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-analytics",
+      "workflow": "job-tracker",
+      "reference_feature": "Weekly progress analytics",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "reference_acceptance_criteria": [
+        "Compute weekly counts from saved application dates/statuses and verify totals against a fixed fixture."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "Status totals exist, but no date-based weekly progress analytics or reporting."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-capture",
+      "workflow": "job-tracker",
+      "reference_feature": "Capture posting URLs and browser-extension fields",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Extract a supported public posting into a reviewable application draft; show URL and parsing errors without requesting unrelated site permissions."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "URLs are entered manually; no posting auto-fill, page extraction or browser extension."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "tracker-reminders",
+      "workflow": "job-tracker",
+      "reference_feature": "Follow-up reminders linked to application timelines",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "reference_acceptance_criteria": [
+        "Queue a due reminder using durable application/task IDs, deduplicate retries and obtain a delivery receipt through an authorised notification route."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "Follow-up dates are stored only; no scheduler/outbox, delivery route, deduplication or notification receipt."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "share-feedback",
+      "workflow": "collaboration",
+      "reference_feature": "Share links and section-specific feedback",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/",
+        "https://enhancv.com/resume-templates/"
+      ],
+      "reference_acceptance_criteria": [
+        "Two independent accounts open the same shared document with their assigned permissions; anchored feedback survives refresh and access revocation."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Optional real shared-CV service with owner/edit/view links, comments, revisions, revocation and conflict rejection.",
+      "remaining_gaps": [
+        "Capability possession rather than verified account identity; comments are document-wide, without section anchors, mentions or automatic merge."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/cloud-ui.js",
+          "line": 5,
+          "symbol_or_handler": "createCloudUI",
+          "sha256": "07c816cfe7874c988e2b04839fa2b9fac23eda7f0800a1e2f31794a09fea00d6"
+        },
+        {
+          "file": "scripts/workspace-backend.mjs",
+          "line": 184,
+          "symbol_or_handler": "createWorkspaceHandler",
+          "sha256": "1eb7f84754ca75d5634b60e8a76782933f8b1c21a1e138f0cdf1fd54bd0a30f3"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace-backend.test.mjs",
+          "sha256": "63979955e4cb04a542931593ce21349b9c7d2b326989d52a53554d91e2b3c3d0",
+          "test_cases": [
+            {
+              "line": 44,
+              "name": "service is explicitly disabled by default and cannot create cloud documents"
+            },
+            {
+              "line": 57,
+              "name": "distinct capability roles persist hashes only; viewer cannot write or read old versions"
+            },
+            {
+              "line": 80,
+              "name": "permission rotation and revocation immediately invalidate old links without granting owner authority"
+            },
+            {
+              "line": 96,
+              "name": "concurrent updates reject the stale writer with a recoverable revision, and persist one exact document"
+            },
+            {
+              "line": 113,
+              "name": "comments, revision history and rotated permissions survive a real service restart"
+            },
+            {
+              "line": 133,
+              "name": "cross-origin writes, missing guard headers and invalid document complexity are rejected before persistence"
+            },
+            {
+              "line": 147,
+              "name": "strict application validators reject documents and service cannot acquire a second writer"
+            },
+            {
+              "line": 158,
+              "name": "workspace identifiers cannot escape storage, and symlinked records cannot reveal external data"
+            },
+            {
+              "line": 175,
+              "name": "document history is bounded and preserves the current version under many edits"
+            },
+            {
+              "line": 189,
+              "name": "large old document versions are trimmed to the history byte budget without dropping the current document"
+            },
+            {
+              "line": 204,
+              "name": "workspace count quota rejects a new document while keeping existing documents writable"
+            },
+            {
+              "line": 217,
+              "name": "crash-orphaned storage counts against the quota and remains preserved for operator recovery"
+            },
+            {
+              "line": 229,
+              "name": "browser client sends token headers only, enforces same-origin APIs and reports actionable conflicts"
+            },
+            {
+              "line": 255,
+              "name": "polling observes a real remote edit and stops after permission revocation"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-4",
+          "component-7",
+          "component-5"
+        ],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "interview-help",
+      "workflow": "interview",
+      "reference_feature": "Role questions, STAR answers and company preparation",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/"
+      ],
+      "reference_acceptance_criteria": [
+        "Produce role-specific practice questions and reviewable answers grounded in supplied facts; retain a practice history and report provider failure."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Configured question and supplied-answer-feedback tasks; reviewed notes retained in-tab and exportable as TXT.",
+      "remaining_gaps": [
+        "No persistent practice history, company research, voice mock interviews or verified STAR/coaching efficacy."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "scripts/ai.mjs",
+          "line": 42,
+          "symbol_or_handler": "createAiHandler",
+          "sha256": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-1",
+          "component-8"
+        ],
+        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "job-board",
+      "workflow": "discovery",
+      "reference_feature": "Conversational job search and profile matching",
+      "documented_tier": "Pro",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "reference_acceptance_criteria": [
+        "Retrieve current jobs from an authorised feed, filter or rank them against profile criteria, and preserve source URLs and freshness."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "No live job provider, indexed listings, current search results or matching service."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "chatgpt-app",
+      "workflow": "integrations",
+      "reference_feature": "Official ChatGPT resume design integration",
+      "documented_tier": "Not explicitly stated",
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "reference_acceptance_criteria": [
+        "Complete a real external app invocation with authenticated document access and a returned editable result; verify revoked access fails closed."
+      ],
+      "classification": "missing",
+      "delivered_scope": "",
+      "remaining_gaps": [
+        "No authenticated ChatGPT app or external assistant integration."
+      ],
+      "source_evidence": [],
+      "test_evidence": [],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": false,
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "cv-pro-sections",
+      "workflow": "resume",
+      "reference_feature": "Premium specialised resume sections",
+      "documented_tier": "Pro",
+      "source_links": [
+        "https://enhancv.com/pricing/",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "reference_acceptance_criteria": [
+        "Create specialised sections as genuinely editable structured content; preserve them in preview, PDF and reopen."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Custom heading/plain-text sections can hold projects, awards and other supplied facts.",
+      "remaining_gaps": [
+        "No full specialised section catalogue, charts or section-specific typed controls."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/model.js",
+          "line": 164,
+          "symbol_or_handler": "addCustomSection",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/app.js",
+          "line": 475,
+          "symbol_or_handler": "renderCustomSections",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/workspace.test.js",
+          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "test_cases": [
+            {
+              "line": 6,
+              "name": "original release v1 document migrates without losing literal or Unicode content"
+            },
+            {
+              "line": 13,
+              "name": "custom section order and visibility are validated and affect export/feedback"
+            },
+            {
+              "line": 28,
+              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+            },
+            {
+              "line": 42,
+              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+            },
+            {
+              "line": 59,
+              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+            },
+            {
+              "line": 75,
+              "name": "provided invalid master documents are rejected rather than silently defaulted"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "custom content, renamed headings and section order persist in preview",
+            "passed": true,
+            "ms": 281
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "content-live-suggestions",
+      "workflow": "checker",
+      "reference_feature": "Live content suggestions",
+      "documented_tier": "Pro",
+      "source_links": [
+        "https://enhancv.com/pricing/"
+      ],
+      "reference_acceptance_criteria": [
+        "Changing resume content triggers relevant reviewable suggestions; stale responses cannot replace newer edits and rejected suggestions leave content unchanged."
+      ],
+      "classification": "partial",
+      "delivered_scope": "Review panel recalculates transparent rules from current content; writing model runs only on explicit request.",
+      "remaining_gaps": [
+        "No continuously triggered model suggestions or original real-time semantic feedback."
+      ],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 648,
+          "symbol_or_handler": "renderReview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/review.js",
+          "line": 71,
+          "symbol_or_handler": "reviewCV",
+          "sha256": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62"
+        },
+        {
+          "file": "src/app.js",
+          "line": 700,
+          "symbol_or_handler": "renderAi",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/review.test.js",
+          "sha256": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
+          "test_cases": [
+            {
+              "line": 8,
+              "name": "blank CV produces actionable essentials without a hiring score"
+            },
+            {
+              "line": 21,
+              "name": "valid supplied contact is enough and malformed contact gets precise prompts"
+            },
+            {
+              "line": 38,
+              "name": "summary prompts expose length and specific generic phrase evidence"
+            },
+            {
+              "line": 49,
+              "name": "empty and partial entries identify missing fields without requiring irrelevant descriptions for education"
+            },
+            {
+              "line": 62,
+              "name": "date checks accept supported formats and detect reversed periods without using current time"
+            },
+            {
+              "line": 82,
+              "name": "date consistency prompts do not assume missing months or enforce chronological entry order"
+            },
+            {
+              "line": 92,
+              "name": "quantitative prompt accepts any supplied numeral but never treats it as verified impact"
+            },
+            {
+              "line": 103,
+              "name": "description review finds exact repetition, duty openings, long lines and line-count excess"
+            },
+            {
+              "line": 116,
+              "name": "hidden sections do not generate content review issues or word counts"
+            },
+            {
+              "line": 131,
+              "name": "hidden profile summary is excluded from all summary prompts and visible word counts while header essentials remain"
+            },
+            {
+              "line": 153,
+              "name": "custom sections provide background and use the same description checks"
+            },
+            {
+              "line": 163,
+              "name": "duplicate skills use case and whitespace only and preserve distinct technology names"
+            },
+            {
+              "line": 169,
+              "name": "review is deterministic, does not mutate input and returns detached rule descriptions"
+            },
+            {
+              "line": 181,
+              "name": "tailoring ranks only existing IDs by exact overlaps and retains stable ties"
+            },
+            {
+              "line": 201,
+              "name": "tailoring compares stored custom content and defaults to the saved ad, with an empty-ad prompt"
+            },
+            {
+              "line": 210,
+              "name": "cover letter starter contains supplied facts with provenance and never makes up metrics or company knowledge"
+            },
+            {
+              "line": 227,
+              "name": "cover letter omits missing facts, warns about gaps and can draw from education"
+            },
+            {
+              "line": 242,
+              "name": "structured letter body excludes generated salutation and signature while keeping facts and thank-you"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/ai.test.js",
+          "sha256": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+          "test_cases": [
+            {
+              "line": 14,
+              "name": "AI configuration is disabled by default and rejects credentials in URLs or insecure remote endpoints"
+            },
+            {
+              "line": 21,
+              "name": "disabled bridge performs no provider calls and does not expose configuration"
+            },
+            {
+              "line": 28,
+              "name": "bridge rejects cross-origin, invalid tasks and oversized requests before inference"
+            },
+            {
+              "line": 37,
+              "name": "actual protocol forwards only selected text and returns a review candidate without leaking credentials"
+            },
+            {
+              "line": 51,
+              "name": "provider failures are redacted and a failed generation releases the concurrency guard"
+            },
+            {
+              "line": 62,
+              "name": "two delayed request bodies cannot bypass the single-generation guard"
+            },
+            {
+              "line": 83,
+              "name": "disconnecting the browser aborts the upstream model request"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "transparent review responds to corrections and hidden sections stay out of match text",
+            "passed": true,
+            "ms": 373
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    },
+    {
+      "reference_id": "export-branding",
+      "workflow": "export",
+      "reference_feature": "Branding-free document export",
+      "documented_tier": "Pro",
+      "source_links": [
+        "https://enhancv.com/pricing/",
+        "https://help.enhancv.com/en/articles/1208865-what-is-included-in-the-free-version",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "reference_acceptance_criteria": [
+        "Export an independently branded document with no reference-product watermark and verify document content and pagination remain unchanged."
+      ],
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Independent ClearCV documents carry no reference-product watermark.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/app.js",
+          "line": 274,
+          "symbol_or_handler": "renderPreview",
+          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+        },
+        {
+          "file": "src/model.js",
+          "line": 187,
+          "symbol_or_handler": "plainTextDocument",
+          "sha256": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7"
+        },
+        {
+          "file": "src/formats.js",
+          "line": 47,
+          "symbol_or_handler": "exportDocx",
+          "sha256": "1bee9303614caf4e1c8636650d0c66e4db73b7cd25a9b074cb9996e1f6859f03"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/formats.test.js",
+          "sha256": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
+          "test_cases": [
+            {
+              "line": 17,
+              "name": "editable DOCX exports preserve visible ordered text without HTML or external relationships"
+            },
+            {
+              "line": 34,
+              "name": "cover letters export applicant and letter text, without including the CV work history"
+            },
+            {
+              "line": 42,
+              "name": "hiding or moving the summary keeps the applicant header and contacts in the exported CV"
+            },
+            {
+              "line": 47,
+              "name": "extracts genuine raw-deflate ZIP text including runs, Unicode, tabs and XML entities"
+            },
+            {
+              "line": 51,
+              "name": "damaged, encrypted, oversized and conflicting archive entries fail before import"
+            },
+            {
+              "line": 68,
+              "name": "XML extraction rejects entity declarations, malformed nesting and excessive text"
+            },
+            {
+              "line": 76,
+              "name": "plain-text review normalises line endings and bounds input without inventing semantic fields"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "original_authenticated_behaviour": "not-exercised",
+      "algorithm_equivalence": "not-established",
+      "verification": {
+        "source_inspected": true,
+        "browser_proof_id": "browser-current",
+        "browser_checks": [
+          {
+            "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
+            "passed": true,
+            "ms": 329
+          }
+        ],
+        "additional_proof_ids": [],
+        "provider_limit": null,
+        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+      }
+    }
+  ],
+  "proof_metadata_file": "proof-metadata.json",
+  "publication_boundary": "Only independently written inventories, relative local source/test anchors, hashes and scoped receipt metadata are included. Raw site captures, proprietary scripts/assets, session data, provider responses and capability credentials are excluded.",
+  "supplemental_all_tier_gaps": [
+    {
+      "feature": "Business reusable custom templates",
+      "documented_tier": "Business",
+      "classification": "missing",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/11588565-how-to-create-your-first-custom-template"
+      ],
+      "remaining_gaps": [
+        "No team template library or imported-document template application workflow."
+      ],
+      "note": "Newly verified official January 2026 help; outside frozen 48-row inventory."
+    },
+    {
+      "feature": "Business custom logo/background branding",
+      "documented_tier": "Business",
+      "classification": "missing",
+      "source_links": [
+        "https://help.enhancv.com/en/articles/11588605-how-to-create-your-custom-branding"
+      ],
+      "remaining_gaps": [
+        "Portrait upload is not a reusable logo/background with placement, opacity/saturation and team branding."
+      ],
+      "note": "Newly verified official January 2026 help; outside frozen 48-row inventory."
+    }
+  ]
+}

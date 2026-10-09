@@ -1,6 +1,6 @@
 {
   "name": "clearcv",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "A local-first, open-source CV workspace.",
   "type": "module",
@@ -14,9 +14,13 @@
     "build": "node scripts/build.mjs",
     "preview": "node scripts/serve.mjs --dir dist --port 4201",
     "test": "node --test",
-    "test:browser": "node scripts/browser-smoke.mjs"
+    "test:browser": "node scripts/browser-smoke.mjs",
+    "prestart": "node scripts/prepare-assets.mjs",
+    "predev": "node scripts/prepare-assets.mjs"
   },
-  "dependencies": {},
+  "dependencies": {
+    "pdfjs-dist": "6.4.299"
+  },
   "devDependencies": {
     "@playwright/test": "1.64.0"
   }

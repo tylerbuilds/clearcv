@@ -1,20 +1,66 @@
-import { sampleDocument, createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS } from './model.js';
+import { sampleDocument, createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument } from './model.js';
 
-const STORAGE_KEY = 'clearcv.document.v1';
+import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES } from './workspace.js';
+import { reviewCV, tailoringSuggestions, coverLetterDraft } from './review.js';
+import { exportDocx, extractDocx, normalisePlainText } from './formats.js';
+import { getAiStatus, generateWriting } from './ai-client.js';
+import { createCloudUI } from './cloud-ui.js';
+import { safeContactHref } from './links.js';
+const STORAGE_KEY = 'clearcv.workspace.v1';
+const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
+let workspace;
+let importText = '';
+let importLabel = '';
+let pendingPdf = null;
+let importGeneration = 0;
+let cloudUI = null;
+let aiStatus = { enabled: false };
+let aiBusy = false;
+let aiTask = 'summary';
+let aiTarget = 'summary';
+let aiCandidate = null;
+let aiUndo = null;
+let aiController = null;
+const practiceRecords = new Map();
+let rawWorkspace = null;
+let recoveryRaw = '';
+let recoveryBackedUp = false;
+let recoveryDownloaded = false;
+let recoveryStorageKey = '';
+
 let activeTab = 'content';
 let noticeTimer;
 let pendingReset = 'blank';
 let initialNotice = '';
+let initialNoticeIsError = false;
 let state;
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
-  state = saved ? parseDocument(saved) : sampleDocument();
-  if (!saved) localStorage.setItem(STORAGE_KEY, serialiseDocument(state));
+  rawWorkspace = saved;
+  if (saved) workspace = parseWorkspace(saved);
+  else {
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    const doc = legacy ? parseDocument(legacy) : sampleDocument();
+    workspace = createWorkspace(doc, 'initial-cv', legacy ? 'Migrated CV' : 'My CV');
+    localStorage.setItem(STORAGE_KEY, serialiseWorkspace(workspace));
+    if (legacy) initialNotice = 'Your previous CV is now in your library. Its original saved copy has been kept.';
+  }
 } catch (error) {
-  state = sampleDocument();
-  initialNotice = `The saved CV could not be read: ${error.message} The example is open; an unreadable saved copy has not been overwritten.`;
+  if (rawWorkspace) {
+    recoveryRaw = rawWorkspace;
+    recoveryStorageKey = `${STORAGE_KEY}.recovery.${Date.now()}`;
+    try { localStorage.setItem(recoveryStorageKey, recoveryRaw); recoveryBackedUp = true; }
+    catch { recoveryBackedUp = false; }
+  }
+  if (!workspace) {
+    try { workspace = createWorkspace(parseDocument(localStorage.getItem(LEGACY_STORAGE_KEY)), 'recovered-cv', 'Recovered CV'); }
+    catch { workspace = createWorkspace(sampleDocument()); }
+  }
+  initialNoticeIsError = true;
+  initialNotice = `The saved workspace could not be read or saved: ${error.message} The original unreadable workspace is ${recoveryBackedUp ? 'kept in a separate recovery copy' : 'protected from replacement; saving is locked'}. Open Library to export recovery data and a backup of the open library.`;
   document.querySelector('#save-status').textContent = 'Saved copy unavailable';
 }
+state = activeEntry(workspace).document;
 const panel = document.querySelector('#editor-panel');
 const preview = document.querySelector('#cv-preview');
 
@@ -40,8 +86,13 @@ function announce(message, error = false) {
   noticeTimer = setTimeout(() => { box.hidden = true; }, error ? 12000 : 5000);
 }
 function save() {
+  if (recoveryRaw && !recoveryBackedUp) {
+    document.querySelector('#save-status').textContent = 'Recovery locked · export originals';
+    announce('The original saved workspace is unreadable and protected. Open Library to download recovery data before explicitly replacing it. Current edits remain open.', true);
+    return false;
+  }
   try {
-    localStorage.setItem(STORAGE_KEY, serialiseDocument(state));
+    localStorage.setItem(STORAGE_KEY, serialiseWorkspace(workspace));
     document.querySelector('#save-status').textContent = 'Saved on this device';
     return true;
   } catch {
@@ -50,13 +101,28 @@ function save() {
     return false;
   }
 }
-function change(next, rerender = false) {
-  state = validateDocument(next);
+function changeWorkspace(next, rerender = true) {
+  workspace = validateWorkspace(next);
+  state = activeEntry(workspace).document;
   const saved = save();
+  renderDocumentSwitcher();
   renderPreview();
   if (rerender) renderPanel();
   else if (activeTab === 'match') renderMatchResults();
   return saved;
+}
+function change(next, rerender = false) { return changeWorkspace(updateActiveDocument(workspace, next), rerender); }
+function renderDocumentSwitcher() {
+  const select = document.querySelector('#active-document');
+  select.replaceChildren(...workspace.documents.map(entry => element('option', { value: entry.id, text: entry.name })));
+  select.value = workspace.activeId;
+}
+function download(content, type, extension, stem = activeEntry(workspace).name) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = element('a', { href: url, download: `${stem.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'clearcv'}.${extension}` });
+  document.body.append(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 function safeAction(action) {
   try { action(); return true; } catch (error) { announce(error.message, true); return false; }
@@ -92,6 +158,7 @@ function renderContent() {
   renderCollection('experience', 'Experience', '02 / WHAT YOU HAVE DONE');
   renderCollection('education', 'Education', '03 / WHAT YOU HAVE LEARNT');
   renderCollection('skills', 'Skills', '04 / YOUR STRENGTHS');
+  renderCustomSections();
 }
 function entryActions(collection, item, index) {
   return element('div', { class: 'entry-actions' }, [
@@ -153,6 +220,8 @@ function renderDesign() {
     swatches.append(button);
   });
   panel.append(swatches);
+  renderLayoutControls();
+  renderSectionControls();
   panel.append(element('p', { class: 'design-note', text: 'A4, with room to breathe. Save as PDF opens your browser’s print dialogue. Choose “Save as PDF”, use A4 paper and turn off browser headers and footers. Longer CVs flow onto another page.' }));
 }
 function renderMatch() {
@@ -187,31 +256,45 @@ function renderMatchResults() {
   }
   card.append(element('p', { class: 'match-caption', text: 'Only include skills and experience you really have. A missing word may be irrelevant; a matching word does not prove suitability.' }));
   container.append(card);
+  renderTailoring(container);
 }
 function renderPanel() {
   panel.replaceChildren();
   panel.setAttribute('aria-labelledby', `tab-${activeTab}`);
   if (activeTab === 'content') renderContent();
   else if (activeTab === 'design') renderDesign();
-  else renderMatch();
+  else if (activeTab === 'match') renderMatch();
+  else if (activeTab === 'library') renderLibrary();
+  else if (activeTab === 'letter') renderLetter();
+  else if (activeTab === 'jobs') renderJobs();
+  else if (activeTab === 'review') renderReview();
+  else if (activeTab === 'ai') renderAi();
+  else renderCloud();
 }
 function renderPreview() {
   preview.replaceChildren();
   preview.className = `paper template-${state.style.template}`;
   preview.style.setProperty('--paper-accent', state.style.accent);
+  for (const [key, value] of Object.entries({ 'font-size': `${state.layout.fontSize}px`, 'line-height': state.layout.lineHeight, 'spacing': `${state.layout.spacing}px`, 'margin': `${state.layout.margin}px`, 'font': {sans:'ui-sans-serif, system-ui, sans-serif',serif:'Georgia, serif',mono:'ui-monospace, monospace'}[state.layout.font] })) preview.style.setProperty(`--cv-${key}`, value);
+  let printStyle = document.querySelector('#document-print-style');
+  if (!printStyle) { printStyle = element('style', { id: 'document-print-style' }); document.head.append(printStyle); }
+  printStyle.textContent = `@media print{@page{size:${state.layout.pageSize};margin:${(state.layout.margin / 3.78).toFixed(1)}mm}}`;
+  document.querySelector('#preview-kind').textContent = `${state.layout.pageSize} · ${activeTab === 'letter' ? 'cover letter' : 'CV preview'}`;
+  if (activeTab === 'letter') { renderLetterPreview(); return; }
   const profile = state.profile;
   const header = element('header', { class: 'cv-header' }, [
     element('h1', { class: `cv-name${profile.name ? '' : ' cv-placeholder'}`, text: profile.name || 'Your name' }),
     element('div', { class: `cv-headline${profile.headline ? '' : ' cv-placeholder'}`, text: profile.headline || 'Your next chapter' })
   ]);
   const contacts = element('div', { class: 'cv-contact' });
-  for (const key of ['email', 'phone', 'location', 'website']) if (profile[key].trim()) contacts.append(element('span', { text: profile[key] }));
+  for (const key of ['email', 'phone', 'location', 'website']) if (profile[key].trim()) contacts.append(contactElement(key, profile[key]));
   header.append(contacts);
+  if (state.photo) header.append(element('img', { class: 'cv-photo', src: state.photo, alt: `Portrait of ${profile.name || 'CV author'}` }));
   preview.append(header);
-  if (profile.summary.trim()) preview.append(element('section', { class: 'cv-section' }, [element('h2', { text: 'Profile' }), element('p', { class: 'cv-summary', text: profile.summary })]));
+  if (profile.summary.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': 'profile' }, [element('h2', { text: state.sectionTitles.profile }), element('p', { class: 'cv-summary', text: profile.summary })]));
   for (const [collection, title] of [['experience', 'Experience'], ['education', 'Education']]) {
     if (!state[collection].length) continue;
-    const section = element('section', { class: 'cv-section', 'data-preview-section': collection }, [element('h2', { text: title })]);
+    const section = element('section', { class: 'cv-section', 'data-preview-section': collection }, [element('h2', { text: state.sectionTitles[collection] })]);
     for (const item of state[collection]) {
       const entry = element('div', { class: 'cv-entry', 'data-preview-entry': item.id }, [element('div', { class: 'cv-entry-head' }, [
         element('h3', { text: item.title || (collection === 'experience' ? 'Role title' : 'Qualification'), class: item.title ? '' : 'cv-placeholder' }),
@@ -225,9 +308,24 @@ function renderPreview() {
     preview.append(section);
   }
   const skills = state.skills.filter(item => item.name.trim());
-  if (skills.length) preview.append(element('section', { class: 'cv-section' }, [element('h2', { text: 'Skills' }), element('div', { class: 'cv-skills' }, skills.map(item => element('span', { class: 'cv-skill', text: item.name })))]));
+  if (skills.length) preview.append(element('section', { class: 'cv-section', 'data-preview-section': 'skills' }, [element('h2', { text: state.sectionTitles.skills }), element('div', { class: 'cv-skills' }, skills.map(item => element('span', { class: 'cv-skill', text: item.name })))]));
+  for (const section of state.customSections) if (section.content.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': section.id }, [element('h2', { text: section.title }), element('p', { class: 'cv-summary', text: section.content })]));
+  const rendered = new Map([...preview.querySelectorAll('[data-preview-section]')].map(section => [section.dataset.previewSection, section]));
+  for (const id of state.sectionOrder) {
+    const section = rendered.get(id);
+    if (!section) continue;
+    if (state.hiddenSections.includes(id)) section.remove();
+    else preview.append(section);
+  }
 }
 function switchTab(tab, focus = false) {
+  const workspace = document.querySelector('.workspace');
+  if (workspace.dataset.mobileView === 'preview') {
+    workspace.dataset.mobileView = 'edit';
+    document.querySelector('#mobile-edit')?.setAttribute('aria-pressed', 'true');
+    document.querySelector('#mobile-preview')?.setAttribute('aria-pressed', 'false');
+    if (matchMedia('(max-width: 700px)').matches) requestAnimationFrame(() => window.scrollTo({ top: workspace.offsetTop, behavior: 'auto' }));
+  }
   activeTab = tab;
   for (const button of document.querySelectorAll('[data-tab]')) {
     const selected = button.dataset.tab === tab;
@@ -240,17 +338,20 @@ function switchTab(tab, focus = false) {
     }
   }
   renderPanel();
-  if (focus) document.querySelector(`#tab-${tab}`).focus();
+  renderPreview();
+  const selectedTab = document.querySelector(`#tab-${tab}`);
+  selectedTab.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  if (focus) selectedTab.focus();
 }
 for (const button of document.querySelectorAll('[data-tab]')) button.addEventListener('click', () => switchTab(button.dataset.tab));
 document.querySelector('.editor-tabs').addEventListener('keydown', event => {
-  const tabs = ['content', 'design', 'match'];
+  const tabs = ['content', 'design', 'match', 'library', 'letter', 'jobs', 'review', 'ai', 'cloud'];
   const current = tabs.indexOf(activeTab);
   let next;
-  if (event.key === 'ArrowRight') next = tabs[(current + 1) % 3];
-  if (event.key === 'ArrowLeft') next = tabs[(current + 2) % 3];
+  if (event.key === 'ArrowRight') next = tabs[(current + 1) % tabs.length];
+  if (event.key === 'ArrowLeft') next = tabs[(current + tabs.length - 1) % tabs.length];
   if (event.key === 'Home') next = tabs[0];
-  if (event.key === 'End') next = tabs[2];
+  if (event.key === 'End') next = tabs.at(-1);
   if (next) { event.preventDefault(); switchTab(next, true); }
 });
 panel.addEventListener('input', event => {
@@ -259,6 +360,18 @@ panel.addEventListener('input', event => {
     if (input.dataset.profile) change({ ...state, profile: { ...state.profile, [input.dataset.profile]: input.value } });
     else if (input.dataset.collection) change(updateItem(state, input.dataset.collection, input.dataset.id, input.dataset.field, input.value));
     else if (input.dataset.jobAd) change({ ...state, jobAd: input.value });
+    else if (input.dataset.customField) change({ ...state, customSections: state.customSections.map(section => section.id === input.dataset.section ? { ...section, [input.dataset.customField]: input.value } : section) });
+    else if (input.dataset.letter) change({ ...state, coverLetter: { ...state.coverLetter, [input.dataset.letter]: input.value } });
+    else if (input.dataset.layout) change({ ...state, layout: { ...state.layout, [input.dataset.layout]: input.type === 'range' ? Number(input.value) : input.value } });
+    else if (input.dataset.sectionTitle) change({ ...state, sectionTitles: { ...state.sectionTitles, [input.dataset.sectionTitle]: input.value } });
+    else if (input.dataset.applicationField) {
+      // Text links are validated on blur to allow typing the URL progressively.
+      if (input.dataset.applicationField !== 'url') changeWorkspace(updateApplication(workspace, input.dataset.applicationId, input.dataset.applicationField, input.value), false);
+    }
+    else if (input.id === 'document-name') {
+      if (input.value.trim()) changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, name: input.value } : entry) }, false);
+    }
+    else if (input.id === 'import-review') { importGeneration++; importText = input.value; }
   });
   if (!accepted) {
     if (input.dataset.profile) input.value = state.profile[input.dataset.profile];
@@ -268,7 +381,7 @@ panel.addEventListener('input', event => {
 });
 document.querySelector('#print-cv').addEventListener('click', () => {
   const previousTitle = document.title;
-  document.title = `${state.profile.name.trim() || 'ClearCV'} — CV`;
+  document.title = `${state.profile.name.trim() || 'ClearCV'} — ${activeTab === 'letter' ? 'Cover letter' : 'CV'}`;
   window.print();
   document.title = previousTitle;
 });
@@ -284,13 +397,54 @@ document.querySelector('#import-json').addEventListener('click', () => document.
 document.querySelector('#import-file').addEventListener('change', async event => {
   const file = event.target.files?.[0];
   if (!file) return;
+  const request = ++importGeneration;
+  pendingPdf = null;
+  // Clear this selection now so a later result cannot clear a newer selection.
+  event.target.value = '';
   try {
-    if (file.size > 1_000_000) throw new Error('Choose a ClearCV JSON file smaller than 1 MB.');
-    const imported = parseDocument(await file.text());
-    const saved = change(imported, true);
-    announce(saved ? 'Your CV has been imported and saved in this browser.' : 'Your CV is imported, but this browser could not save it. Export a JSON backup before closing this page.', !saved);
-  } catch (error) { announce(`${error.message} Your current CV has been kept.`, true); }
-  finally { event.target.value = ''; }
+    const extension = file.name.toLowerCase().split('.').at(-1);
+    if (extension === 'docx' || extension === 'txt' || extension === 'pdf') {
+      if (file.size > 2_000_000) throw new Error('PDF, text and DOCX imports must be smaller than 2 MB.');
+      let extracted;
+      if (extension === 'pdf') {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        if (request !== importGeneration) return;
+        try {
+          const { extractPdf } = await import('./pdf-import.js');
+          if (request !== importGeneration) return;
+          extracted = await extractPdf(bytes);
+          if (request !== importGeneration) return;
+        }
+        catch (error) {
+          if (request !== importGeneration) return;
+          if (/password/i.test(error.message)) { pendingPdf = { bytes, name: file.name }; switchTab('library'); announce('This PDF is encrypted. Enter its password in Library to extract text locally.'); return; }
+          throw error;
+        }
+      } else if (extension === 'docx') {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        if (request !== importGeneration) return;
+        extracted = await extractDocx(bytes);
+        if (request !== importGeneration) return;
+      } else {
+        const text = await file.text();
+        if (request !== importGeneration) return;
+        extracted = normalisePlainText(text);
+      }
+      importText = extracted;
+      importLabel = file.name;
+      switchTab('library');
+      announce('Text extracted for review. Check it, then create a CV from the reviewed text; your library has not been changed.');
+    } else {
+      if (file.size > 4_000_000) throw new Error('Choose a JSON backup smaller than 4 MB.');
+      const text = await file.text();
+      if (request !== importGeneration) return;
+      const imported = parseImport(text);
+      const saved = imported.kind === 'workspace'
+        ? changeWorkspace(mergeWorkspace(workspace, imported.value, () => crypto.randomUUID()))
+        : changeWorkspace(addDocument(workspace, imported.value, crypto.randomUUID(), file.name.replace(/\.json$/i, '').slice(0, 100) || 'Imported CV'));
+      announce(saved ? 'Imported into your library. Existing CVs and master profile have been kept.' : 'Imported, but this browser could not save it. Export a workspace backup before closing.', !saved);
+    }
+  } catch (error) { if (request === importGeneration) announce(`${error.message} Your current library has been kept.`, true); }
 });
 function requestReset(kind) {
   pendingReset = kind;
@@ -302,12 +456,406 @@ document.querySelector('#new-cv').addEventListener('click', () => requestReset('
 document.querySelector('#load-example').addEventListener('click', () => requestReset('example'));
 document.querySelector('#reset-dialog').addEventListener('close', event => {
   if (event.target.returnValue !== 'confirm') return;
-  const saved = change(pendingReset === 'blank' ? createDocument() : sampleDocument());
+  const saved = changeWorkspace(addDocument(workspace, pendingReset === 'blank' ? createDocument() : sampleDocument(), crypto.randomUUID(), pendingReset === 'blank' ? 'Untitled CV' : 'Example CV'));
   switchTab('content');
   document.querySelector('#profile-name').focus();
   const message = pendingReset === 'blank' ? 'A fresh CV is ready for your story.' : 'The example CV is ready to explore.';
   announce(saved ? message : `${message} This browser could not save it; export a JSON backup before closing.`, !saved);
 });
+renderDocumentSwitcher();
 renderPanel();
 renderPreview();
-if (initialNotice) announce(initialNotice, true);
+if (initialNotice) announce(initialNotice, initialNoticeIsError);
+
+function selectField(label, value, id, choices, data = {}) {
+  const select = element('select', { id, ...data }, choices.map(([key, text]) => element('option', { value: key, text })));
+  select.value = value;
+  return element('div', { class: 'field' }, [element('label', { class: 'field-label', for: id, text: label }), select]);
+}
+function renderCustomSections() {
+  const section = element('section', { class: 'form-section' }, [sectionTitle('Make room for more', 'PROJECTS, LANGUAGES, AWARDS…')]);
+  for (const custom of state.customSections) {
+    const card = element('div', { class: 'entry', 'data-custom-section': custom.id }, [
+      field('Section heading', custom.title, `custom-${custom.id}-title`, { data: { 'data-custom-field': 'title', 'data-section': custom.id } }),
+      field('Content', custom.content, `custom-${custom.id}-content`, { multiline: true, rows: '5', data: { 'data-custom-field': 'content', 'data-section': custom.id }, hint: 'Write paragraphs, links as text or a list of achievements.' }),
+      element('button', { type: 'button', class: 'text-button', text: 'Remove section', 'data-remove-section': custom.id, onClick: () => safeAction(() => change(removeCustomSection(state, custom.id), true)) })
+    ]);
+    card.querySelector('textarea').maxLength = 30000;
+    card.querySelector('input').maxLength = 100;
+    section.append(card);
+  }
+  section.append(element('button', { type: 'button', class: 'add-button', id: 'add-custom-section', text: '+ Add a custom section', onClick: () => safeAction(() => change(addCustomSection(state, crypto.randomUUID()), true)) }));
+  panel.append(section);
+}
+function renderLayoutControls() {
+  const section = element('section', { class: 'form-section' }, [sectionTitle('Type & space')]);
+  section.append(selectField('Typeface', state.layout.font, 'layout-font', [['sans', 'Modern sans'], ['serif', 'Editorial serif'], ['mono', 'Monospace']], { 'data-layout': 'font' }));
+  section.append(selectField('Paper size', state.layout.pageSize, 'layout-page-size', [['A4', 'A4'], ['Letter', 'US Letter']], { 'data-layout': 'pageSize' }));
+  for (const [key, label, min, max, step] of [['fontSize', 'Text size', 9, 15, .5], ['lineHeight', 'Line spacing', 1.2, 2.2, .1], ['spacing', 'Section spacing', 8, 28, 1], ['margin', 'Page margins', 20, 60, 1]]) {
+    const wrapper = field(label, state.layout[key], `layout-${key}`, { type: 'range', data: { 'data-layout': key, min, max, step } });
+    const output = element('output', { for: `layout-${key}`, text: String(state.layout[key]) });
+    wrapper.querySelector('input').addEventListener('input', event => { output.textContent = event.target.value; });
+    wrapper.append(output); section.append(wrapper);
+  }
+  section.append(sectionTitle('A personal touch'));
+  const upload = element('input', { id: 'photo-upload', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload a portrait photo' });
+  upload.addEventListener('change', async event => {
+    const file = event.target.files?.[0]; if (!file) return;
+    try {
+      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5_000_000) throw new Error('Choose a PNG, JPEG or WebP photo smaller than 5 MB.');
+      const bitmap = await createImageBitmap(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = 240; canvas.height = 240;
+      const side = Math.min(bitmap.width, bitmap.height);
+      canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
+      bitmap.close();
+      change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
+      announce('Portrait cropped to a square and stored locally. You can remove it at any time.');
+    } catch (error) { announce(error.message, true); }
+  });
+  section.append(upload, element('p', { class: 'field-hint', text: 'Optional. Consider whether a photo is appropriate for the role and country. Images are resized locally.' }));
+  if (state.photo) section.append(element('button', { id: 'remove-photo', class: 'text-button', type: 'button', text: 'Remove portrait', onClick: () => change({ ...state, photo: '' }, true) }));
+  panel.append(section);
+}
+function renderSectionControls() {
+  const section = element('section', { class: 'form-section' }, [sectionTitle('Your section order'), element('p', { class: 'panel-intro', text: 'Rename, hide or move sections. Hidden content stays in your CV but is excluded from printing and keyword comparison.' })]);
+  state.sectionOrder.forEach((id, index) => {
+    const custom = state.customSections.find(section => section.id === id);
+    const title = custom ? custom.title : state.sectionTitles[id];
+    const row = element('div', { class: 'section-order-row', 'data-section-order': id });
+    const visibility = element('input', { type: 'checkbox', id: `visible-${id}`, 'aria-label': `Show ${title}` });
+    visibility.checked = !state.hiddenSections.includes(id);
+    visibility.addEventListener('change', () => change({ ...state, hiddenSections: visibility.checked ? state.hiddenSections.filter(section => section !== id) : [...state.hiddenSections, id] }));
+    const name = element('input', { value: title, maxlength: '100', 'aria-label': `Heading for ${title}`, ...(custom ? { 'data-custom-field': 'title', 'data-section': id } : { 'data-section-title': id }) });
+    row.append(visibility, name,
+      element('button', { type: 'button', class: 'icon-button', text: '↑', 'aria-label': `Move section ${title} up`, disabled: index === 0, 'data-section-up': id, onClick: () => change(moveSection(state, id, -1), true) }),
+      element('button', { type: 'button', class: 'icon-button', text: '↓', 'aria-label': `Move section ${title} down`, disabled: index === state.sectionOrder.length - 1, 'data-section-down': id, onClick: () => change(moveSection(state, id, 1), true) }));
+    section.append(row);
+  });
+  panel.append(section);
+}
+function renderLibrary() {
+  panel.append(sectionTitle('A CV for every chapter', `${workspace.documents.length} / 25 LOCAL CVS`));
+  if (recoveryRaw) {
+    panel.append(element('section', { class: 'recovery-card' }, [sectionTitle('Keep your original saved data'), element('p', { class: 'panel-intro', text: recoveryBackedUp ? `An unreadable workspace was retained at ${recoveryStorageKey}. Download its original bytes for recovery; current editing can save safely.` : 'The unreadable saved workspace is protected from replacement. Download its original bytes first; your open edits are not yet saved.' }),
+      element('button', { id: 'export-recovery', type: 'button', class: 'button button-primary', text: 'Download original recovery JSON', onClick: () => { download(recoveryRaw, 'application/json', 'json', 'clearcv-unreadable-original'); recoveryDownloaded = true; renderPanel(); } }),
+      !recoveryBackedUp ? element('button', { id: 'resume-recovery-save', type: 'button', class: 'button button-quiet', text: 'Replace saved data with open library', disabled: !recoveryDownloaded, onClick: () => { if (window.confirm('Have you kept the downloaded original? This explicitly replaces the unreadable saved workspace with the open library.')) { recoveryBackedUp = true; const saved = save(); if (!saved) recoveryBackedUp = false; else { recoveryRaw = ''; recoveryStorageKey = ''; } renderPanel(); } } }) : null
+    ]));
+  }
+  const name = field('Current CV name', activeEntry(workspace).name, 'document-name');
+  name.querySelector('input').maxLength = 100; panel.append(name);
+  panel.append(element('div', { class: 'action-row' }, [
+    element('button', { id: 'duplicate-cv', type: 'button', class: 'button button-primary', text: 'Duplicate current CV', onClick: () => safeAction(() => changeWorkspace(duplicateDocument(workspace, crypto.randomUUID(), `${activeEntry(workspace).name} copy`.slice(0, 100)))) }),
+    element('button', { id: 'blank-cv', type: 'button', class: 'button button-quiet', text: 'New from master', onClick: () => safeAction(() => changeWorkspace(addDocument(workspace, { ...structuredClone(workspace.masterDocument), jobAd: '', coverLetter: createDocument().coverLetter }, crypto.randomUUID(), 'Untitled CV'))) })
+  ]));
+  const list = element('div', { class: 'document-list' });
+  for (const entry of workspace.documents) list.append(element('div', { class: `library-card${entry.id === workspace.activeId ? ' current' : ''}`, 'data-library-id': entry.id }, [
+    element('button', { type: 'button', class: 'library-open', text: entry.name, 'data-open-document': entry.id, onClick: () => changeWorkspace({ ...workspace, activeId: entry.id }) }),
+    element('span', { class: 'section-caption', text: `${entry.versions.length} snapshots${entry.id === workspace.activeId ? ' · open' : ''}` }),
+    element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Delete CV ${entry.name}`, disabled: workspace.documents.length === 1, 'data-delete-document': entry.id, onClick: () => { if (window.confirm(`Delete “${entry.name}” and its snapshots? Linked job records will be kept without this CV link.`)) safeAction(() => changeWorkspace(deleteDocument(workspace, entry.id))); } })
+  ]));
+  panel.append(list);
+  const master = element('section', { class: 'form-section' }, [sectionTitle('Your master profile'), element('p', { class: 'panel-intro', text: 'Keep a complete career CV: profile, experience, education, skills and custom sections. New CVs start from this master without its job description or letter; existing tailored CVs stay independent.' }), element('p', { class: 'master-preview', text: `${workspace.masterProfile.name || 'No name yet'} · ${workspace.masterProfile.headline || 'No title yet'}` })]);
+  master.append(element('div', { class: 'action-row' }, [
+    element('button', { id: 'save-master', type: 'button', class: 'button button-quiet', text: 'Use current CV as master', onClick: () => safeAction(() => { const saved = changeWorkspace({ ...workspace, masterProfile: structuredClone(state.profile), masterDocument: structuredClone(state) }); announce(saved ? 'Master CV updated. Your other CVs have been kept.' : 'Master profile is open but not saved; export a workspace backup.', !saved); }) }),
+    element('button', { id: 'apply-master', type: 'button', class: 'button button-quiet', text: 'Apply master to this CV', onClick: () => { if (window.confirm('Replace the profile fields in this CV with your master profile? Experience, sections and letter will be kept.')) safeAction(() => change({ ...state, profile: structuredClone(workspace.masterProfile) }, true)); } })
+  ])); panel.append(master);
+  const snapshots = element('section', { class: 'form-section' }, [sectionTitle('Named snapshots', `${activeEntry(workspace).versions.length} / 10`), element('p', { class: 'panel-intro', text: 'Freeze this CV and its cover letter before a change or application. Restoring also keeps a recovery snapshot of the current version.' }), field('Snapshot name', '', 'snapshot-name', { placeholder: 'Before applying to Northstar' })]);
+  snapshots.append(element('button', { id: 'save-snapshot', type: 'button', class: 'button button-quiet', text: 'Save snapshot', onClick: () => safeAction(() => changeWorkspace(saveSnapshot(workspace, crypto.randomUUID(), document.querySelector('#snapshot-name').value.trim()))) }));
+  for (const version of activeEntry(workspace).versions) snapshots.append(element('div', { class: 'snapshot-row', 'data-snapshot-id': version.id }, [
+    element('div', {}, [element('strong', { text: version.name }), element('span', { class: 'section-caption', text: new Date(version.createdAt).toLocaleString('en-GB') })]),
+    element('button', { type: 'button', class: 'text-button', text: 'Restore', 'data-restore-snapshot': version.id, onClick: () => safeAction(() => changeWorkspace(restoreSnapshot(workspace, version.id, crypto.randomUUID()))) }),
+    element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Remove snapshot ${version.name}`, onClick: () => safeAction(() => changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, versions: entry.versions.filter(snapshot => snapshot.id !== version.id) } : entry) })) })
+  ])); panel.append(snapshots);
+  panel.append(element('section', { class: 'form-section' }, [sectionTitle('Keep your whole workspace'), element('p', { class: 'panel-intro', text: 'A workspace backup includes every CV, snapshot, cover letter, master profile and tracked application. Importing merges it into the current library without overwriting existing CVs.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: () => safeAction(() => { download(serialiseWorkspace(workspace), 'application/json', 'json', 'clearcv-workspace'); announce('Workspace backup downloaded. Keep this file private.'); }) })]));
+  if (pendingPdf) {
+    const encrypted = element('section', { class: 'form-section' }, [sectionTitle('Unlock a PDF locally', pendingPdf.name), field('PDF password', '', 'pdf-password', { type: 'password' }), element('button', { id: 'unlock-pdf', type: 'button', class: 'button button-primary', text: 'Extract PDF text', onClick: async () => {
+      const pdf = pendingPdf;
+      if (!pdf) return;
+      const request = ++importGeneration;
+      const password = document.querySelector('#pdf-password').value;
+      try {
+        const { extractPdf } = await import('./pdf-import.js');
+        if (request !== importGeneration || pendingPdf !== pdf) return;
+        const extracted = await extractPdf(pdf.bytes, { password });
+        if (request !== importGeneration || pendingPdf !== pdf) return;
+        importText = extracted; importLabel = pdf.name; pendingPdf = null; renderPanel(); announce('PDF text is ready for review. The password has not been stored.');
+      }
+      catch (error) { if (request === importGeneration && pendingPdf === pdf) announce(error.message, true); }
+    } })]);
+    panel.append(encrypted);
+  }
+  if (importText) {
+    const review = element('section', { class: 'form-section' }, [sectionTitle('Review extracted text', importLabel), element('p', { class: 'panel-intro', text: 'Limited text extraction from PDF, TXT or DOCX. Scanned PDFs need OCR, which is not supplied. Formatting, tables, images and semantic field mapping are not imported. Edit this text, then create a new CV with it in a custom “Imported content” section.' }), field('Extracted text', importText, 'import-review', { multiline: true, rows: '14' }), element('button', { id: 'apply-text-import', type: 'button', class: 'button button-primary', text: 'Create CV from reviewed text', onClick: () => safeAction(() => {
+      const text = normalisePlainText(importText);
+      if (text.length > 30000) throw new Error('Shorten the reviewed text to 30,000 characters before creating a CV.');
+      let doc = addCustomSection(createDocument(), crypto.randomUUID(), 'Imported content');
+      doc.customSections[0].content = text;
+      const next = addDocument(workspace, doc, crypto.randomUUID(), importLabel.replace(/\.(pdf|docx|txt)$/i, '').slice(0, 100) || 'Imported text');
+      changeWorkspace(next); importGeneration++; importText = ''; importLabel = ''; renderPanel(); announce('A new CV holds your reviewed text. Move facts into the structured fields as needed.');
+    }) })]);
+    review.querySelector('textarea').maxLength = 50000;
+    panel.append(review);
+  }
+}
+function renderLetter() {
+  panel.append(sectionTitle('A letter with intention'), element('p', { class: 'panel-intro', text: 'A cover letter belongs to this CV. Write a focused introduction, explain your relevant experience and make a clear connection to the role.' }));
+  for (const [key, label, multiline] of [['company', 'Company'], ['role', 'Role'], ['recipient', 'Recipient & address'], ['date', 'Date'], ['subject', 'Subject'], ['salutation', 'Salutation'], ['body', 'Your letter', true], ['closing', 'Closing']]) {
+    const wrapper = field(label, state.coverLetter[key], `letter-${key}`, { multiline, rows: '16', data: { 'data-letter': key } });
+    if (multiline) wrapper.querySelector('textarea').maxLength = 30000;
+    panel.append(wrapper);
+  }
+  panel.append(element('button', { id: 'draft-letter', type: 'button', class: 'button button-quiet', text: 'Draft from my existing facts', onClick: () => {
+    if (state.coverLetter.body.trim() && !window.confirm('Replace this letter body with a rule-based draft from the current CV facts? Save a snapshot first to retain it.')) return;
+    const draft = coverLetterDraft(state, state.coverLetter.company, state.coverLetter.role);
+    safeAction(() => change({ ...state, coverLetter: { ...state.coverLetter, body: draft.body, salutation: draft.salutation, closing: draft.closing } }, true));
+    announce(`Rule-based draft ready to edit. ${draft.warnings.join(' ')}`);
+  } }));
+  panel.append(element('p', { class: 'design-note', text: 'This draft is assembled from your stored facts by explicit rules, not an AI model. Check each sentence and personalise it. Save as PDF, TXT and DOCX export the cover letter while this view is open.' }));
+}
+function renderLetterPreview() {
+  const p = state.profile; const letter = state.coverLetter;
+  preview.classList.add('letter-paper');
+  preview.append(element('header', { class: 'cv-header' }, [element('h1', { class: 'cv-name', text: p.name || 'Your name' }), element('div', { class: 'cv-contact' }, ['email', 'phone', 'location', 'website'].filter(key => p[key].trim()).map(key => contactElement(key, p[key]))) ]));
+  if (letter.date) preview.append(element('p', { class: 'letter-date', text: letter.date }));
+  if (letter.recipient || letter.company) preview.append(element('p', { class: 'letter-recipient', text: [letter.recipient, letter.company].filter(Boolean).join('\n') }));
+  if (letter.subject || letter.role) preview.append(element('h2', { class: 'letter-subject', text: letter.subject || `Application: ${letter.role}` }));
+  preview.append(element('p', { text: letter.salutation }), element('div', { class: 'letter-body', text: letter.body }), element('p', { class: 'letter-closing', text: `${letter.closing}\n${p.name}` }));
+}
+let jobFilter = 'all';
+function renderJobs() {
+  panel.append(sectionTitle('Move your search forward', `${workspace.applications.length} LOCAL APPLICATIONS`));
+  panel.append(element('p', { class: 'panel-intro', text: 'Keep the role, a linked CV and the next step together. Linked CVs stay editable: duplicate or save a named snapshot at submission. This tracker never sends an application or contacts an employer.' }));
+  const counts = element('div', { class: 'job-counts' });
+  for (const status of JOB_STATUSES) counts.append(element('span', { text: `${status}: ${workspace.applications.filter(app => app.status === status).length}` }));
+  panel.append(counts, element('button', { id: 'add-application', type: 'button', class: 'button button-primary', text: '+ Track a job', onClick: () => safeAction(() => changeWorkspace(addApplication(workspace, crypto.randomUUID()))) }));
+  const filter = selectField('View', jobFilter, 'job-filter', [['all', 'All applications'], ...JOB_STATUSES.map(status => [status, status[0].toUpperCase() + status.slice(1)])]);
+  filter.querySelector('select').addEventListener('change', event => { jobFilter = event.target.value; renderJobsPanel(); }); panel.append(filter);
+  for (const application of workspace.applications.filter(app => jobFilter === 'all' || app.status === jobFilter)) {
+    const card = element('section', { class: 'entry application-card', 'data-application-id': application.id }, [sectionTitle(application.company || 'New application', application.status)]);
+    for (const [key, label, type] of [['company', 'Company'], ['role', 'Role'], ['url', 'Job URL', 'url'], ['appliedDate', 'Applied date', 'date'], ['followUpDate', 'Next follow-up', 'date'], ['notes', 'Notes & next steps']]) card.append(field(label, application[key], `application-${application.id}-${key}`, { type, multiline: key === 'notes', rows: '4', data: { 'data-application-field': key, 'data-application-id': application.id } }));
+    card.append(selectField('Status', application.status, `application-${application.id}-status`, JOB_STATUSES.map(status => [status, status[0].toUpperCase() + status.slice(1)]), { 'data-application-field': 'status', 'data-application-id': application.id }));
+    card.append(selectField('Linked CV & cover letter', application.cvId, `application-${application.id}-cv`, [['', 'No CV linked'], ...workspace.documents.map(entry => [entry.id, entry.name])], { 'data-application-field': 'cvId', 'data-application-id': application.id }));
+    card.append(element('div', { class: 'action-row' }, [
+      application.cvId ? element('button', { type: 'button', class: 'text-button', text: 'Open linked CV', 'data-open-linked-cv': application.id, onClick: () => { changeWorkspace({ ...workspace, activeId: application.cvId }); switchTab('content'); } }) : null,
+      element('button', { type: 'button', class: 'text-button', text: 'Remove application', 'data-remove-application': application.id, onClick: () => { if (window.confirm('Remove this application record? Your CVs will be kept.')) safeAction(() => changeWorkspace({ ...workspace, applications: workspace.applications.filter(app => app.id !== application.id) })); } })
+    ]));
+    panel.append(card);
+  }
+  if (!workspace.applications.length) panel.append(element('p', { class: 'match-empty', text: 'Add the first role you are considering. Your application history will be included in workspace backups.' }));
+}
+function renderJobsPanel() { panel.replaceChildren(); renderJobs(); }
+function renderReview() {
+  const review = reviewCV(state);
+  panel.append(sectionTitle('Clarity, one detail at a time'), element('p', { class: 'panel-intro', text: review.method }));
+  panel.append(element('div', { class: 'review-metrics', text: `${review.metrics.words} words · ${review.metrics.experienceBullets} experience bullets · ${review.issues.length} review prompts` }));
+  for (const issue of review.issues) panel.append(element('article', { class: `review-issue ${issue.severity}`, 'data-rule': issue.ruleId }, [element('h3', { text: issue.message }), element('p', { text: issue.suggestion }), element('span', { class: 'section-caption', text: `${issue.path} · ${issue.ruleId}` })]));
+  if (!review.issues.length) panel.append(element('p', { class: 'match-empty', text: 'These rules found no issues. This is not a guarantee of accuracy, suitability or successful ATS parsing.' }));
+  const rules = element('details', { class: 'review-rules' }, [element('summary', { text: 'See every rule used' })]);
+  for (const rule of review.rules) rules.append(element('p', { text: `${rule.id}: ${rule.description}` }));
+  panel.append(rules);
+}
+function renderTailoring(container) {
+  const suggestions = tailoringSuggestions(state);
+  const box = element('section', { class: 'form-section' }, [sectionTitle('Bring relevant facts forward'), element('p', { class: 'panel-intro', text: suggestions.method })]);
+  for (const suggestion of suggestions.suggestions) box.append(element('p', { class: 'tailoring-prompt', text: suggestion.message }));
+  const orderChanged = suggestions.experienceOrder.join(',') !== state.experience.map(item => item.id).join(',') || suggestions.skillOrder.join(',') !== state.skills.map(item => item.id).join(',');
+  if (orderChanged) box.append(element('button', { id: 'apply-tailoring', type: 'button', class: 'button button-primary', text: 'Create a tailored copy with this order', onClick: () => safeAction(() => {
+    const tailored = validateDocument(state);
+    tailored.experience = suggestions.experienceOrder.map(id => tailored.experience.find(item => item.id === id));
+    tailored.skills = suggestions.skillOrder.map(id => tailored.skills.find(item => item.id === id));
+    changeWorkspace(addDocument(workspace, tailored, crypto.randomUUID(), `${activeEntry(workspace).name} tailored`.slice(0, 100)));
+    announce('A tailored copy is open. Your original CV is kept; no facts or claims have been added.');
+  }) }));
+  else box.append(element('p', { class: 'match-empty', text: 'The existing entry order already matches this rule. Review the words above and edit only where accurate.' }));
+  container.append(box);
+}
+
+document.querySelector('#active-document').addEventListener('change', event => safeAction(() => changeWorkspace({ ...workspace, activeId: event.target.value })));
+document.querySelector('#export-txt').addEventListener('click', () => safeAction(() => download(plainTextDocument(state, activeTab === 'letter' ? 'letter' : 'cv'), 'text/plain;charset=utf-8', 'txt', `${activeEntry(workspace).name}${activeTab === 'letter' ? '-letter' : ''}`)));
+document.querySelector('#export-docx').addEventListener('click', () => safeAction(() => download(exportDocx(state, { kind: activeTab === 'letter' ? 'letter' : 'cv' }), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', `${activeEntry(workspace).name}${activeTab === 'letter' ? '-letter' : ''}`)));
+panel.addEventListener('focusout', event => {
+  const input = event.target;
+  if (input.dataset.applicationField === 'url') {
+    if (!safeAction(() => changeWorkspace(updateApplication(workspace, input.dataset.applicationId, 'url', input.value), false))) input.value = workspace.applications.find(app => app.id === input.dataset.applicationId).url;
+  }
+});
+panel.addEventListener('change', event => {
+  if (event.target.dataset.applicationField === 'status') renderJobsPanel();
+});
+
+function aiSource(target = aiTarget) {
+  if (target === 'summary') return state.profile.summary;
+  if (target === 'letter') return state.coverLetter.body;
+  if (target === 'headline') return state.profile.headline;
+  if (target === 'practice') return aiTask === 'interview-feedback' ? (practiceRecords.get(workspace.activeId)?.answer || '') : plainTextDocument(state);
+  return state.experience.find(item => item.id === target)?.description || '';
+}
+function documentWithAiText(document, target, text) {
+  if (target === 'summary') return validateDocument({ ...document, profile: { ...document.profile, summary: text } });
+  if (target === 'headline') return validateDocument({ ...document, profile: { ...document.profile, headline: text } });
+  if (target === 'letter') return validateDocument({ ...document, coverLetter: { ...document.coverLetter, body: text } });
+  return updateItem(document, 'experience', target, 'description', text);
+}
+function renderAi() {
+  panel.append(sectionTitle('Writing, with a second voice'), element('p', { class: 'panel-intro', text: 'Generate a candidate, read every claim and apply only the wording you want. The current CV stays unchanged until you apply a result.' }));
+  panel.append(element('p', { id: 'ai-status', class: 'design-note', text: aiStatus.enabled ? `Connected to configured model ${aiStatus.model || 'provider'}. Clicking Generate sends only the source text and context below to that configured service.` : 'AI generation is unavailable on the static demo. Run the local server with an operator-configured model to enable it. The rule-based Review and Job match tools work without AI.' }));
+  const task = selectField('Writing task', aiTask, 'ai-task', [['summary', 'Improve summary'], ['headline', 'Write a professional headline'], ['objective', 'Write a career objective'], ['bullets', 'Improve experience bullets'], ['tailor', 'Tailor summary to the job'], ['letter', 'Draft a cover letter'], ['translate', 'Translate a selected field'], ['interview', 'Generate interview questions'], ['interview-feedback', 'Review a practice answer']]);
+  task.querySelector('select').addEventListener('change', event => {
+    aiTask = event.target.value;
+    aiTarget = aiTask.startsWith('interview') ? 'practice' : aiTask === 'headline' ? 'headline' : aiTask === 'letter' ? 'letter' : aiTask === 'bullets' ? (state.experience[0]?.id || 'summary') : aiTask === 'translate' ? aiTarget : 'summary';
+    renderPanel();
+  }); panel.append(task);
+  const targets = aiTask.startsWith('interview') ? [['practice', 'Interview practice — CV stays unchanged']] : [['summary', 'CV summary / objective'], ['headline', 'Professional headline'], ['letter', 'Cover letter body'], ...state.experience.map((item, index) => [item.id, `Experience: ${item.title || index + 1}`])];
+  const target = selectField('Apply result to', aiTarget, 'ai-target', targets);
+  target.querySelector('select').addEventListener('change', event => { aiTarget = event.target.value; renderPanel(); }); panel.append(target);
+  const source = field('Source text — only this text is sent', aiSource(), 'ai-source', { multiline: true, rows: '9' });
+  source.querySelector('textarea').maxLength = 30000; panel.append(source);
+  const contextText = aiTask === 'interview-feedback' ? `Question(s):\n${practiceRecords.get(workspace.activeId)?.questions || ''}\n\nJob context:\n${state.jobAd}` : state.jobAd;
+  const context = field('Job / company context — also sent', contextText, 'ai-context', { multiline: true, rows: '6', hint: 'Check this text for private material. The model may make mistakes; supplied facts still need your review.' });
+  context.querySelector('textarea').maxLength = 20000; panel.append(context);
+  if (aiTask === 'translate') panel.append(field('Target language', 'French', 'ai-language', { placeholder: 'e.g. French' }));
+  const generate = element('button', { id: 'ai-generate', type: 'button', class: 'button button-primary', text: aiBusy ? 'Generating…' : 'Generate candidate', disabled: !aiStatus.enabled || aiBusy });
+  generate.addEventListener('click', async () => {
+    const content = document.querySelector('#ai-source').value;
+    const context = document.querySelector('#ai-context').value;
+    const language = document.querySelector('#ai-language')?.value;
+    const docId = workspace.activeId; const target = aiTarget; const task = aiTask;
+    aiController = new AbortController();
+    const controller = aiController;
+    if (task === 'interview-feedback') practiceRecords.set(docId, { ...practiceRecords.get(docId), answer: content });
+    aiBusy = true; generate.disabled = true; generate.textContent = 'Generating…';
+    generate.after(element('button', { id: 'ai-cancel', type: 'button', class: 'button button-quiet', text: 'Cancel request', onClick: () => controller.abort() }));
+    try {
+      const result = await generateWriting({ task, content, context, ...(language ? { language } : {}) }, { signal: controller.signal });
+      if (controller.signal.aborted) throw new Error('Generation cancelled.');
+      aiCandidate = { docId, target, task, text: result.text, model: result.model };
+      if (activeTab === 'ai') renderPanel();
+      announce('Candidate generated. Review the text before applying it; no CV content has been changed.');
+    } catch (error) { announce(controller.signal.aborted ? 'Generation cancelled. Your CV has been kept.' : error.message, !controller.signal.aborted); }
+    finally { aiController = null; aiBusy = false; if (activeTab === 'ai') renderPanel(); }
+  }); panel.append(generate);
+  if (aiBusy) panel.append(element('button', { id: 'ai-cancel', type: 'button', class: 'button button-quiet', text: 'Cancel request', onClick: () => aiController?.abort() }));
+  if (aiCandidate) {
+    panel.append(element('section', { class: 'form-section' }, [sectionTitle('Review the candidate', aiCandidate.model || 'CONFIGURED MODEL'), field('Candidate text — edit before applying', aiCandidate.text, 'ai-result', { multiline: true, rows: '12' })]));
+    panel.querySelector('#ai-result').maxLength = 30000;
+    panel.querySelector('#ai-result').addEventListener('input', event => { aiCandidate.text = event.target.value; });
+    panel.append(element('button', { id: 'ai-apply', type: 'button', class: 'button button-primary', text: aiCandidate.target === 'practice' ? 'Keep reviewed practice text' : aiCandidate.task === 'tailor' ? 'Apply to a new tailored CV' : 'Apply reviewed text', disabled: aiCandidate.docId !== workspace.activeId, onClick: () => safeAction(() => {
+      if (aiCandidate.target === 'practice') {
+        const key = aiCandidate.task === 'interview-feedback' ? 'feedback' : 'questions';
+        practiceRecords.set(workspace.activeId, { ...practiceRecords.get(workspace.activeId), [key]: aiCandidate.text });
+        aiCandidate = null; renderPanel(); announce('Practice text kept in this tab. Export notes to keep them after closing; your CV is unchanged.'); return;
+      }
+      const oldValue = aiSource(aiCandidate.target);
+      const nextDoc = documentWithAiText(state, aiCandidate.target, aiCandidate.text);
+      if (aiCandidate.task === 'tailor') changeWorkspace(addDocument(workspace, nextDoc, crypto.randomUUID(), `${activeEntry(workspace).name} AI tailored`.slice(0, 100)));
+      else change(nextDoc, true);
+      aiUndo = { docId: workspace.activeId, target: aiCandidate.target, oldValue, newValue: aiCandidate.text };
+      aiCandidate = null; renderPanel();
+      announce('Reviewed text applied. Undo can restore the previous field while this page stays open.');
+    }) }));
+    if (aiCandidate.docId !== workspace.activeId) panel.append(element('p', { class: 'match-empty', text: 'This candidate belongs to another CV. Open that CV to apply it.' }));
+  }
+  const practice = practiceRecords.get(workspace.activeId);
+  if (practice && (practice.questions || practice.feedback)) {
+    const notes = element('section', { class: 'form-section' }, [sectionTitle('Your practice notebook'), element('p', { class: 'panel-intro', text: 'These notes remain in this tab while it is open. Export them before closing. Feedback is model-generated guidance, not a hiring prediction.' })]);
+    if (practice.questions) notes.append(element('p', { class: 'practice-text', text: practice.questions }));
+    if (practice.feedback) notes.append(element('p', { class: 'practice-text', text: practice.feedback }));
+    notes.append(element('button', { id: 'export-practice', type: 'button', class: 'button button-quiet', text: 'Export practice TXT', onClick: () => download([practice.questions, practice.answer, practice.feedback].filter(Boolean).join('\n\n'), 'text/plain;charset=utf-8', 'txt', `${activeEntry(workspace).name}-interview`) }));
+    panel.append(notes);
+  }
+  if (aiUndo?.docId === workspace.activeId) panel.append(element('button', { id: 'ai-undo', type: 'button', class: 'button button-quiet', text: 'Undo last AI apply', onClick: () => safeAction(() => {
+    if (aiSource(aiUndo.target) !== aiUndo.newValue && !window.confirm('This field has been edited since the AI apply. Restore its previous text? Other fields will be kept.')) return;
+    change(documentWithAiText(state, aiUndo.target, aiUndo.oldValue), true);
+    aiUndo = null; renderPanel(); announce('Previous field text restored.');
+  }) }));
+}
+// GitHub Pages is a static release: skip unavailable API requests there entirely.
+if (!location.hostname.endsWith('.github.io')) getAiStatus().then(status => { aiStatus = status; if (activeTab === 'ai') renderPanel(); });
+
+function renderCloud() {
+  if (cloudUI) cloudUI.render(panel);
+  else panel.append(sectionTitle('Shared CVs'), element('p', { class: 'design-note', text: 'The optional self-hosted sharing service is unavailable here. Local workspace backups remain available in Library.' }));
+}
+
+cloudUI = createCloudUI({
+  element, field, sectionTitle, notify: announce,
+  getDocument: () => validateDocument(state), getLocalId: () => workspace.activeId, getName: () => activeEntry(workspace).name,
+  addLocalDocument: (document, name) => {
+    changeWorkspace(addDocument(workspace, document, crypto.randomUUID(), name.slice(0, 100)));
+    return workspace.activeId;
+  },
+  replaceLocalDocument: (document, reason) => {
+    const preserved = saveSnapshot(workspace, crypto.randomUUID(), reason);
+    changeWorkspace(updateActiveDocument(preserved, document));
+  },
+  rerender: () => { if (activeTab === 'cloud') renderPanel(); }
+});
+void cloudUI.initialise();
+
+// Original stroke icons keep workspace tools visually consistent across platforms.
+function workspaceIcon(name) {
+  const paths = {
+    content: ['M5 19h4l11-11-4-4L5 15v4Z', 'm14 6 4 4', 'M4 21h16'],
+    design: ['M5 3h14v18H5z', 'M5 9h14', 'M10 9v12'],
+    match: ['M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z', 'm14.5 14.5 5 5', 'm7 10 2 2 4-4'],
+    library: ['M4 6h16v15H4z', 'M7 3h10', 'M8 10h8', 'M8 14h8', 'M8 18h5'],
+    letter: ['M3 6h18v13H3z', 'm3 6 9 7 9-7'],
+    jobs: ['M4 6h16v15H4z', 'M8 6V3h8v3', 'M4 12h16', 'M10 12v3h4v-3'],
+    review: ['M5 3h10l4 4v14H5z', 'M15 3v5h4', 'm8 14 3 3 5-6'],
+    ai: ['m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z', 'M19 3v4', 'M17 5h4'],
+    cloud: ['M4 8h15', 'm16 5 3 3-3 3', 'M20 16H5', 'm8 13-3 3 3 3'],
+    preview: ['M5 3h14v18H5z', 'M8 7h8', 'M8 11h8', 'M8 15h5'],
+    chevron: ['m9 6 6 6-6 6']
+  };
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false');
+  for (const path of paths[name] || paths.content) {
+    const node = document.createElementNS('http://www.w3.org/2000/svg', 'path'); node.setAttribute('d', path); svg.append(node);
+  }
+  return svg;
+}
+for (const button of document.querySelectorAll('.rail-button')) {
+  const label = [...button.children].findLast(child => child.tagName === 'SPAN')?.textContent || button.title;
+  button.replaceChildren(workspaceIcon(button.dataset.tab), element('span', { text: label }));
+}
+const localSymbol = document.querySelector('.local-symbol');
+if (localSymbol) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path'); path.setAttribute('d', 'M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5zM12 15v2'); svg.append(path); localSymbol.replaceChildren(svg);
+}
+const workspaceNode = document.querySelector('.workspace');
+let editorScrollPosition = 0;
+workspaceNode.dataset.mobileView = 'edit';
+const mobileViews = element('div', { class: 'mobile-view-switch', role: 'group', 'aria-label': 'Mobile workspace view' });
+for (const [view, label, icon] of [['edit', 'Edit CV', 'content'], ['preview', 'Preview', 'preview']]) {
+  mobileViews.append(element('button', { id: `mobile-${view}`, type: 'button', 'aria-pressed': String(view === 'edit'), onClick: () => {
+    if (view === 'preview') editorScrollPosition = window.scrollY;
+    workspaceNode.dataset.mobileView = view;
+    for (const button of mobileViews.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.id === `mobile-${view}`));
+    if (matchMedia('(max-width: 700px)').matches) requestAnimationFrame(() => window.scrollTo({ top: view === 'preview' ? workspaceNode.offsetTop : Math.max(workspaceNode.offsetTop, editorScrollPosition), behavior: 'auto' }));
+  } }, [workspaceIcon(icon), element('span', { text: label })]));
+}
+workspaceNode.prepend(mobileViews);
+
+// Make the remaining horizontally scrollable navigation visibly navigable.
+const editorTabs = document.querySelector('.editor-tabs');
+const tabNavigation = element('div', { class: 'editor-tabs-wrap' });
+editorTabs.before(tabNavigation); tabNavigation.append(editorTabs);
+const moreTabs = element('button', { id: 'editor-more-views', type: 'button', class: 'more-views', 'aria-label': 'Scroll to more editor views', onClick: () => {
+  const atEnd = editorTabs.scrollLeft + editorTabs.clientWidth >= editorTabs.scrollWidth - 4;
+  editorTabs.scrollTo({ left: atEnd ? 0 : editorTabs.scrollLeft + 210, behavior: 'smooth' });
+} }, [workspaceIcon('chevron')]);
+tabNavigation.append(moreTabs);
+function updateTabOverflow() {
+  moreTabs.hidden = editorTabs.scrollWidth <= editorTabs.clientWidth + 4;
+  moreTabs.classList.toggle('at-end', editorTabs.scrollLeft + editorTabs.clientWidth >= editorTabs.scrollWidth - 4);
+}
+editorTabs.addEventListener('scroll', updateTabOverflow);
+window.addEventListener('resize', updateTabOverflow);
+requestAnimationFrame(updateTabOverflow);
+
+function contactElement(kind, text) {
+  const href = safeContactHref(kind, text);
+  return href ? element('a', { href, text, ...(kind === 'website' ? { target: '_blank', rel: 'noopener noreferrer' } : {}) }) : element('span', { text });
+}

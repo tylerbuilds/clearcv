@@ -1,0 +1,1514 @@
+{
+  "schema_version": 2,
+  "reference_product": "Enhancv",
+  "checked_at_utc": "2026-10-09T22:04:25.355743+00:00",
+  "scope": "Free and premium publicly documented workflows across listed tiers, retained REA evidence, and independent functional acceptance criteria. This is a broad inventory, not an exhaustive original-service audit.",
+  "claim_boundary": "Documentation confirms advertised workflows and named tier boundaries. Only the retained REA evidence proves the limited anonymous observations. No original authenticated or paid workflow was executed.",
+  "priority_definitions": {
+    "P0": "Primary product editing or game loop workflows",
+    "P1": "Broader mature workflows and import/export depth",
+    "P2": "Network, provider, licensed catalogue or expanded suite parity"
+  },
+  "evidence_reused": [
+    {
+      "file": "public-findings/clearcv.json",
+      "scope": "Feature catalogue and anonymous application onboarding"
+    },
+    {
+      "evidence_id": "ev_bc0356395e8dd8930b4998de94331d28bf33851d34062315d443098fb38a4711",
+      "scope": "Anonymous four-step onboarding initial page only"
+    }
+  ],
+  "sources": [
+    {
+      "id": "sections",
+      "url": "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume",
+      "title": "Add resume sections and entries",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": "2026-04-07"
+    },
+    {
+      "id": "duplicate",
+      "url": "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume",
+      "title": "Duplicate a resume or cover letter",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": "2026-07-02"
+    },
+    {
+      "id": "documents",
+      "url": "https://help.enhancv.com/en/articles/2808816-pro-account-where-can-i-access-my-other-resumes-can-i-have-more-than-one-resume",
+      "title": "Manage multiple resume and cover-letter documents",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": "2020-03-20"
+    },
+    {
+      "id": "templates",
+      "url": "https://enhancv.com/resume-templates/",
+      "title": "Resume templates and document design",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "ukcv",
+      "url": "https://enhancv.com/uk/",
+      "title": "UK CV builder overview",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "tailor",
+      "url": "https://enhancv.com/features/tailor-resume-to-job-description/",
+      "title": "Resume tailoring, master profile and versions",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "checker",
+      "url": "https://enhancv.com/resources/resume-checker/",
+      "title": "Resume Checker",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "ats",
+      "url": "https://enhancv.com/ats-hub/",
+      "title": "ATS Resource Hub",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "tracker",
+      "url": "https://enhancv.com/features/job-application-tracker/",
+      "title": "Job Application Tracker",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "cover",
+      "url": "https://enhancv.com/cover-letter-builder/",
+      "title": "Cover-letter builder",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "coverai",
+      "url": "https://enhancv.com/cover-letter-generator/",
+      "title": "Free cover-letter generator",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "covertemplates",
+      "url": "https://enhancv.com/cover-letter-templates/",
+      "title": "Cover-letter templates",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "ai",
+      "url": "https://enhancv.com/ai-resume-builder/",
+      "title": "AI resume builder",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "linkedin",
+      "url": "https://enhancv.com/linkedin-resume-builder/",
+      "title": "LinkedIn resume import",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "features",
+      "url": "https://enhancv.com/features/",
+      "title": "Feature catalogue",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": null
+    },
+    {
+      "id": "free",
+      "url": "https://help.enhancv.com/en/articles/1208865-what-is-included-in-the-free-version",
+      "title": "Free access and premium boundaries",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": "2026-02-05"
+    },
+    {
+      "id": "pro",
+      "url": "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans",
+      "title": "Enhancv Pro plans",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T21:58:41.803123+00:00",
+      "visible_updated_date": "2026-02-05"
+    },
+    {
+      "id": "pricing",
+      "url": "https://enhancv.com/pricing/",
+      "title": "Current trial and Pro feature comparison",
+      "type": "official-help-or-product-page",
+      "checked_at_utc": "2026-10-09T22:04:25.355743+00:00",
+      "visible_updated_date": null
+    }
+  ],
+  "features": [
+    {
+      "id": "cv-start",
+      "workflow": "resume",
+      "feature": "Start with an existing CV or a new document",
+      "source_ids": [
+        "features"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "REA-anonymous-onboarding-observed",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/"
+      ],
+      "acceptance_criteria": [
+        "Create both a blank document and an imported-document draft, with editable fields and durable saved state."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "anonymous-initial-onboarding-only",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-sections",
+      "workflow": "resume",
+      "feature": "Standard, personal and custom sections",
+      "source_ids": [
+        "templates",
+        "pro"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/resume-templates/",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "acceptance_criteria": [
+        "Add standard and custom sections, rename or remove them, and preserve content through export and reload."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-entries",
+      "workflow": "resume",
+      "feature": "Add sections and repeatable entries",
+      "source_ids": [
+        "sections"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "acceptance_criteria": [
+        "Create, edit, reorder and delete multiple entries without overwriting neighbouring entries."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-reorder",
+      "workflow": "resume",
+      "feature": "Rearrange sections and content",
+      "source_ids": [
+        "sections"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "acceptance_criteria": [
+        "Move sections and entries; preview, exported reading order and reopened state agree."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-design",
+      "workflow": "resume",
+      "feature": "Fonts, colours and backgrounds",
+      "source_ids": [
+        "templates"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/resume-templates/"
+      ],
+      "acceptance_criteria": [
+        "Change font, colours, spacing and background; preview and exported document preserve the choices."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-layout",
+      "workflow": "resume",
+      "feature": "Single-column, two-column and multi-page layouts",
+      "source_ids": [
+        "templates",
+        "ukcv"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/resume-templates/",
+        "https://enhancv.com/uk/"
+      ],
+      "acceptance_criteria": [
+        "Switch column layouts and paginate long content without overlaps, clipped text or lost entries."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-preview",
+      "workflow": "resume",
+      "feature": "Preview before exporting",
+      "source_ids": [
+        "sections"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808219-how-to-add-a-new-section-to-my-resume"
+      ],
+      "acceptance_criteria": [
+        "Show accurate pagination and a preview that agrees with the exported PDF."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-pdf",
+      "workflow": "export",
+      "feature": "Export selectable-text PDF",
+      "source_ids": [
+        "linkedin",
+        "tailor"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/linkedin-resume-builder/",
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "acceptance_criteria": [
+        "Export a real PDF with selectable text, working links and correct page dimensions; parse it independently."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-txt",
+      "workflow": "export",
+      "feature": "Export plain text",
+      "source_ids": [
+        "tailor",
+        "ukcv"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/",
+        "https://enhancv.com/uk/"
+      ],
+      "acceptance_criteria": [
+        "Export complete UTF-8 text in a coherent reading order, including all selected sections."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-paper",
+      "workflow": "export",
+      "feature": "Selectable paper sizing",
+      "source_ids": [
+        "ukcv"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/uk/"
+      ],
+      "acceptance_criteria": [
+        "Choose A4 or Letter and verify PDF page dimensions and pagination."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "doc-dashboard",
+      "workflow": "documents",
+      "feature": "Resume and cover-letter dashboard",
+      "source_ids": [
+        "documents",
+        "duplicate"
+      ],
+      "priority": "P0",
+      "documented_tier": "Multiple documents documented for Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808816-pro-account-where-can-i-access-my-other-resumes-can-i-have-more-than-one-resume",
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "acceptance_criteria": [
+        "List, open, rename and delete multiple resumes and letters; maintain document isolation after reload."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "doc-new",
+      "workflow": "documents",
+      "feature": "Create additional CVs and cover letters",
+      "source_ids": [
+        "documents"
+      ],
+      "priority": "P0",
+      "documented_tier": "Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2808816-pro-account-where-can-i-access-my-other-resumes-can-i-have-more-than-one-resume"
+      ],
+      "acceptance_criteria": [
+        "Create another document without replacing the existing one; persist both independently."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "doc-duplicate",
+      "workflow": "documents",
+      "feature": "Duplicate independent job-specific document versions",
+      "source_ids": [
+        "duplicate"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "acceptance_criteria": [
+        "Duplicate a document, edit the copy and prove the original is unchanged."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "doc-master",
+      "workflow": "documents",
+      "feature": "Keep comprehensive experience while tailoring versions",
+      "source_ids": [
+        "tailor"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-profile-and-version-reconstruction",
+      "unknowns": [
+        "Original master-profile merge and revision rules are undocumented."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "acceptance_criteria": [
+        "Retain comprehensive master facts while creating independent role-specific versions; omitted material remains recoverable."
+      ],
+      "prerequisites": [
+        "Structured master facts, version identities and durable independent revisions."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "doc-cloud",
+      "workflow": "documents",
+      "feature": "Persist documents across desktop and mobile",
+      "source_ids": [
+        "ukcv"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "account-and-sync-service",
+      "unknowns": [
+        "Authenticated storage API and conflict semantics are unobserved."
+      ],
+      "source_links": [
+        "https://enhancv.com/uk/"
+      ],
+      "acceptance_criteria": [
+        "Save on one authenticated device, reopen on another, and resolve conflicting revisions without silent data loss."
+      ],
+      "prerequisites": [
+        "Authenticated account service, durable storage, revision IDs and explicit conflict resolution."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-import-file",
+      "workflow": "import",
+      "feature": "Import PDF or DOCX resume content",
+      "source_ids": [
+        "checker",
+        "coverai"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "No private CV uploaded; original extraction quality and layout recovery untested."
+      ],
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/cover-letter-generator/"
+      ],
+      "acceptance_criteria": [
+        "Import representative PDF and DOCX fixtures into editable fields; report extraction failures and preserve the original file."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-import-linkedin",
+      "workflow": "import",
+      "feature": "Import LinkedIn profile content",
+      "source_ids": [
+        "linkedin"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "external-profile-import",
+      "unknowns": [
+        "External profile access, permissions and extraction implementation are unobserved."
+      ],
+      "source_links": [
+        "https://enhancv.com/linkedin-resume-builder/"
+      ],
+      "acceptance_criteria": [
+        "Use an authorised profile input to populate editable experience and education; show missing fields and revocation errors."
+      ],
+      "prerequisites": [
+        "Authorised profile export or permitted provider access, importer and field validation."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cover-edit",
+      "workflow": "cover-letter",
+      "feature": "Editable header, greeting, body and closing",
+      "source_ids": [
+        "cover"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/cover-letter-builder/"
+      ],
+      "acceptance_criteria": [
+        "Edit greeting, body, closing and contact header; save and reopen the letter without flattening its fields."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cover-design",
+      "workflow": "cover-letter",
+      "feature": "Matching CV and cover-letter design",
+      "source_ids": [
+        "covertemplates"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/cover-letter-templates/"
+      ],
+      "acceptance_criteria": [
+        "Apply matching resume and letter typography and colours and verify both exports."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cover-per-role",
+      "workflow": "cover-letter",
+      "feature": "Separate tailored letters per application",
+      "source_ids": [
+        "covertemplates",
+        "duplicate"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/cover-letter-templates/",
+        "https://help.enhancv.com/en/articles/2800966-how-to-duplicate-a-resume-make-a-copy-of-my-resume"
+      ],
+      "acceptance_criteria": [
+        "Keep separate letters linked to different applications; changes to one letter do not alter another."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cover-pdf",
+      "workflow": "cover-letter",
+      "feature": "Preview and PDF export",
+      "source_ids": [
+        "cover"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/cover-letter-builder/"
+      ],
+      "acceptance_criteria": [
+        "Export the complete letter as a selectable-text PDF with the previewed layout."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cover-ai",
+      "workflow": "ai",
+      "feature": "Generate letter from resume and job ad",
+      "source_ids": [
+        "coverai"
+      ],
+      "priority": "P2",
+      "documented_tier": "Public plain-text generator advertised free without login",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider",
+      "unknowns": [
+        "Original prompts, provider routing and output quality unknown; no generation request sent."
+      ],
+      "source_links": [
+        "https://enhancv.com/cover-letter-generator/"
+      ],
+      "acceptance_criteria": [
+        "Submit resume facts and a job ad to a configured provider, receive an editable letter, then accept or reject it; handle cancellation and provider errors."
+      ],
+      "prerequisites": [
+        "Configured inference provider or local model, user-controlled inputs, request cancellation and error handling."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "check-structure",
+      "workflow": "checker",
+      "feature": "Contact, sections, length and formatting checks",
+      "source_ids": [
+        "checker",
+        "ats"
+      ],
+      "priority": "P0",
+      "documented_tier": "Basic checker advertised free; deeper review paid",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original scoring weights and parser identity are unknown."
+      ],
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Run reproducible fixtures with missing contacts, missing sections and excessive length; report locations and explain rules."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "check-content",
+      "workflow": "checker",
+      "feature": "Grammar, repetition and quantified achievement checks",
+      "source_ids": [
+        "checker",
+        "ats"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Heuristics alone do not establish original grammar or AI analysis parity."
+      ],
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/",
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Identify fixture repetition and unquantified claims; show actionable edits and label rule-based checks honestly."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "check-jobmatch",
+      "workflow": "checker",
+      "feature": "Missing job keywords and resume match feedback",
+      "source_ids": [
+        "ats"
+      ],
+      "priority": "P0",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original match score and job requirement extraction are unknown."
+      ],
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Compare resume and job-ad terms; show present and absent terms with supporting text and explain the independent scoring method."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "check-human",
+      "workflow": "checker",
+      "feature": "Career progression, gaps, bias and leadership review",
+      "source_ids": [
+        "checker"
+      ],
+      "priority": "P2",
+      "documented_tier": "Paid deeper checker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider-and-evaluation",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/resources/resume-checker/"
+      ],
+      "acceptance_criteria": [
+        "Return grounded, reviewable feedback for career progression or gaps; distinguish uncertainty from facts and test for unsupported assertions."
+      ],
+      "prerequisites": [
+        "Configured model, evaluation fixtures for grounded feedback and a disclosed independent grading method."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tailor-review",
+      "workflow": "tailoring",
+      "feature": "Review suggested rewrites before applying or undoing",
+      "source_ids": [
+        "tailor"
+      ],
+      "priority": "P1",
+      "documented_tier": "AI tailoring documented in seven-day trial and paid plans",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider-and-reviewed-changes",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "acceptance_criteria": [
+        "Show proposed edits beside originals; accept, reject and undo individual changes while preserving factual claims."
+      ],
+      "prerequisites": [
+        "Configured model plus change proposals, factual-grounding checks and reversible apply/reject history."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "ai-writing",
+      "workflow": "ai",
+      "feature": "Summary, bullets, headline and objective writing",
+      "source_ids": [
+        "ai",
+        "features"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/ai-resume-builder/",
+        "https://enhancv.com/features/"
+      ],
+      "acceptance_criteria": [
+        "Generate editable summaries, bullets and headlines using only supplied experience; preserve numbers unless the user explicitly changes them."
+      ],
+      "prerequisites": [
+        "Configured inference provider or local model, user-controlled inputs, request cancellation and error handling."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "ai-translation",
+      "workflow": "ai",
+      "feature": "Translate CV content",
+      "source_ids": [
+        "ai"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider",
+      "unknowns": [
+        "Published language totals vary; precise list and translation fidelity untested."
+      ],
+      "source_links": [
+        "https://enhancv.com/ai-resume-builder/"
+      ],
+      "acceptance_criteria": [
+        "Translate selected content via a configured provider while preserving names, numbers and document structure; allow review and rollback."
+      ],
+      "prerequisites": [
+        "Configured inference provider or local model, user-controlled inputs, request cancellation and error handling."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-records",
+      "workflow": "job-tracker",
+      "feature": "Company, role, application date and posting record",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Unlimited applications advertised free",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Create, edit, search and reopen company, role, date and job-posting records with stable application identity."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-pipeline",
+      "workflow": "job-tracker",
+      "feature": "Statuses, board movement and sorting",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Move applications among statuses; filtering and persisted board order reflect the same record."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-resume",
+      "workflow": "job-tracker",
+      "feature": "Attach the exact resume version sent",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Attach and reopen the precise submitted resume revision after later changes to the master document."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-letters",
+      "workflow": "job-tracker",
+      "feature": "Link tailored cover letters",
+      "source_ids": [
+        "ats"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker; document entitlements separate",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Attach and reopen the application-specific cover letter without changing other applications."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-tasks",
+      "workflow": "job-tracker",
+      "feature": "Tasks, completion and due dates",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Create due-dated tasks, mark them complete and preserve completion and due dates after reload."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-notes",
+      "workflow": "job-tracker",
+      "feature": "Contacts, interview notes and offer details",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Save contacts, interview notes and offer details on the correct application and retrieve them after reload."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-archive",
+      "workflow": "job-tracker",
+      "feature": "Archive applications without losing history",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P0",
+      "documented_tier": "Free tracker",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Archive and restore an application while retaining notes, tasks and document links."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-fields",
+      "workflow": "job-tracker",
+      "feature": "Custom fields and tracker columns",
+      "source_ids": [
+        "ats"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Add typed custom fields and columns; edit, sort and preserve values across import and reload."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-import",
+      "workflow": "job-tracker",
+      "feature": "Import spreadsheet trackers",
+      "source_ids": [
+        "ats"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Map spreadsheet columns to applications, preview validation errors and prevent silent duplicate or truncated records."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-analytics",
+      "workflow": "job-tracker",
+      "feature": "Weekly progress analytics",
+      "source_ids": [
+        "ats"
+      ],
+      "priority": "P1",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/ats-hub/"
+      ],
+      "acceptance_criteria": [
+        "Compute weekly counts from saved application dates/statuses and verify totals against a fixed fixture."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-capture",
+      "workflow": "job-tracker",
+      "feature": "Capture posting URLs and browser-extension fields",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "external-posting-and-browser-extension",
+      "unknowns": [
+        "Private job-site APIs were not called; permission and parsing details unknown."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Extract a supported public posting into a reviewable application draft; show URL and parsing errors without requesting unrelated site permissions."
+      ],
+      "prerequisites": [
+        "Scoped browser extension or supported URL importer; allowed external data access and extraction fixtures."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "tracker-reminders",
+      "workflow": "job-tracker",
+      "feature": "Follow-up reminders linked to application timelines",
+      "source_ids": [
+        "tracker"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "notification-service",
+      "unknowns": [
+        "Delivery channels and timing guarantees unobserved; no sends authorised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/job-application-tracker/"
+      ],
+      "acceptance_criteria": [
+        "Queue a due reminder using durable application/task IDs, deduplicate retries and obtain a delivery receipt through an authorised notification route."
+      ],
+      "prerequisites": [
+        "Durable scheduler/outbox, deduplication and authorised delivery provider; no live sends performed in this audit."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "share-feedback",
+      "workflow": "collaboration",
+      "feature": "Share links and section-specific feedback",
+      "source_ids": [
+        "tailor",
+        "templates"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "sharing-and-comments-service",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/",
+        "https://enhancv.com/resume-templates/"
+      ],
+      "acceptance_criteria": [
+        "Two independent accounts open the same shared document with their assigned permissions; anchored feedback survives refresh and access revocation."
+      ],
+      "prerequisites": [
+        "Identity, permission enforcement, durable shared storage, comments and independently reachable clients."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "interview-help",
+      "workflow": "interview",
+      "feature": "Role questions, STAR answers and company preparation",
+      "source_ids": [
+        "features"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-and-public-research-provider",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/"
+      ],
+      "acceptance_criteria": [
+        "Produce role-specific practice questions and reviewable answers grounded in supplied facts; retain a practice history and report provider failure."
+      ],
+      "prerequisites": [
+        "Configured model and authorised current public research inputs with grounded citations."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "job-board",
+      "workflow": "discovery",
+      "feature": "Conversational job search and profile matching",
+      "source_ids": [
+        "tailor"
+      ],
+      "priority": "P2",
+      "documented_tier": "Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "licensed-live-job-data-service",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "acceptance_criteria": [
+        "Retrieve current jobs from an authorised feed, filter or rank them against profile criteria, and preserve source URLs and freshness."
+      ],
+      "prerequisites": [
+        "Authorised live job feed, search/indexing and freshness monitoring."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "chatgpt-app",
+      "workflow": "integrations",
+      "feature": "Official ChatGPT resume design integration",
+      "source_ids": [
+        "tailor"
+      ],
+      "priority": "P2",
+      "documented_tier": "Not explicitly stated",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "external-app-integration",
+      "unknowns": [
+        "Original runtime and detailed edge cases not exercised."
+      ],
+      "source_links": [
+        "https://enhancv.com/features/tailor-resume-to-job-description/"
+      ],
+      "acceptance_criteria": [
+        "Complete a real external app invocation with authenticated document access and a returned editable result; verify revoked access fails closed."
+      ],
+      "prerequisites": [
+        "Document-scoped authenticated integration, revocable access and an independently runnable client."
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "cv-pro-sections",
+      "workflow": "resume",
+      "feature": "Premium specialised resume sections",
+      "source_ids": [
+        "pricing",
+        "pro"
+      ],
+      "priority": "P2",
+      "documented_tier": "Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Authenticated original workflow and precise edge cases remain unobserved."
+      ],
+      "acceptance_criteria": [
+        "Create specialised sections as genuinely editable structured content; preserve them in preview, PDF and reopen."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "source_links": [
+        "https://enhancv.com/pricing/",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "content-live-suggestions",
+      "workflow": "checker",
+      "feature": "Live content suggestions",
+      "source_ids": [
+        "pricing"
+      ],
+      "priority": "P2",
+      "documented_tier": "Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "model-provider-and-reviewed-changes",
+      "unknowns": [
+        "Authenticated original workflow and precise edge cases remain unobserved."
+      ],
+      "acceptance_criteria": [
+        "Changing resume content triggers relevant reviewable suggestions; stale responses cannot replace newer edits and rejected suggestions leave content unchanged."
+      ],
+      "prerequisites": [
+        "Configured model plus change proposals, factual-grounding checks and reversible apply/reject history."
+      ],
+      "source_links": [
+        "https://enhancv.com/pricing/"
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    },
+    {
+      "id": "export-branding",
+      "workflow": "export",
+      "feature": "Branding-free document export",
+      "source_ids": [
+        "pricing",
+        "free",
+        "pro"
+      ],
+      "priority": "P2",
+      "documented_tier": "Pro",
+      "observation_basis": "official-public-documentation",
+      "implementation_lane": "local-functional-reconstruction",
+      "unknowns": [
+        "Authenticated original workflow and precise edge cases remain unobserved."
+      ],
+      "acceptance_criteria": [
+        "Export an independently branded document with no reference-product watermark and verify document content and pagination remain unchanged."
+      ],
+      "prerequisites": [
+        "Persistent document model and functional renderer; no remote provider inherently required."
+      ],
+      "source_links": [
+        "https://enhancv.com/pricing/",
+        "https://help.enhancv.com/en/articles/1208865-what-is-included-in-the-free-version",
+        "https://help.enhancv.com/en/articles/1195346-understanding-the-enhancv-pro-plans"
+      ],
+      "reference_runtime_status": "not-exercised",
+      "implementation_status": "not-assessed-by-research-agent"
+    }
+  ],
+  "counts": {
+    "features": 48,
+    "by_priority": {
+      "P0": 25,
+      "P1": 8,
+      "P2": 15
+    },
+    "by_workflow": {
+      "resume": 8,
+      "export": 4,
+      "documents": 5,
+      "import": 2,
+      "cover-letter": 4,
+      "ai": 3,
+      "checker": 5,
+      "tailoring": 1,
+      "job-tracker": 12,
+      "collaboration": 1,
+      "interview": 1,
+      "discovery": 1,
+      "integrations": 1
+    }
+  },
+  "blockers": [
+    {
+      "id": "auth-editor",
+      "scope": "Authenticated editor, account sync and collaborator sessions",
+      "status": "not-inspected",
+      "reason": "Only anonymous onboarding was observed. No credentials, personal documents or collaboration invitations used."
+    },
+    {
+      "id": "ai-identity",
+      "scope": "AI writing, tailoring, interview help and exact ATS grading",
+      "status": "unknown",
+      "reason": "Public feature descriptions do not expose model routing, prompts, evaluation data or score weights."
+    },
+    {
+      "id": "external-services",
+      "scope": "Live jobs, LinkedIn import, remote sharing and notifications",
+      "status": "service-dependent",
+      "reason": "Requires independently implemented services, provider access and explicit runtime verification; UI controls alone do not fulfil it."
+    }
+  ],
+  "source_conflicts_and_limits": [
+    "Current pricing and February 2026 help agree on 12 trial items and 300 Pro documents; other public pages still mention 15 items or 30 documents. Preserve the date/source distinction.",
+    "ATS documentation distinguishes a 13-point targeted check from the broader advertised 27 checks. A single invented numeric score is not equivalent.",
+    "The 2020 multiple-documents article establishes the workflow, while newer Pro help establishes current entitlements; it is not sole evidence of present numerical limits.",
+    "Template counts, language counts, cloud limits and claims about employment results are not implementation acceptance criteria."
+  ],
+  "verification_rules": [
+    "A control or static menu is insufficient: execute its workflow and inspect durable output.",
+    "Only call a feature complete after appropriate Linux and macOS build/runtime evidence.",
+    "Local state or tab coordination does not prove network collaboration or account-sync parity.",
+    "Deterministic hints do not prove AI model, ATS score, economy or original-algorithm parity.",
+    "Do not publish captured proprietary assets, raw site DOM, scripts, account data or request logs."
+  ],
+  "tier_scope": [
+    "Seven-day builder trial",
+    "Free public generators/checker",
+    "Free job tracker",
+    "Pro monthly/quarterly/annual entitlements"
+  ],
+  "tier_notes": [
+    "Current pricing specifies a seven-day trial with basic sections, 12 items and branding; Pro lists 300 resume/letter documents, unlimited items and specialised sections.",
+    "The independent OSS implementation can offer these features without reproducing paid gates; source-tier mapping identifies scope, not a billing requirement.",
+    "Rendered currency values on the current pricing page are inconsistent; no monetary price is relied on."
+  ],
+  "criteria_basis": "Acceptance criteria and prerequisites are independently designed engineering requirements, not observed original-service tests or recovered implementation."
+}
