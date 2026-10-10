@@ -1,4 +1,4 @@
-import { validateDocument, parseDocument, createDocument, MAX_DOCUMENT_BYTES } from './model.js';
+import { validateDocument, parseDocument, createDocument } from './model.js';
 import { validateTrackerFields } from './tracker.js';
 export const WORKSPACE_SCHEMA = 'clearcv.workspace';
 export const WORKSPACE_VERSION = 1;
@@ -9,43 +9,61 @@ const APP_KEYS = ['id', 'company', 'role', 'url', 'status', 'appliedDate', 'foll
 function fail(message) { throw new Error(message); }
 function object(value, allowed, name, required = allowed) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.getPrototypeOf(value) !== Object.prototype) fail(`${name} must be an object.`);
-  if (Object.keys(value).some(key => !allowed.includes(key)) || required.some(key => !Object.hasOwn(value, key))) fail(`${name} has missing or unsupported fields.`);
+  if (Reflect.ownKeys(value).some(key => {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    return !allowed.includes(key) || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value');
+  }) || required.some(key => !Object.hasOwn(value, key))) fail(`${name} has missing or unsupported fields.`);
+}
+function list(value, name, maximum, minimum = 0) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype || value.length < minimum || value.length > maximum) fail(`${name} must be a list with ${minimum ? `between ${minimum} and` : 'at most'} ${maximum} entries.`);
+  const keys = Reflect.ownKeys(value).filter(key => key !== 'length');
+  if (keys.length !== value.length || keys.some((key, index) => {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    return key !== String(index) || !descriptor.enumerable || !Object.hasOwn(descriptor, 'value');
+  })) fail(`${name} must be a dense list without unsupported fields.`);
 }
 function text(value, label, limit = 300) {
   if (typeof value !== 'string' || value.length > limit) fail(`${label} must be text of at most ${limit} characters.`);
 }
 function identifier(value) { if (typeof value !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value)) fail('Invalid workspace entry ID.'); }
 function date(value, label) { if (value && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) fail(`${label} must be a valid date.`); }
+function timestamp(value) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString() !== value) fail('A snapshot has an invalid saved date. Choose another backup.');
+}
 function size(value) { if (new TextEncoder().encode(JSON.stringify(value, null, 2)).length > MAX_WORKSPACE_BYTES) fail('Your library is over 4 MB. Download a backup, then remove snapshots or photos you no longer need.'); }
 export function validateWorkspace(value) {
   const core = ['schema', 'version', 'activeId', 'masterProfile', 'documents', 'applications'];
   object(value, [...core, 'masterDocument'], 'Workspace', core);
   if (value.schema !== WORKSPACE_SCHEMA || value.version !== WORKSPACE_VERSION) fail('This backup uses an unsupported ClearCV workspace version. Choose another backup.');
   object(value.masterProfile, PROFILE_KEYS, 'Master profile');
-  validateDocument({ ...createDocument(), profile: value.masterProfile });
-  if (!Array.isArray(value.documents) || value.documents.length < 1 || value.documents.length > 25) fail('Keep between 1 and 25 CVs in a workspace.');
-  const next = structuredClone(value);
+  const masterProfile = validateDocument({ ...createDocument(), profile: value.masterProfile }).profile;
+  list(value.documents, 'CVs', 25, 1);
+  list(value.applications, 'Applications', 150);
+  // Inspect originals before cloning: structuredClone would execute accessors
+  // and discard hidden fields, bypassing the validators for nested records.
+  const next = { schema: value.schema, version: value.version, activeId: value.activeId, masterProfile, documents: [], applications: [] };
   const ids = new Set();
-  for (const entry of next.documents) {
+  for (const entry of value.documents) {
     object(entry, ['id', 'name', 'document', 'versions'], 'CV library entry'); identifier(entry.id);
     if (ids.has(entry.id)) fail('Duplicate CV library ID.'); ids.add(entry.id);
     text(entry.name, 'CV name', 100);
     if (!entry.name.trim()) fail('Give each CV a name.');
-    entry.document = validateDocument(entry.document);
-    if (!Array.isArray(entry.versions) || entry.versions.length > 10) fail('Use at most 10 named snapshots per CV.');
+    const document = validateDocument(entry.document);
+    list(entry.versions, 'Named snapshots', 10);
     const versionIds = new Set();
-    for (const version of entry.versions) {
+    const versions = entry.versions.map(version => {
       object(version, ['id', 'name', 'createdAt', 'document'], 'Snapshot'); identifier(version.id);
       if (versionIds.has(version.id)) fail('Duplicate snapshot ID.'); versionIds.add(version.id);
       text(version.name, 'Snapshot name', 100); text(version.createdAt, 'Snapshot date', 30);
-      if (!version.name.trim() || !/^\d{4}-\d{2}-\d{2}T/.test(version.createdAt) || !Number.isFinite(Date.parse(version.createdAt))) fail('A snapshot has an invalid name or date. Choose another backup.');
-      version.document = validateDocument(version.document);
-    }
+      if (!version.name.trim()) fail('A snapshot has an invalid name. Choose another backup.');
+      timestamp(version.createdAt);
+      return { id: version.id, name: version.name, createdAt: version.createdAt, document: validateDocument(version.document) };
+    });
+    next.documents.push({ id: entry.id, name: entry.name, document, versions });
   }
-  next.masterDocument = validateDocument(Object.hasOwn(next, 'masterDocument') ? next.masterDocument : { ...next.documents[0].document, profile: next.masterProfile });
+  next.masterDocument = validateDocument(Object.hasOwn(value, 'masterDocument') ? value.masterDocument : { ...next.documents[0].document, profile: next.masterProfile });
   if (!ids.has(next.activeId)) fail('The active CV must exist in the library.');
-  if (!Array.isArray(next.applications) || next.applications.length > 150) fail('Use at most 150 tracked applications.');
-  next.applications = next.applications.map(validateTrackerFields);
+  next.applications = value.applications.map(validateTrackerFields);
   const appIds = new Set();
   for (const application of next.applications) {
     identifier(application.id);
@@ -74,7 +92,10 @@ export function addDocument(workspace, document, id, name = 'Untitled CV') {
   next.documents.push({ id, name, document: validateDocument(document), versions: [] }); next.activeId = id;
   return validateWorkspace(next);
 }
-export function duplicateDocument(workspace, id, name) { return addDocument(workspace, activeEntry(workspace).document, id, name); }
+export function duplicateDocument(workspace, id, name) {
+  const next = validateWorkspace(workspace);
+  return addDocument(next, activeEntry(next).document, id, name);
+}
 export function deleteDocument(workspace, id) {
   const next = validateWorkspace(workspace);
   if (next.documents.length === 1) fail('Keep at least one CV in your library.');
@@ -198,7 +219,7 @@ export function mergeWorkspace(workspace, imported, makeId) {
   return validateWorkspace(next);
 }
 export function parseImport(json) {
-  if (typeof json !== 'string' || json.length > MAX_WORKSPACE_BYTES) fail('Choose a file smaller than 4 MB.');
+  if (typeof json !== 'string' || json.length > MAX_WORKSPACE_BYTES || new TextEncoder().encode(json).length > MAX_WORKSPACE_BYTES) fail('Choose a file smaller than 4 MB.');
   let value;
   try { value = JSON.parse(json); } catch { fail('This file is not valid JSON.'); }
   return value?.schema === WORKSPACE_SCHEMA ? { kind: 'workspace', value: parseWorkspace(json) } : { kind: 'document', value: parseDocument(json) };

@@ -3,9 +3,10 @@ import {normalisePlainText} from './formats.js';
 export const OCR_LIMITS=Object.freeze({bytes:10*1024*1024,pages:20,sourcePixels:32_000_000,renderPixels:4_000_000,text:50_000,timeoutMs:120_000});
 const cancelled=()=>new DOMException('Document reading cancelled.','AbortError');
 const ensureActive=signal=>{if(signal?.aborted)throw cancelled();};
+const inputBytes=input=>input instanceof Uint8Array?input:input instanceof ArrayBuffer?new Uint8Array(input):null;
 export function detectOcrType(input) {
-  const b=input instanceof Uint8Array?input:new Uint8Array(input);
-  if(!b.length||b.length>OCR_LIMITS.bytes)throw new Error('Choose a document or image smaller than 10 MiB.');
+  const b=inputBytes(input);
+  if(!b||!b.length||b.length>OCR_LIMITS.bytes)throw new Error('Choose a document or image smaller than 10 MiB.');
   if(new TextDecoder().decode(b.subarray(0,5))==='%PDF-')return 'pdf';
   if(b[0]===137&&b[1]===80&&b[2]===78&&b[3]===71)return 'image/png';
   if(b[0]===255&&b[1]===216&&b[2]===255)return 'image/jpeg';
@@ -15,7 +16,9 @@ export function detectOcrType(input) {
 }
 export function boundedOcrSize(width,height) {
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<1||height<1||width*height>OCR_LIMITS.sourcePixels)throw new Error('This page image is too large. Use an image below 32 megapixels.');
-  const scale=Math.min(1,Math.sqrt(OCR_LIMITS.renderPixels/(width*height)));
+  // A very thin source rounds its short edge back up to one pixel. Bound each
+  // edge as well as the area so that rounding cannot exceed the render budget.
+  const scale=Math.min(1,Math.sqrt(OCR_LIMITS.renderPixels/(width*height)),OCR_LIMITS.renderPixels/width,OCR_LIMITS.renderPixels/height);
   return {width:Math.max(1,Math.floor(width*scale)),height:Math.max(1,Math.floor(height*scale)),scale};
 }
 
@@ -92,7 +95,7 @@ function makeCanvas(width,height) {
 
 export async function extractOcr(input,{signal,password,onProgress,forceOcr=false}={}) {
   ensureActive(signal);
-  const bytes=input instanceof Uint8Array?input:new Uint8Array(input),type=detectOcrType(bytes);
+  const source=inputBytes(input),type=detectOcrType(source),bytes=new Uint8Array(source);
   const controller=new AbortController();let timedOut=false,engine,pdfTask,renderTask;
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
   const timer=setTimeout(()=>{timedOut=true;controller.abort();},OCR_LIMITS.timeoutMs);

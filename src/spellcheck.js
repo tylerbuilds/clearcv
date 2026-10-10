@@ -12,12 +12,15 @@ export function checkText(text, { signal, ignored = [] } = {}) {
     const timer = setTimeout(() => finish(new Error('The spelling check took longer than 30 seconds. Check a shorter section.')), 30000);
     signal?.addEventListener('abort', abort, { once: true });
     worker.onmessage = event => {
+      if (finished) return;
       const result = event.data;
-      if (!result || !Array.isArray(result.issues) || typeof result.checkedWords !== 'number' || result.issues.length > 60) { finish(new Error(result?.error || 'The spelling check returned an invalid result. Try checking again.')); return; }
-      if (result.issues.some(issue => typeof issue.word !== 'string' || !Number.isInteger(issue.start) || !Number.isInteger(issue.end) || issue.start < 0 || issue.end > text.length || text.slice(issue.start, issue.end) !== issue.word || !Array.isArray(issue.suggestions) || issue.suggestions.some(word => typeof word !== 'string' || word.length > 80))) { finish(new Error('The spelling result no longer matches the text. Check again.')); return; }
+      if (!result || !Array.isArray(result.issues) || !Number.isInteger(result.checkedWords) || result.checkedWords < 0 || result.checkedWords > 4000 || result.issues.length > 60) { finish(new Error(typeof result?.error === 'string' && result.error.length <= 500 ? result.error : 'The spelling check returned an invalid result. Try checking again.')); return; }
+      if (result.issues.some(issue => !issue || typeof issue !== 'object' || typeof issue.word !== 'string' || issue.word.length < 2 || issue.word.length > 40 || !Number.isInteger(issue.start) || !Number.isInteger(issue.end) || issue.start < 0 || issue.end <= issue.start || issue.end > text.length || text.slice(issue.start, issue.end) !== issue.word || !Array.isArray(issue.suggestions) || issue.suggestions.length > 5 || issue.suggestions.some(word => typeof word !== 'string' || !word.length || word.length > 80))) { finish(new Error('The spelling result no longer matches the text. Check again.')); return; }
+      if (typeof result.limitReached !== 'boolean') { finish(new Error('The spelling check returned an invalid result. Try checking again.')); return; }
       finish(null, result);
     };
     worker.onerror = () => finish(new Error('The spelling dictionary couldn’t load. Reload the page, or restart ClearCV if you’re running it locally.'));
-    worker.postMessage({ text, ignored });
+    try { worker.postMessage({ text, ignored }); }
+    catch { finish(new Error('The spelling check could not start. Reload the page and try again.')); }
   });
 }

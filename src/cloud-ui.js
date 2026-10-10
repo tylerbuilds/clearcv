@@ -33,6 +33,7 @@ export function createCloudUI({ element, field, sectionTitle, notify, getDocumen
   async function openLink(link) {
     const connection = readShareLink(link);
     if (!connection) throw new Error('Paste the complete ClearCV share link, including everything after #.');
+    if (new URL(link).origin !== location.origin) throw new Error('This share link is for another server. Open that link in your browser to use it there.');
     const result = checkSnapshot(await client.open(connection));
     const localId = addLocalDocument(result.workspace.document, `${result.workspace.title} (shared)`);
     session = { ...result, token: connection.token, localId };

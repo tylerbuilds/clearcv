@@ -117,7 +117,7 @@ function headerParts(text, kind) {
 }
 function sectionBlocks(rows, kind) {
   const nonblank = rows.filter(row => clean(row.text));
-  const blocks = []; let current = [];
+  const blocks = []; let current = [], dated = false, described = false;
   const titleLike = kind === 'education' ? DEGREE : ROLE;
   const candidate = row => {
     if (!row || BULLET.test(row.text) || prose(clean(row.text))) return false;
@@ -126,17 +126,17 @@ function sectionBlocks(rows, kind) {
   };
   for (let index = 0; index < nonblank.length; index++) {
     const row = nonblank[index], part = dateParts(row.text);
-    const dated = current.some(item => dateParts(item.text).dates);
-    const described = current.some(item => BULLET.test(item.text) || prose(clean(item.text)));
     const upcomingDate = nonblank.slice(index, index + 4).findIndex(item => dateParts(item.text).dates);
     const clearInline = part.dates && part.rest && candidate(row);
     const dateFirst = part.dates && !part.rest;
     const nearDate = upcomingDate >= 0 && candidate(row) && nonblank.slice(index, index + upcomingDate).every(item => !BULLET.test(item.text) && !prose(clean(item.text)));
     const undatedHeader = titleLike.test(part.rest) && headerParts(part.rest, kind).length > 1;
     if (current.length && ((clearInline && (dated || described)) || (dateFirst && dated) || (nearDate && (dated || described)) || (undatedHeader && described))) {
-      blocks.push(current); current = [];
+      blocks.push(current); current = []; dated = false; described = false;
     }
     current.push(row);
+    dated ||= Boolean(part.dates);
+    described ||= BULLET.test(row.text) || prose(clean(row.text));
   }
   if (current.length) blocks.push(current);
   return blocks;

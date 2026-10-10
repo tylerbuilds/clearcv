@@ -1,8 +1,9 @@
 import {normalisePlainText} from './formats.js';
 export async function extractPdf(input,{signal,password}={}) {
-  const bytes=input instanceof Uint8Array ? input : new Uint8Array(input);
-  if(bytes.length<5 || bytes.length>2_000_000 || new TextDecoder().decode(bytes.subarray(0,5))!=='%PDF-') throw new Error('Choose a PDF file smaller than 2 MB.');
+  const source=input instanceof Uint8Array ? input : input instanceof ArrayBuffer ? new Uint8Array(input) : null;
+  if(!source || source.length<5 || source.length>2_000_000 || new TextDecoder().decode(source.subarray(0,5))!=='%PDF-') throw new Error('Choose a PDF file smaller than 2 MB.');
   if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
+  const bytes=new Uint8Array(source);
   const pdfjs=await import('../public/vendor/pdfjs/pdf.mjs');
   if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
   pdfjs.GlobalWorkerOptions.workerSrc=new URL('../public/vendor/pdfjs/pdf.worker.mjs',import.meta.url).href;

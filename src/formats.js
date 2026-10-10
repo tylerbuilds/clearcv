@@ -368,9 +368,11 @@ function wordRelationships(xml,part) {
   return {links,parts};
 }
 export async function extractDocx(input,{signal}={}) {
-  const bytes=input instanceof Uint8Array ? input : new Uint8Array(input);
-  if(bytes.length<22 || bytes.length>DOCX_LIMIT) throw new Error('Choose a DOCX file smaller than 2 MB.');
+  const source=input instanceof Uint8Array ? input : input instanceof ArrayBuffer ? new Uint8Array(input) : null;
+  if(!source || source.length<22 || source.length>DOCX_LIMIT) throw new Error('Choose a DOCX file smaller than 2 MB.');
   if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
+  // Retain the accepted document even if its caller later reuses the buffer.
+  const bytes=new Uint8Array(source);
   const entries=wordArchive(bytes),main='word/document.xml',relationCache=new Map();
   const relationships=async part=>{
     if(!relationCache.has(part)) {

@@ -16,6 +16,8 @@ Owner, editor and viewer links have separate access tokens in their URL fragment
 
 Comments and history survive a graceful server restart. If someone else saves a new revision before you do, resolve the conflict before saving again. Your local edits stay open.
 
+Open a share link on the server that created it. ClearCV refuses links from a different server before sending their access token. Open the original link in your browser to use that server instead.
+
 The server listens on `127.0.0.1` by default. To make it available remotely, use an HTTPS reverse proxy, set `--public-origin https://your-app.example` and add an access layer you manage. The links grant access to documents; ClearCV doesn't provide OAuth accounts, team identities, enterprise SSO or billing.
 
 Back up the private data directory separately from the app. Its lock stops two servers opening the same data. After a crash, check that the recorded process has ended before removing the lock.

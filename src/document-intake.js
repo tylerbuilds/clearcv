@@ -497,7 +497,9 @@ export async function extractDocument(input,{name='',mime='',signal,password}={}
   if(!(input instanceof Uint8Array)) throw new Error('Read the document as bytes before importing.');
   if(!input.length || input.length>DOCUMENT_BYTE_LIMIT) throw new Error('Choose a non-empty document no larger than 2 MB.');
   checkAbort(signal);
-  const bytes=input, extension=extensionOf(name), mediaType=String(mime).split(';')[0].trim().toLowerCase(), warnings=[];
+  // Format readers await decompression or local libraries. Keep a bounded
+  // snapshot so those stages cannot observe later changes to the input view.
+  const bytes=new Uint8Array(input), extension=extensionOf(name), mediaType=String(mime).split(';')[0].trim().toLowerCase(), warnings=[];
   let format,text;
   if(isBytes(bytes,[0x25,0x50,0x44,0x46,0x2d])) { format='pdf'; text=await extractPdf(bytes,{signal,password}); }
   else if(isBytes(bytes,[0x50,0x4b,0x03,0x04]) || isBytes(bytes,[0x50,0x4b,0x05,0x06])) {

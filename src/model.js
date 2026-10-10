@@ -14,6 +14,19 @@ const MAX_ITEMS = 60;
 function fail(message) { throw new Error(message); }
 function record(value, label) {
   if (!value || typeof value !== 'object' || Array.isArray(value) || Object.getPrototypeOf(value) !== Object.prototype) fail(`${label} must be an object.`);
+  for (const key of Reflect.ownKeys(value)) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+    if (typeof key !== 'string' || !descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) fail(`${label} must contain only plain text fields and values.`);
+  }
+}
+function list(value, label, limit) {
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype || value.length > limit) fail(`${label} must be a list with at most ${limit} entries.`);
+  const ownKeys = Reflect.ownKeys(value);
+  if (ownKeys.length !== value.length + 1) fail(`${label} must be a plain list without missing or extra entries.`);
+  for (let index = 0; index < value.length; index++) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index));
+    if (!descriptor?.enumerable || !Object.hasOwn(descriptor, 'value')) fail(`${label} must be a plain list without missing or accessor entries.`);
+  }
 }
 function keys(value, allowed, label, required = allowed) {
   record(value, label);
@@ -35,7 +48,7 @@ export function validateDocument(value) {
   for (const key of PROFILE_KEYS) string(value.profile[key], `Profile ${key}`, key === 'summary' ? 10000 : 300);
   const ids = new Set();
   for (const collection of COLLECTIONS) {
-    if (!Array.isArray(value[collection]) || value[collection].length > MAX_ITEMS) fail(`${collection} must be a list with at most ${MAX_ITEMS} entries.`);
+    list(value[collection], collection, MAX_ITEMS);
     for (const item of value[collection]) {
       keys(item, ITEM_KEYS[collection], `${collection} entry`);
       for (const key of ITEM_KEYS[collection]) string(item[key], `${collection} ${key}`, key === 'description' ? 10000 : 300);
@@ -45,18 +58,22 @@ export function validateDocument(value) {
   }
   keys(value.style, ['template', 'accent'], 'Style');
   if (!TEMPLATES.includes(value.style.template)) fail('Choose a supported template.');
+  string(value.style.accent, 'Accent colour', 7);
   if (!/^#[0-9a-fA-F]{6}$/.test(value.style.accent)) fail('Enter a six-digit hex colour, such as #a94f2e.');
   string(value.jobAd, 'Job description', 50000);
-  if (!Array.isArray(value.customSections) || value.customSections.length > 20) fail('Use at most 20 custom sections.');
+  list(value.customSections, 'Custom sections', 20);
   for (const section of value.customSections) {
     keys(section, ['id', 'title', 'content'], 'Custom section');
+    string(section.id, 'Section ID', 80);
     string(section.title, 'Section title', 100); string(section.content, 'Section content', 30000);
     if (!/^[a-zA-Z0-9_-]{1,80}$/.test(section.id) || ids.has(section.id) || ['profile', ...COLLECTIONS].includes(section.id)) fail('This backup has a missing, invalid or repeated section ID. Choose another ClearCV backup.');
     ids.add(section.id);
   }
   const sectionIds = ['profile', ...COLLECTIONS, ...value.customSections.map(section => section.id)];
-  if (!Array.isArray(value.sectionOrder) || value.sectionOrder.length !== sectionIds.length || new Set(value.sectionOrder).size !== sectionIds.length || value.sectionOrder.some(id => !sectionIds.includes(id))) fail('Section order must contain every section exactly once.');
-  if (!Array.isArray(value.hiddenSections) || new Set(value.hiddenSections).size !== value.hiddenSections.length || value.hiddenSections.some(id => !sectionIds.includes(id))) fail('This backup has missing or repeated hidden sections. Choose another ClearCV backup.');
+  list(value.sectionOrder, 'Section order', sectionIds.length);
+  if (value.sectionOrder.length !== sectionIds.length || new Set(value.sectionOrder).size !== sectionIds.length || value.sectionOrder.some(id => !sectionIds.includes(id))) fail('Section order must contain every section exactly once.');
+  list(value.hiddenSections, 'Hidden sections', sectionIds.length);
+  if (new Set(value.hiddenSections).size !== value.hiddenSections.length || value.hiddenSections.some(id => !sectionIds.includes(id))) fail('This backup has missing or repeated hidden sections. Choose another ClearCV backup.');
   keys(value.sectionTitles, ['profile', ...COLLECTIONS], 'Section titles');
   for (const title of Object.values(value.sectionTitles)) string(title, 'Section title', 100);
   keys(value.layout, ['font', 'fontSize', 'lineHeight', 'spacing', 'margin', 'pageSize'], 'Layout');
