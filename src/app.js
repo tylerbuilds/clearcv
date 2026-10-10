@@ -292,6 +292,13 @@ function renderDesign() {
     change({ ...state, style: { ...state.style, accent: event.target.value } });
     document.querySelector('#accent-hex').value = state.style.accent;
   }));
+  customColour.querySelector('#accent-hex').addEventListener('input', event => {
+    const accent = event.target.value.trim();
+    // Leave incomplete colours editable; apply a complete colour without blur.
+    if (/^#[0-9a-fA-F]{6}$/.test(accent) && safeAction(() => change({ ...state, style: { ...state.style, accent } }))) {
+      document.querySelector('#custom-accent').value = state.style.accent;
+    }
+  });
   customColour.querySelector('#accent-hex').addEventListener('change', event => {
     if (!safeAction(() => change({ ...state, style: { ...state.style, accent: event.target.value.trim() } }))) event.target.value = state.style.accent;
     document.querySelector('#custom-accent').value = state.style.accent;
