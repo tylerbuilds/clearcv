@@ -185,7 +185,7 @@
 .template-signal .cv-header{background:#243035;color:white;border:0;border-bottom:4px solid var(--paper-accent);padding:23px 24px 21px;margin-bottom:calc(var(--cv-spacing,20px) * 1.2)}
 .template-signal .cv-name{font-family:Arial,Helvetica,sans-serif;font-size:calc(var(--cv-font-size,11px) * 3.5);font-weight:800;letter-spacing:-1.3px;line-height:1.05;color:white}
 .template-signal .cv-headline{font-family:Arial,Helvetica,sans-serif;font-size:calc(var(--cv-font-size,11px) * 1.2);line-height:1.5;color:#e5eeea;margin-top:12px}
-.template-signal .cv-contact{font-family:Arial,Helvetica,sans-serif;color:#e5eeea;gap:6px 14px;margin-top:15px}
+.paper.template-signal .cv-contact{font-family:Arial,Helvetica,sans-serif;color:#e5eeea;gap:6px 14px;margin-top:15px}
 .template-signal .cv-header.has-headshot{padding-right:calc(var(--headshot-size) + 42px);min-height:calc(var(--headshot-size) + 46px)}
 .template-signal .cv-photo{top:23px;right:22px;border-radius:6px;border:2px solid #d4dfd8}
 .template-signal .cv-section{border-top:1px solid var(--cv-rule);padding-top:calc(var(--cv-spacing,20px) * .6)}
@@ -346,7 +346,7 @@ details.headshot-controls .headshot-choice{margin-bottom:13px}
   /* Ink on white prints safely with background graphics switched off. */
   .template-signal .cv-header{background:white!important;color:var(--cv-ink)!important;border-bottom-color:var(--cv-ink)!important}
   .template-signal .cv-name{color:var(--cv-ink)!important}
-  .template-signal .cv-headline,.template-signal .cv-contact{color:#46584f!important}
+  .paper.template-signal .cv-headline,.paper.template-signal .cv-contact{color:#46584f!important}
   .template-atlas .cv-columns.columns-2{gap:26px}
   .template-margin .cv-columns.columns-2{gap:31px}
   .template-outline .cv-section>h2{break-after:auto}

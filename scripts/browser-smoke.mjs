@@ -89,6 +89,7 @@ try {
     const pdf = await page.pdf({path:resolve(output,'cv.pdf'),format:'A4',printBackground:true});
     expect(pdf.subarray(0,4).toString()).toBe('%PDF');
     await page.locator('#tab-content').click();
+    await page.locator('#profile-email').fill('avery@example.test');
     const headshotDisclosure = page.locator('#content-headshot');
     await expect(headshotDisclosure.locator('summary')).toHaveText('Headshot (optional)');
     await expect(headshotDisclosure).toHaveJSProperty('open', false);
@@ -122,6 +123,22 @@ try {
       await expect(page.locator('#cv-preview .cv-header')).toHaveClass(/has-headshot/);
       await expect(portraitPreview).toBeVisible();
       await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+      if (id === 'signal') {
+        const signalContact = page.locator('#cv-preview .cv-contact');
+        const signalEmail = signalContact.locator('a[href="mailto:avery@example.test"]');
+        await expect(signalEmail).toHaveText('avery@example.test');
+        await expect(signalContact).toHaveCSS('color', 'rgb(229, 238, 234)');
+        await expect(signalEmail).toHaveCSS('color', 'rgb(229, 238, 234)');
+        try {
+          await page.emulateMedia({media:'print'});
+          await expect(page.locator('#cv-preview .cv-header')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+          await expect(signalContact).toHaveCSS('color', 'rgb(70, 88, 79)');
+          await expect(signalEmail).toHaveCSS('color', 'rgb(70, 88, 79)');
+          const signalPdf = await page.pdf({path:resolve(output,'signal-no-background.pdf'),format:'A4',printBackground:false});
+          expect(signalPdf.subarray(0,4).toString()).toBe('%PDF');
+        } finally { await page.emulateMedia({media:'screen'}); }
+        await expect(signalContact).toHaveCSS('color', 'rgb(229, 238, 234)');
+      }
     }
     await page.reload({waitUntil:'networkidle'});
     await expect(page.locator('#cv-preview')).toHaveClass(/template-margin/);
@@ -140,6 +157,7 @@ try {
     await expect(page.locator('#cv-preview')).toHaveClass(/template-margin/);
     await page.locator('#tab-content').click();
     await expect(page.locator('#content-remove-photo')).toHaveCount(0);
+    await page.locator('#profile-email').fill('');
     await page.locator('#profile-summary').fill('Designed useful services with users.');
     await page.locator('#profile-summary').evaluate(node => {
       node.focus(); node.setSelectionRange(0, 8);
