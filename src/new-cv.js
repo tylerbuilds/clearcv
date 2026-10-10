@@ -17,7 +17,7 @@ export function isBlankCV(document) {
 
 export function isFirstBlankWorkspace(workspace) {
   return workspace.documents.length === 1 && workspace.documents[0].versions.length === 0
-    && workspace.applications.length === 0 && isBlankCV(workspace.documents[0].document)
+    && workspace.applications.length === 0 && (workspace.letters?.length || 0) === 0 && isBlankCV(workspace.documents[0].document)
     && isBlankCV(workspace.masterDocument) && Object.values(workspace.masterProfile).every(value => !value.trim());
 }
 

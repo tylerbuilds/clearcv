@@ -33,7 +33,7 @@ test('editable DOCX exports preserve visible ordered text without HTML or extern
 });
 test('cover letters export applicant and letter text, without including the CV work history',async()=>{
   const doc=sampleDocument();
-  doc.coverLetter={company:'Example Ltd',recipient:'Hiring team',date:'9 October 2026',subject:'Design role',salutation:'Dear team,',body:'My experience is relevant.\nI would welcome a conversation.',closing:'Yours sincerely,'};
+  doc.coverLetter={...doc.coverLetter,company:'Example Ltd',recipient:'Hiring team',date:'9 October 2026',subject:'Design role',salutation:'Dear team,',body:'My experience is relevant.\nI would welcome a conversation.',closing:'Yours sincerely,'};
   const text=await extractDocx(exportDocx(doc,{kind:'letter'}));
   assert.ok(text.includes(doc.coverLetter.body));
   assert.ok(text.includes('Example Ltd'));

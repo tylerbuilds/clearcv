@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createDocument, sampleDocument, serialiseDocument } from '../src/model.js';
-import { createWorkspace, addDocument, validateWorkspace, MAX_WORKSPACE_BYTES, addApplication, saveSnapshot, captureApplicationSubmission, addApplicationTask, addApplicationCustomField, updateApplicationTask, updateApplicationCustomField, serialiseWorkspace } from '../src/workspace.js';
+import { createWorkspace, addDocument, validateWorkspace, MAX_WORKSPACE_BYTES, MAX_CVS, saveReusableLetter, addApplication, saveSnapshot, captureApplicationSubmission, addApplicationTask, addApplicationCustomField, updateApplicationTask, updateApplicationCustomField, serialiseWorkspace } from '../src/workspace.js';
 import { initialWorkspace, isBlankCV, isFirstBlankWorkspace, addNewCV } from '../src/new-cv.js';
 
 test('fresh storage starts a genuinely blank CV and master rather than saving example facts', () => {
@@ -69,9 +69,9 @@ test('new CV names distinguish repeated creations and input validation rejects a
   assert.throws(() => addNewCV(workspace, 'initial-cv'), /Duplicate CV library ID/);
   assert.throws(() => addNewCV(workspace, 'new', 'invented'), /Choose a blank CV or an example/);
   assert.equal(serialiseWorkspace(workspace), validBefore);
-  for (let count = workspace.documents.length; count < 25; count++) workspace = addNewCV(workspace, `cv-${count}`);
+  for (let count = workspace.documents.length; count < MAX_CVS; count++) workspace = addNewCV(workspace, `cv-${count}`);
   const before = serialiseWorkspace(workspace);
-  assert.throws(() => addNewCV(workspace, 'overflow'), /between 1 and 25/);
+  assert.throws(() => addNewCV(workspace, 'overflow'), new RegExp(`between 1 and ${MAX_CVS}`));
   assert.equal(serialiseWorkspace(workspace), before);
 });
 
@@ -82,6 +82,7 @@ test('welcome eligibility does not mistake stored career, letter or history for 
   }
   const snapshot = saveSnapshot(first, 'checkpoint', 'Blank checkpoint', '2026-10-10T00:00:00.000Z');
   assert.equal(isFirstBlankWorkspace(snapshot), false);
+  assert.equal(isFirstBlankWorkspace(saveReusableLetter(first, 'intro', 'Saved introduction')), false);
 });
 
 
