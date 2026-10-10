@@ -14,7 +14,7 @@ When importing into a copy, identical text entries are deduplicated. If their te
 
 Design offers five original presets: Studio, Editorial, Concise, Folio and Ledger. You can still choose your own colour, one or two columns, column proportions, font size, spacing, margins and A4 or Letter paper. Each section has a placement selector when two columns are enabled. Ordering applies within each column; hidden sections remain saved and don't appear in the exported text.
 
-Six font families use fonts available on the device, without downloading font files. A particular face may vary between devices. The optional profile photo appears in the browser view and PDF.
+Six font families use fonts available on the device, without downloading font files. A particular face may vary between devices. The optional profile photo appears in the browser view and PDF. Portrait uploads can be at most 5 MB, 16,384 pixels on either edge and 40 megapixels. Recognised image headers are checked before decoding; the decoded dimensions are checked again before cropping. Imported CV photos use the same declared-dimension limits.
 
 Choose **Preview pages** from the preview toolbar or Design. It arranges the current CV or letter into sheets at the selected paper size, keeping blocks together where they fit and continuing long text on another page. The view is capped at 100 pages. Choose **Print / Save as PDF**, match the paper size, turn off browser headers and footers, and inspect the final print preview. Browser print settings can still affect the result. There is no manual page-break editor.
 

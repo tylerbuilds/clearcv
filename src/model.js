@@ -1,5 +1,6 @@
 import { FONT_FAMILIES, TEMPLATE_CHOICES } from './layout.js';
 import { validateRichText, transformRuns } from './rich-text.js';
+import { checkDeclaredRasterSize } from './raster-size.js';
 export const SCHEMA = 'clearcv';
 export const VERSION = 1;
 export const MAX_DOCUMENT_BYTES = 1_000_000;
@@ -86,6 +87,15 @@ export function validateDocument(value) {
   for (const [key, minimum, maximum] of [['fontSize', 9, 15], ['lineHeight', 1.2, 2.2], ['spacing', 8, 28], ['margin', 20, 60]]) if (typeof value.layout[key] !== 'number' || !Number.isFinite(value.layout[key]) || value.layout[key] < minimum || value.layout[key] > maximum) fail(`Layout ${key} must be between ${minimum} and ${maximum}.`);
   string(value.photo, 'Photo', 250000);
   if (value.photo && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(value.photo)) fail('Photo must be an embedded PNG, JPEG or WebP image.');
+  if (value.photo) {
+    let encoded;
+    try { encoded = atob(value.photo.slice(value.photo.indexOf(',') + 1)); }
+    catch { encoded = null; } // Preserve older syntax-accepted incomplete photos.
+    if (encoded !== null) {
+      const bytes = Uint8Array.from(encoded, character => character.charCodeAt(0));
+      checkDeclaredRasterSize(bytes, value.photo.slice(5, value.photo.indexOf(';')));
+    }
+  }
   keys(value.coverLetter, ['company', 'role', 'recipient', 'date', 'subject', 'salutation', 'body', 'closing'], 'Cover letter');
   for (const [key, text] of Object.entries(value.coverLetter)) string(text, `Cover letter ${key}`, key === 'body' ? 30000 : 300);
   keys(value.sectionColumns, sectionIds, 'Column placement', []);

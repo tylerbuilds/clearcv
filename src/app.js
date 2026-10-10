@@ -16,6 +16,7 @@ import { FONT_FAMILIES, TEMPLATE_CHOICES, sectionPlacement } from './layout.js';
 import { renderRichText } from './rich-text.js';
 import { installRichTextToolbar } from './rich-text-ui.js';
 import { prepareTailoredCopy, reviewTailoredCopy, jobRequirementChecks } from './tailoring.js';
+import { decodePortrait } from './portrait.js';
 import { buildPagePreview } from './page-preview.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
@@ -649,10 +650,10 @@ function renderLayoutControls() {
     const request = ++portraitGeneration, docId = workspace.activeId, original = JSON.stringify(state);
     let bitmap;
     try {
-      if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5_000_000) throw new Error('Choose a PNG, JPEG or WebP photo smaller than 5 MB.');
-      bitmap = await createImageBitmap(file);
+      bitmap = await decodePortrait(file, { isCurrent: () => request === portraitGeneration && workspace.activeId === docId && JSON.stringify(state) === original });
       if (request !== portraitGeneration) return;
       if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('Your CV changed while the photo was loading. Choose the photo again to add it here.', true); return; }
+      if (!bitmap) return;
       const canvas = document.createElement('canvas');
       canvas.width = 240; canvas.height = 240;
       const side = Math.min(bitmap.width, bitmap.height);
