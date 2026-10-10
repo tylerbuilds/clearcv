@@ -383,13 +383,24 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
   }
   if (isBlankCV(state)) preview.append(element('div', { class: 'cv-empty-guide' }, [element('p', { text: 'Your CV starts here.' }), element('span', { text: 'Add your name and experience in Content. Choose a layout in Design. The preview updates as you write.' })]));
 }
+function scrollMobileWorkspace(restoredPosition = 0) {
+  if (!matchMedia('(max-width: 700px)').matches) return;
+  requestAnimationFrame(() => {
+    const workspace = document.querySelector('.workspace');
+    const headerHeight = Math.ceil(document.querySelector('.app-header').getBoundingClientRect().height);
+    // The view switch stays below the sticky header. Keep it in view rather
+    // than scrolling the workspace underneath both sets of controls.
+    const start = Math.max(0, window.scrollY + workspace.getBoundingClientRect().top - headerHeight);
+    window.scrollTo({ top: Math.max(start, restoredPosition), behavior: 'auto' });
+  });
+}
 function switchTab(tab, focus = false) {
   const workspace = document.querySelector('.workspace');
   if (workspace.dataset.mobileView === 'preview') {
     workspace.dataset.mobileView = 'edit';
     document.querySelector('#mobile-edit')?.setAttribute('aria-pressed', 'true');
     document.querySelector('#mobile-preview')?.setAttribute('aria-pressed', 'false');
-    if (matchMedia('(max-width: 700px)').matches) requestAnimationFrame(() => window.scrollTo({ top: workspace.offsetTop, behavior: 'auto' }));
+    scrollMobileWorkspace();
   }
   activeTab = tab;
   for (const button of document.querySelectorAll('[data-tab]')) {
@@ -894,7 +905,7 @@ for (const [view, label, icon] of [['edit', 'Edit CV', 'content'], ['preview', '
     if (view === 'preview') editorScrollPosition = window.scrollY;
     workspaceNode.dataset.mobileView = view;
     for (const button of mobileViews.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.id === `mobile-${view}`));
-    if (matchMedia('(max-width: 700px)').matches) requestAnimationFrame(() => window.scrollTo({ top: view === 'preview' ? workspaceNode.offsetTop : Math.max(workspaceNode.offsetTop, editorScrollPosition), behavior: 'auto' }));
+    scrollMobileWorkspace(view === 'preview' ? 0 : editorScrollPosition);
   } }, [workspaceIcon(icon), element('span', { text: label })]));
 }
 workspaceNode.prepend(mobileViews);

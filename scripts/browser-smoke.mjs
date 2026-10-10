@@ -2,6 +2,7 @@ import { chromium, expect } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { readFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { smokeMobilePreview } from './mobile-preview-smoke.mjs';
 const {name} = JSON.parse(await readFile('package.json', 'utf8'));
 const port = 4322;
 const server = spawn(process.execPath, ['scripts/serve.mjs', '--dir', 'dist', '--port', String(port)], {stdio:['ignore','pipe','pipe']});
@@ -190,6 +191,7 @@ try {
     expect(afterLibraryNew.documents).toHaveLength(beforeNew.documents.length + 2);
     expect(afterLibraryNew.documents.slice(0, beforeNew.documents.length)).toEqual(beforeNew.documents);
     expect(afterLibraryNew.applications).toEqual(beforeNew.applications);
+    await smokeMobilePreview({ browser, expect, errors, output, resolve, url: `http://127.0.0.1:${port}/` });
   } else if (name === 'stencil-studio') {
     await page.locator('#document-title').fill('Avery design');
     await page.locator('#document-title').press('Tab');
