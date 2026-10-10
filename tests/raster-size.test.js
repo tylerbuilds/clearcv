@@ -196,6 +196,58 @@ test('unrecognised legacy bytes and unsupported inputs return null', () => {
   assert.equal(guard(new Uint8Array(5_000_001)), null);
 });
 
+test('known GIF and BMP bytes are refused under every declared portrait MIME', () => {
+  const gif = (version, width, height) => join(word(version), [width & 255, width >>> 8, height & 255, height >>> 8, 0, 0, 0, 0x3b]);
+  const bmp = (width, height) => {
+    const bytes = new Uint8Array(54), view = new DataView(bytes.buffer);
+    bytes.set(word('BM')); view.setUint32(2, 54, true); view.setUint32(10, 54, true);
+    view.setUint32(14, 40, true); view.setInt32(18, width, true); view.setInt32(22, height, true);
+    view.setUint16(26, 1, true); view.setUint16(28, 24, true);
+    return bytes;
+  };
+  for (const bytes of [word('GIF87a'), word('GIF89a'), word('BM'), gif('GIF87a', 1, 1), gif('GIF89a', 1, 1), gif('GIF89a', 10000, 5000), bmp(1, 1), bmp(10000, 5000)]) {
+    const before = Uint8Array.from(bytes);
+    for (const mime of ['image/png', 'image/jpeg', 'image/webp', undefined]) {
+      assert.throws(() => checkDeclaredRasterSize(bytes, mime), /PNG, JPEG or WebP photo/);
+    }
+    assert.deepEqual(bytes, before);
+    const padded = join([0, 0, 0], bytes, [0]);
+    assert.throws(() => guard(padded.subarray(3, 3 + bytes.length)), /PNG, JPEG or WebP photo/);
+  }
+});
+
+test('standard icon, cursor and TIFF signatures cannot bypass permitted MIME labels', () => {
+  for (const bytes of [[0, 0, 1, 0], [0, 0, 2, 0], [73, 73, 42, 0], [77, 77, 0, 42]]) {
+    assert.throws(() => guard(Uint8Array.from(bytes)), /PNG, JPEG or WebP photo/);
+  }
+});
+
+test('AVIF and HEIF major or compatible image brands are refused', () => {
+  const ftyp = (major, ...compatible) => {
+    const payload = join(word('ftyp'), word(major), [0, 0, 0, 0], ...compatible.map(word));
+    const bytes = join([0, 0, 0, payload.length + 4], payload);
+    return bytes;
+  };
+  for (const brand of ['avif', 'avis', 'heic', 'heix', 'hevc', 'hevx', 'mif1', 'msf1']) {
+    assert.throws(() => guard(ftyp(brand)), /PNG, JPEG or WebP photo/);
+    assert.throws(() => guard(ftyp('isom', 'abcd', brand)), /PNG, JPEG or WebP photo/);
+  }
+  assert.equal(guard(ftyp('isom', 'mp42')), null);
+  const outsideBox = join(ftyp('isom'), word('avif'));
+  assert.equal(guard(outsideBox), null);
+  const minorVersion = ftyp('isom'); minorVersion.set(word('avif'), 12);
+  assert.equal(guard(minorVersion), null);
+});
+
+test('partial, mutated and non-leading unsupported magic stays unknown', () => {
+  for (const bytes of [word('GIF'), word('GIF87'), word('GIF89'), word('GIF89b'), word('B'), word('BN'), [0, 0, 1], [73, 73, 42], join([0], word('GIF89a')), join([0], word('BM')), join([0], [0, 0, 1, 0]), word('ftypavif')]) {
+    assert.equal(guard(Uint8Array.from(bytes)), null);
+  }
+  // Embedded opaque metadata is not a second top-level image signature.
+  assert.deepEqual(guard(jpeg(segment(0xe1, word('GIF89a')), sof(240, 240))), { width: 240, height: 240 });
+  assert.deepEqual(guard(webp(chunk('JUNK', word('BM')), vp8x(240, 240))), { width: 240, height: 240 });
+});
+
 test('recognised sources above 5 MB reject before scanning', () => {
   for (const head of [png(10, 10), jpeg(sof(10, 10)), webp(vp8x(10, 10))]) {
     const bytes = new Uint8Array(5_000_001); bytes.set(head);

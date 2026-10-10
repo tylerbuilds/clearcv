@@ -4,6 +4,7 @@ export const PORTRAIT_LIMITS = Object.freeze({ edge: 16_384, pixels: 40_000_000 
 const MAX_SOURCE_BYTES = 5_000_000;
 const MAX_SCAN_STEPS = 131_072;
 const SOF = new Set([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf]);
+const OTHER_IMAGE_BRANDS = ['avif', 'avis', 'heic', 'heix', 'hevc', 'hevx', 'mif1', 'msf1'];
 const tooLarge = () => new Error('Choose a photo no larger than 40 megapixels or 16,384 pixels on either side.');
 
 export function checkPortraitSize(width, height) {
@@ -23,16 +24,34 @@ export function checkDeclaredRasterSize(bytes, type) {
     for (let i = 0; i < word.length; i++) if (bytes[at + i] !== word.charCodeAt(i)) return false;
     return true;
   };
+  let steps = 0;
+  const step = () => {
+    if (++steps > MAX_SCAN_STEPS) throw new Error('This photo has too many image headers. Choose another photo.');
+  };
+  // Browser sniffing can display these formats behind a permitted MIME label.
+  // Reject known unsupported formats, while preserving genuinely unknown saves.
+  let unsupported = ascii(0, 'GIF87a') || ascii(0, 'GIF89a') || ascii(0, 'BM') ||
+    (bytes.length >= 4 && bytes[0] === 0 && bytes[1] === 0 && (bytes[2] === 1 || bytes[2] === 2) && bytes[3] === 0) ||
+    (bytes.length >= 4 && ((bytes[0] === 73 && bytes[1] === 73 && bytes[2] === 42 && bytes[3] === 0) ||
+      (bytes[0] === 77 && bytes[1] === 77 && bytes[2] === 0 && bytes[3] === 42)));
+  if (!unsupported && bytes.length >= 16 && ascii(4, 'ftyp')) {
+    const box = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const end = Math.min(box.getUint32(0) || bytes.length, bytes.length);
+    unsupported = OTHER_IMAGE_BRANDS.some(brand => ascii(8, brand));
+    // Compatible brands are aligned words after the major brand/minor version.
+    for (let at = 16; !unsupported && at + 4 <= end; at += 4) {
+      step();
+      unsupported = OTHER_IMAGE_BRANDS.some(brand => ascii(at, brand));
+    }
+  }
+  if (unsupported) throw new Error('Choose a PNG, JPEG or WebP photo.');
   const png = bytes.length >= 8 && [137, 80, 78, 71, 13, 10, 26, 10].every((byte, i) => bytes[i] === byte);
   const jpeg = bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xd8;
   const webp = bytes.length >= 12 && ascii(0, 'RIFF') && ascii(8, 'WEBP');
   if (!png && !jpeg && !webp) return null;
   if (bytes.length > MAX_SOURCE_BYTES) throw new Error('Choose a photo no larger than 5 MB.');
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  let steps = 0, dimensions = null;
-  const step = () => {
-    if (++steps > MAX_SCAN_STEPS) throw new Error('This photo has too many image headers. Choose another photo.');
-  };
+  let dimensions = null;
   const declared = (width, height, record = true) => {
     // JPEG may defer a zero height until a later DNL. A known giant edge must
     // still be rejected even when the other edge is zero or unavailable.

@@ -21,6 +21,13 @@ function webp(width, height) {
   const bytes = Buffer.alloc(30); bytes.write('RIFF'); bytes.writeUInt32LE(22,4); bytes.write('WEBPVP8X',8); bytes.writeUInt32LE(10,16);
   bytes.writeUIntLE(width-1,24,3); bytes.writeUIntLE(height-1,27,3); return bytes;
 }
+function gif(width, height) {
+  const bytes = Buffer.alloc(13); bytes.write('GIF89a'); bytes.writeUInt16LE(width,6); bytes.writeUInt16LE(height,8); return bytes;
+}
+function bmp(width, height) {
+  const bytes = Buffer.alloc(54); bytes.write('BM'); bytes.writeUInt32LE(54,2); bytes.writeUInt32LE(54,10); bytes.writeUInt32LE(40,14);
+  bytes.writeInt32LE(width,18); bytes.writeInt32LE(height,22); bytes.writeUInt16LE(1,26); bytes.writeUInt16LE(24,28); return bytes;
+}
 const asPhoto = (mime, bytes) => `data:${mime};base64,${bytes.toString('base64')}`;
 test('embedded portraits reject declared oversized dimensions before JSON can reach image rendering', () => {
   for (const [mime, make] of [['image/png',png],['image/jpeg',jpeg],['image/webp',webp]]) {
@@ -80,4 +87,23 @@ test('portrait upload checks decoded dimensions and closes oversized or stale bi
   const bitmap = {width:240,height:240,close(){closes++;}};
   assert.equal(await decodePortrait(file,{decode:async()=>bitmap}),bitmap);
   assert.equal(closes,2,'the successful caller owns and later closes its bitmap');
+});
+for (const [format,make] of [['GIF',gif],['BMP',bmp]]) {
+  test(`a ${format} header cannot reach saved portrait rendering by claiming to be a PNG`, () => {
+    for (const [width,height] of [[10000,5000],[1,1]]) {
+      const doc = createDocument(); doc.photo = asPhoto('image/png',make(width,height));
+      const raw = JSON.stringify(doc), before = structuredClone(doc);
+      assert.throws(() => validateDocument(doc), /photo|PNG|JPEG|WebP/i);
+      assert.throws(() => initialWorkspace(null,raw), /photo|PNG|JPEG|WebP/i);
+      assert.deepEqual(doc,before);
+    }
+  });
+}
+test('mislabeled GIF and BMP uploads are refused without any native decoder call', async () => {
+  let decodes = 0;
+  const decode = async () => { decodes++; throw new Error('Decoder must not run'); };
+  for (const make of [gif,bmp]) {
+    await assert.rejects(decodePortrait(new Blob([make(10000,5000)],{type:'image/png'}),{decode}),/photo|PNG|JPEG|WebP/i);
+  }
+  assert.equal(decodes,0);
 });
