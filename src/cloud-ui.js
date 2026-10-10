@@ -51,7 +51,7 @@ export function createCloudUI({ element, field, sectionTitle, notify, getDocumen
     return element('button', { id, type: 'button', class: `button ${primary ? 'button-primary' : 'button-quiet'}`, text, disabled: busy || disabled, onClick: () => action(callback) });
   }
   function render(container) {
-    container.append(sectionTitle('A shared second pair of eyes'), element('p', { class: 'panel-intro', text: 'An optional self-hosted workspace service shares the full editable active CV, including hidden sections, its cover letter and the pasted job description. Your master CV, other CVs, snapshots and job tracker stay local. Changes are sent only when you click a sharing action.' }));
+    container.append(sectionTitle('A shared second pair of eyes'), element('p', { class: 'panel-intro', text: 'An optional self-hosted workspace service shares the full editable active CV, including hidden sections and any retained imported source text, its cover letter and the pasted job description. Your master CV, other CVs, snapshots and job tracker stay local. Changes are sent only when you click a sharing action.' }));
     container.append(element('p', { id: 'cloud-status', class: 'design-note', text: status.enabled ? 'Self-hosted sharing is available. Read, edit and owner links have distinct permissions. Anyone holding a link can use its permission; keep owner links private.' : 'Sharing is unavailable on the static demo or an unconfigured server. Configure the optional self-hosted workspace service to enable private links, comments and revision history.' }));
     if (!status.enabled) return;
     if (!session || session.localId !== getLocalId()) container.append(button('cloud-create', 'Share this CV', async () => {

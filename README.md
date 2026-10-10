@@ -1,6 +1,6 @@
 # ClearCV
 
-![Original application screenshot](docs/screenshots/desktop.png)
+![Reviewed document upgrade in ClearCV](docs/screenshots/document-upgrade-0.4.png)
 
 [Try the live demo](https://tylerbuilds.github.io/clearcv/) · [Linux/macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
 
@@ -19,7 +19,7 @@ npm ci
 npm start
 ```
 
-Open **http://localhost:4201** in a recent browser. The development server binds to localhost by default. The pinned PDF.js dependency supplies local PDF text extraction; build/start prepare its browser assets without a CDN.
+Open **http://localhost:4201** in a recent browser. The development server binds to localhost by default. Pinned PDF extraction, English OCR and British English spelling assets are prepared locally by test/build/start, without a CDN. See [third-party assets](docs/third-party-assets.md) for licences and provenance.
 
 ```sh
 npm test            # Model and import validation checks
@@ -40,7 +40,8 @@ This is a browser application for Linux and macOS, not a native desktop package.
 - Independent read-only submitted CV and letter copies, reviewed/downloaded as PDF, TXT, DOCX or document JSON. Later edits, renaming and deletion of the linked CV cannot change those copies.
 - Multiple follow-up tasks with due dates and completion, editable custom text fields, CSV export and transparent current-stage/date-based analytics.
 - Automatic browser-local saves; current-CV JSON export and whole-workspace backups. Importing adds or merges documents, preserving the existing library.
-- TXT and bounded PDF/DOCX text extraction into an editable review area before creating a new CV. Formatting, photos and semantic field mapping are not imported; scanned-page OCR is unavailable. Encrypted PDFs can be unlocked locally with a password that is not stored.
+- Reviewed document-to-CV upgrades from PDF, DOCX, supported Word97–2003 DOC, ODT, RTF, TXT, Markdown and inert HTML. Local English OCR reads scans and common images. Editable profile, career, education and skill proposals retain the complete extracted source; apply as a new CV or an explicitly merged independent copy. Originals and history are kept. See [formats and limits](docs/document-upgrades.md).
+- Real local British English Hunspell spelling checks for visible headings/prose or cover letters, review/apply/accept-word controls, whitespace-only cleanup and guarded Undo. Native browser spelling hints are also enabled.
 - Browser PDF printing, plain text and editable DOCX exports.
 - A transparent writing checklist and job-description keyword comparison. Reviewed ordering suggestions create a tailored copy using existing facts. **These rules are not AI, an ATS score or a hiring prediction.**
 - Optional real AI headline, objective, summary, bullet, cover-letter and selected-field translation candidates through a configured local server. Source/context are visible before Generate; candidates must be reviewed before Apply and support field-level Undo. Summary tailoring creates an independent CV copy. AI is unavailable on the static demo. Interview questions and practice-answer feedback produce reviewed in-tab notes with TXT export.
@@ -56,6 +57,8 @@ The library, job descriptions, photos, letters and applications stay in this bro
 Optional AI sends only the selected source text and context when you click Generate; the operator supplies the provider configuration outside the browser and repository. A configured provider has its own data handling. The static demo makes no model calls.
 
 Anyone with access to the same browser profile may be able to read your library. Private browsing, restricted storage and quota limits can prevent saves; the app reports this and keeps edits open for export.
+
+To improve an existing document, open **Improve an existing CV** in Content or Library. Upload, drop or paste; review the mapped fields and original extracted text; preview the paper and exports; then create the reviewed CV or an upgraded copy. Review offers spelling and whitespace cleanup, and Design controls the template, typography, spacing and accent. [The upgrade guide](docs/document-upgrades.md) describes exact format support, OCR, preservation and limits.
 
 A workspace JSON backup includes **every CV, snapshot, submitted copy, letter, image, job description, master CV, application, task and custom field**. Keep it somewhere you trust. Document JSON is limited to 1 MB and workspace JSON to 4 MB. Unknown fields, invalid layouts, duplicate IDs and malformed values are rejected before changing the library. Workspace imports merge with new IDs and preserve the current master.
 
@@ -77,13 +80,15 @@ CSV exports either the shown records or all records, including archived ones. It
 
 [Free and premium parity ledger](docs/research/parity-ledger.md), [all-tier source comparison](docs/research/feature-comparison.md) and [feature map](docs/research/feature-map.md) distinguish source observations, implementation decisions and gaps. [REA provenance](docs/research/rea-provenance.md) records the pinned reverse-engineering tool used for public discovery. Sanitised proof metadata and [verification](docs/verification.md) document the actual checks.
 
-Remaining limits include LinkedIn extraction, semantic ATS validation, full-document AI translation, the full target template/section catalogue, automatic multi-user merging and full-workspace cloud synchronisation, job-provider feeds and alerts, a browser extension, company research and voice interview services, team branding and native installers. Custom pipeline stages, board dragging/sorting, tracker spreadsheet import, structured interview/offer models and automatic reminders are not shipped. DOCX export contains editable text and layout settings, but does not embed the portrait. Optional sharing sends only the active CV; application records and submitted copies are not cloud-shared.
+The all-tier source comparison retains the dated 0.3 audit. Current document intake, reviewed upgrades and spelling are described in the [0.4 workflow guide](docs/document-upgrades.md); that guide does not relabel the full inventory as parity.
+
+Remaining limits include LinkedIn extraction, semantic ATS validation, full-document AI translation, the full target template/section catalogue, automatic multi-user merging and full-workspace cloud synchronisation, job-provider feeds and alerts, a browser extension, company research and voice interview services, team branding and native installers. Custom pipeline stages, board dragging/sorting, tracker spreadsheet import, structured interview/offer models and automatic reminders are not shipped. DOCX export contains editable text and layout settings, but does not embed the portrait. Optional sharing sends the full active editable CV, including hidden retained import-source text; application records and submitted copies are not cloud-shared.
 
 See the ledger for each official source, known tier and delivered/remaining/unknown boundary. Optional AI depends on a configured provider; rules remain available without it. No generated claim is automatically accepted as true.
 
 ## Contribute
 
-The editor uses standard browser modules. Its pinned PDF.js dependency is served locally for extraction; no other document content is uploaded by import. Keep pure document and workspace operations in `src/model.js` and `src/workspace.js` and user interface code in `src/app.js`. Render user content as text, validate imported data before storing it, and retain local-first defaults and the explicit, reviewed optional AI boundary. Use British English and original layouts, copy and assets.
+The editor uses standard browser modules. Its pinned PDF.js, Tesseract.js and British English spellchecking assets are served locally; imported document content is not uploaded by these workflows. Keep pure document and workspace operations in `src/model.js` and `src/workspace.js` and user interface code in `src/app.js`. Render user content as text, validate imported data before storing it, and retain local-first defaults and the explicit, reviewed optional AI boundary. Use British English and original layouts, copy and assets.
 
 Run `npm test` and `npm run build` before submitting a pull request. See [AGENTS.md](AGENTS.md) for repository-specific constraints.
 

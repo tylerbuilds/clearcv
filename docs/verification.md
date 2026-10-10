@@ -1,5 +1,17 @@
 # Release verification
 
+## Current 0.4 workflows
+
+The 0.4 candidate passes **163 Node tests** on Fedora with Node.js 24.14.0. A separate **31-check actual Chromium pass** covers PDF, DOCX, supported Word97–2003 DOC, ODT, RTF, TXT, Markdown and inert HTML intake, local image and mixed-page OCR, password-protected PDF opening, source comparison, editable field review, new and explicitly merged independent CVs, spelling review and guarded Undo. It checks original CVs, job records and submitted copies remain unchanged, and downloads actual PDF, TXT and DOCX from the reviewed candidate before applying it.
+
+Imports retain the complete extracted source text. Documentary notices and competing identity candidates require review; unsupported or uncertain structure is retained for correction. The [upgrade guide](document-upgrades.md) records exact format and size limits. These checks qualify the supported formats, not arbitrary document parsing or proprietary algorithm equivalence.
+
+An eight-check clean synthetic showcase checks desktop, tablet, 390px and 320px layouts, the reviewed-candidate modal's local scrolling and 44px action targets, and source/mapping/writing screens. The visual review uses the original warm paper editor and three original CV layouts. Separate [desktop](screenshots/document-upgrade-0.4.png) and [mobile](screenshots/document-upgrade-mobile-0.4.png) clean captures use synthetic example content and no success overlay. Browser file-drop events exercise the real application handlers; physical operating-system drag gestures and native macOS clipboard behaviour are not established by Fedora checks.
+
+The [Linux/macOS workflow](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml) runs the exact current commit's tests, production build and actual Chromium smoke on Ubuntu and macOS before publishing Pages. Its commit status is the authority for remote qualification. The [all-tier comparison](research/feature-comparison.md) remains a dated 0.3 inventory; it does not count the new workflows as complete commercial parity.
+
+## Preserved 0.3 qualification
+
 The 0.3.0 source was checked on Fedora with Node.js 24.14.0 and system Chrome. **85 Node tests**, **24 existing browser workflow checks** and **12 application-tracker browser checks** passed against recorded source hashes, with no uncaught page or console errors or unrelated failed requests.
 
 The tracker checks capture immutable submitted CV/letter copies, then edit and delete their source documents without changing those copies. They exercise read-only review, PDF/TXT/Word/JSON downloads, independent editable restoration, tasks, due/completion filters, custom text fields, archive/restore, literal search, metadata CSV exports and derived weekly counts. Chromium prints the captured A4 letter after the current document changes to Letter, and an independent PDF inspection checks actual geometry and captured content. The operating-system print dialog is not automated.

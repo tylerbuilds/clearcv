@@ -25,3 +25,5 @@ Entry controls use explicit move-up/move-down actions. Content is rendered as pl
 - Exact token overlap cannot assess suitability, factual accuracy, semantic similarity or how a particular applicant-tracking system will parse a CV.
 - Linux and macOS support refers to a modern browser served by Node. Native desktop packaging is not shipped.
 - Automated model checks validate state transitions and import rejection. Browser/PDF and OS qualification require their own receipts; a local unit-test pass does not establish those results.
+
+The document-upgrade workflow now maps reviewed local PDF/Word/ODT/RTF/text/Markdown/HTML and OCR output into existing editable CV fields. It keeps the complete extracted source, supports independent new/merged copies, and provides local British English spelling and whitespace review. Exact format support and remaining layout/parser limits are documented in the [upgrade guide](../document-upgrades.md). This is independently implemented behaviour, not proof of target algorithm parity.

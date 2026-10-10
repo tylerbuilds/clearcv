@@ -1,0 +1,13 @@
+{
+  "upstream": "https://github.com/naptha/tessdata",
+  "commit": "806cd9adc8c6e8abc11c782db1818c990576bebc",
+  "modelPath": "4.0.0/eng.traineddata.gz",
+  "modelLicence": "Apache-2.0",
+  "wrapperPackage": "@tesseract.js-data/eng",
+  "wrapperVersion": "1.0.0",
+  "wrapperMetadataLicence": "MIT",
+  "upstreamModelGitBlob": "e83c1267675ff3a6641b110002363782db7a1885",
+  "modelSHA256": "ed350f3752f81ee8f38769edc14d92d997dababe23b565c59879372cc46a2468",
+  "licenseGitBlob": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+  "licenseSHA256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+}

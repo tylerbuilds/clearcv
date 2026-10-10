@@ -2,7 +2,9 @@ import { sampleDocument, createDocument, validateDocument, parseDocument, serial
 
 import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES } from './workspace.js';
 import { reviewCV, tailoringSuggestions, coverLetterDraft } from './review.js';
-import { exportDocx, extractDocx, normalisePlainText } from './formats.js';
+import { exportDocx } from './formats.js';
+import { createDocumentImportUI } from './import-ui.js';
+import { createWritingUI } from './writing-ui.js';
 import { getAiStatus, generateWriting } from './ai-client.js';
 import { createCloudUI } from './cloud-ui.js';
 import { safeContactHref } from './links.js';
@@ -11,10 +13,8 @@ import { applicationSubmission, copySubmissionToLibrary } from './workspace.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
 let workspace;
-let importText = '';
-let importLabel = '';
-let pendingPdf = null;
-let importGeneration = 0;
+let documentImportUI = null;
+let writingUI = null;
 let cloudUI = null;
 let jobsUI = null;
 let aiStatus = { enabled: false };
@@ -137,13 +137,14 @@ function field(label, value, id, options = {}) {
   const input = element(options.multiline ? 'textarea' : 'input', {
     id, value, ...(options.multiline ? { rows: options.rows || '4' } : { type: options.type || 'text' }),
     maxlength: options.multiline ? '10000' : '300', placeholder: options.placeholder || '',
-    autocomplete: options.autocomplete || 'off', ...options.data
+    autocomplete: options.autocomplete || 'off', spellcheck: options.type && ['email', 'tel', 'url', 'password', 'date'].includes(options.type) ? 'false' : 'true', lang: 'en-GB', ...options.data
   });
   const wrapper = element('div', { class: 'field' }, [element('label', { class: 'field-label', for: id, text: label }), input]);
   if (options.hint) wrapper.append(element('span', { class: 'field-hint', text: options.hint }));
   return wrapper;
 }
 function renderContent() {
+  panel.append(element('button', { id: 'improve-existing-cv', type: 'button', class: 'button button-quiet improve-existing', text: 'Improve an existing CV', onClick: () => switchTab('library') }));
   panel.append(sectionTitle('The essentials', '01 / YOUR INTRODUCTION'));
   for (const [key, label, placeholder, type] of [
     ['name', 'Full name', 'Your name'], ['headline', 'Professional title', 'What do you do?'],
@@ -380,7 +381,6 @@ panel.addEventListener('input', event => {
     else if (input.id === 'document-name') {
       if (input.value.trim()) changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, name: input.value } : entry) }, false);
     }
-    else if (input.id === 'import-review') { importGeneration++; importText = input.value; }
   });
   if (!accepted) {
     if (input.dataset.profile) input.value = state.profile[input.dataset.profile];
@@ -403,58 +403,15 @@ document.querySelector('#export-json').addEventListener('click', () => safeActio
   announce('JSON backup downloaded. It contains your CV and job description; keep it somewhere you trust.');
 }));
 document.querySelector('#import-json').addEventListener('click', () => document.querySelector('#import-file').click());
-document.querySelector('#import-file').addEventListener('change', async event => {
-  const file = event.target.files?.[0];
-  if (!file) return;
-  const request = ++importGeneration;
-  pendingPdf = null;
-  // Clear this selection now so a later result cannot clear a newer selection.
-  event.target.value = '';
-  try {
-    const extension = file.name.toLowerCase().split('.').at(-1);
-    if (extension === 'docx' || extension === 'txt' || extension === 'pdf') {
-      if (file.size > 2_000_000) throw new Error('PDF, text and DOCX imports must be smaller than 2 MB.');
-      let extracted;
-      if (extension === 'pdf') {
-        const bytes = new Uint8Array(await file.arrayBuffer());
-        if (request !== importGeneration) return;
-        try {
-          const { extractPdf } = await import('./pdf-import.js');
-          if (request !== importGeneration) return;
-          extracted = await extractPdf(bytes);
-          if (request !== importGeneration) return;
-        }
-        catch (error) {
-          if (request !== importGeneration) return;
-          if (/password/i.test(error.message)) { pendingPdf = { bytes, name: file.name }; switchTab('library'); announce('This PDF is encrypted. Enter its password in Library to extract text locally.'); return; }
-          throw error;
-        }
-      } else if (extension === 'docx') {
-        const bytes = new Uint8Array(await file.arrayBuffer());
-        if (request !== importGeneration) return;
-        extracted = await extractDocx(bytes);
-        if (request !== importGeneration) return;
-      } else {
-        const text = await file.text();
-        if (request !== importGeneration) return;
-        extracted = normalisePlainText(text);
-      }
-      importText = extracted;
-      importLabel = file.name;
-      switchTab('library');
-      announce('Text extracted for review. Check it, then create a CV from the reviewed text; your library has not been changed.');
-    } else {
-      if (file.size > 4_000_000) throw new Error('Choose a JSON backup smaller than 4 MB.');
-      const text = await file.text();
-      if (request !== importGeneration) return;
-      const imported = parseImport(text);
-      const saved = imported.kind === 'workspace'
-        ? changeWorkspace(mergeWorkspace(workspace, imported.value, () => crypto.randomUUID()))
-        : changeWorkspace(addDocument(workspace, imported.value, crypto.randomUUID(), file.name.replace(/\.json$/i, '').slice(0, 100) || 'Imported CV'));
-      announce(saved ? 'Imported into your library. Existing CVs and master profile have been kept.' : 'Imported, but this browser could not save it. Export a workspace backup before closing.', !saved);
-    }
-  } catch (error) { if (request === importGeneration) announce(`${error.message} Your current library has been kept.`, true); }
+function getDocumentImportUI() {
+  if (!documentImportUI) documentImportUI = createDocumentImportUI({ element, field, selectField, sectionTitle, getWorkspace: () => workspace, changeWorkspace, safeAction, announce, switchTab, download, renderPreview, openPreview: showImportPreview, chooseFile: () => document.querySelector('#import-file').click(), isActive: () => activeTab === 'library' });
+  return documentImportUI;
+}
+document.querySelector('#import-file').addEventListener('change', event => {
+  const file = event.target.files?.[0]; event.target.value = '';
+  if (file) void getDocumentImportUI().openFile(file);
 });
+
 function requestReset(kind) {
   pendingReset = kind;
   document.querySelector('#reset-title').textContent = kind === 'blank' ? 'A fresh start?' : 'Open the example?';
@@ -577,35 +534,7 @@ function renderLibrary() {
     element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Remove snapshot ${version.name}`, onClick: () => safeAction(() => changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, versions: entry.versions.filter(snapshot => snapshot.id !== version.id) } : entry) })) })
   ])); panel.append(snapshots);
   panel.append(element('section', { class: 'form-section' }, [sectionTitle('Keep your whole workspace'), element('p', { class: 'panel-intro', text: 'A workspace backup includes every CV, snapshot, cover letter, master profile and tracked application. Importing merges it into the current library without overwriting existing CVs.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: () => safeAction(() => { download(serialiseWorkspace(workspace), 'application/json', 'json', 'clearcv-workspace'); announce('Workspace backup downloaded. Keep this file private.'); }) })]));
-  if (pendingPdf) {
-    const encrypted = element('section', { class: 'form-section' }, [sectionTitle('Unlock a PDF locally', pendingPdf.name), field('PDF password', '', 'pdf-password', { type: 'password' }), element('button', { id: 'unlock-pdf', type: 'button', class: 'button button-primary', text: 'Extract PDF text', onClick: async () => {
-      const pdf = pendingPdf;
-      if (!pdf) return;
-      const request = ++importGeneration;
-      const password = document.querySelector('#pdf-password').value;
-      try {
-        const { extractPdf } = await import('./pdf-import.js');
-        if (request !== importGeneration || pendingPdf !== pdf) return;
-        const extracted = await extractPdf(pdf.bytes, { password });
-        if (request !== importGeneration || pendingPdf !== pdf) return;
-        importText = extracted; importLabel = pdf.name; pendingPdf = null; renderPanel(); announce('PDF text is ready for review. The password has not been stored.');
-      }
-      catch (error) { if (request === importGeneration && pendingPdf === pdf) announce(error.message, true); }
-    } })]);
-    panel.append(encrypted);
-  }
-  if (importText) {
-    const review = element('section', { class: 'form-section' }, [sectionTitle('Review extracted text', importLabel), element('p', { class: 'panel-intro', text: 'Limited text extraction from PDF, TXT or DOCX. Scanned PDFs need OCR, which is not supplied. Formatting, tables, images and semantic field mapping are not imported. Edit this text, then create a new CV with it in a custom “Imported content” section.' }), field('Extracted text', importText, 'import-review', { multiline: true, rows: '14' }), element('button', { id: 'apply-text-import', type: 'button', class: 'button button-primary', text: 'Create CV from reviewed text', onClick: () => safeAction(() => {
-      const text = normalisePlainText(importText);
-      if (text.length > 30000) throw new Error('Shorten the reviewed text to 30,000 characters before creating a CV.');
-      let doc = addCustomSection(createDocument(), crypto.randomUUID(), 'Imported content');
-      doc.customSections[0].content = text;
-      const next = addDocument(workspace, doc, crypto.randomUUID(), importLabel.replace(/\.(pdf|docx|txt)$/i, '').slice(0, 100) || 'Imported text');
-      changeWorkspace(next); importGeneration++; importText = ''; importLabel = ''; renderPanel(); announce('A new CV holds your reviewed text. Move facts into the structured fields as needed.');
-    }) })]);
-    review.querySelector('textarea').maxLength = 50000;
-    panel.append(review);
-  }
+  getDocumentImportUI().render(panel);
 }
 function renderLetter() {
   panel.append(sectionTitle('A letter with intention'), element('p', { class: 'panel-intro', text: 'A cover letter belongs to this CV. Write a focused introduction, explain your relevant experience and make a clear connection to the role.' }));
@@ -630,6 +559,15 @@ function renderLetterPreview(state, preview) {
   if (letter.recipient || letter.company) preview.append(element('p', { class: 'letter-recipient', text: [letter.recipient, letter.company].filter(Boolean).join('\n') }));
   if (letter.subject || letter.role) preview.append(element('h2', { class: 'letter-subject', text: letter.subject || `Application: ${letter.role}` }));
   preview.append(element('p', { text: letter.salutation }), element('div', { class: 'letter-body', text: letter.body }), element('p', { class: 'letter-closing', text: `${letter.closing}\n${p.name}` }));
+}
+function showImportPreview(candidate) {
+  const doc = validateDocument(candidate);
+  const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog' });
+  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { text: 'Your reviewed CV' }), element('p', { class: 'field-hint', text: 'Preview of the editable import draft. The library has not changed. These exports use this reviewed draft; JSON also retains the hidden extracted source.' })]);
+  controls.append(element('div', { class: 'action-row' }, [element('button', { id: 'import-preview-pdf', type: 'button', class: 'button button-primary', text: 'Save reviewed PDF', onClick: () => { setPrintLayout(doc); window.print(); } }), element('button', { id: 'import-preview-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(doc), 'text/plain', 'txt', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(doc), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-close', type: 'button', class: 'button button-quiet', text: 'Close preview', onClick: () => dialog.close() })]));
+  const paper = element('div', { class: 'paper' }); dialog.append(controls, paper); document.body.append(dialog);
+  renderPreview(doc, 'cv', paper); setPrintLayout(doc);
+  dialog.addEventListener('close', () => { dialog.remove(); renderPreview(); }); dialog.showModal(); document.querySelector('#import-preview-close').focus();
 }
 function showSubmittedCopy(applicationId, submissionId) {
   const copy = applicationSubmission(workspace, applicationId, submissionId);
@@ -666,6 +604,8 @@ function renderReview() {
   const rules = element('details', { class: 'review-rules' }, [element('summary', { text: 'See every rule used' })]);
   for (const rule of review.rules) rules.append(element('p', { text: `${rule.id}: ${rule.description}` }));
   panel.append(rules);
+  if (!writingUI) writingUI = createWritingUI({ element, selectField, sectionTitle, getWorkspace: () => workspace, change, safeAction, announce, isActive: () => activeTab === 'review' });
+  writingUI.render(panel);
 }
 function renderTailoring(container) {
   const suggestions = tailoringSuggestions(state);

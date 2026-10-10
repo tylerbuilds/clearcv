@@ -6,4 +6,6 @@ test-results/
 .DS_Store
 *.log
 public/vendor/pdfjs/
+public/vendor/ocr/
+public/vendor/spellcheck/
 .workspace-data/

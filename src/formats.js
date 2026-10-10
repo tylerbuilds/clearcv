@@ -111,42 +111,168 @@ function decodeEntities(text) {
     throw new Error('The Word document contains an unsupported XML entity.');
   });
 }
-export function extractWordXml(xml) {
-  if (typeof xml !== 'string' || encoder.encode(xml).length > DOCX_LIMIT || /<!DOCTYPE|<!ENTITY/i.test(xml)) throw new Error('Unsupported or oversized Word XML.');
-  // The scanner checks balanced XML without a DOM dependency. Only Word text,
-  // tabs and breaks are emitted; relationships, fields and embedded objects are ignored.
-  const tokens=/<!--[\s\S]*?-->|<\?[\s\S]*?\?>|<!\[CDATA\[[\s\S]*?\]\]>|<\/?[A-Za-z_][\w:.-]*(?:\s+[A-Za-z_][\w:.-]*\s*=\s*(?:"[^"]*"|'[^']*'))*\s*\/?>|[^<]+/g;
-  const stack=[], paragraphs=[];
-  let cursor=0, prefix='', root=false, closed=false, current='', inText=false;
-  for (const match of xml.matchAll(tokens)) {
-    if (match.index !== cursor) throw new Error('The Word document contains malformed XML.');
-    const token=match[0]; cursor += token.length;
-    if (token.startsWith('<!--') || token.startsWith('<?')) continue;
-    if (token.startsWith('<![CDATA[')) { if(inText) current += token.slice(9,-3); continue; }
-    if (!token.startsWith('<')) { if(inText) current += decodeEntities(token); else if(!stack.length && token.trim()) throw new Error('Malformed Word XML.'); continue; }
-    const closing=token.startsWith('</'), selfClosing=token.endsWith('/>'), tag=token.match(/^<\/?([\w:.-]+)/)[1];
-    if (closing) {
-      if (!/^<\/[\w:.-]+\s*>$/.test(token) || stack.pop() !== tag) throw new Error('The Word document contains unbalanced XML.');
-      if (tag===`${prefix}:t`) inText=false;
-      if (tag===`${prefix}:p`) { paragraphs.push(current); current=''; }
-      if (!stack.length) closed=true;
-      continue;
-    }
-    if (!stack.length) {
-      if (root || closed || !tag.endsWith(':document')) throw new Error('Choose a supported Word document.');
-      prefix=tag.split(':')[0];
-      if (!/^[A-Za-z_][A-Za-z0-9_-]*$/.test(prefix)) throw new Error('Unsupported Word namespace prefix.');
-      const ns=token.match(new RegExp(`\\bxmlns:${prefix}\\s*=\\s*["']([^"']*)["']`));
-      if (!ns || ns[1] !== WORD_NS) throw new Error('Choose a supported Word document.');
-      root=true;
-    }
-    if (tag===`${prefix}:t`) { if(inText) throw new Error('Malformed Word text.'); inText=!selfClosing; }
-    if ([`${prefix}:tab`,`${prefix}:br`,`${prefix}:cr`].includes(tag)) current += tag.endsWith(':tab') ? '\t' : '\n';
-    if (!selfClosing) stack.push(tag);
-    if (stack.length>128 || paragraphs.length>10000 || current.length>50000) throw new Error('The Word document is too complex or contains too much text.');
+const WORD_URIS=new Set([WORD_NS,'http://purl.oclc.org/ooxml/wordprocessingml/main']);
+const DRAWING_URIS=new Set(['http://schemas.openxmlformats.org/drawingml/2006/main','http://purl.oclc.org/ooxml/drawingml/main']);
+const RELATIONSHIP_URIS=new Set(['http://schemas.openxmlformats.org/officeDocument/2006/relationships','http://purl.oclc.org/ooxml/officeDocument/relationships']);
+const PACKAGE_RELS='http://schemas.openxmlformats.org/package/2006/relationships';
+const MC_NS='http://schemas.openxmlformats.org/markup-compatibility/2006';
+
+export function safeImportedLink(value) {
+  if(typeof value!=='string') return null;
+  const text=value.trim();
+  if(!text || /[\u0000-\u0020\u007f\\]/u.test(text)) return null;
+  if(/^mailto:/i.test(text)) {
+    let email;
+    try { email=decodeURIComponent(text.slice(7).split('?')[0]); } catch { return null; }
+    return /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,63}$/.test(email) && !email.includes('..') ? `mailto:${email}` : null;
   }
-  if (cursor!==xml.length || stack.length || !root) throw new Error('The Word document contains incomplete XML.');
-  return normalisePlainText(paragraphs.join('\n'));
+  if(!/^https?:\/\//i.test(text)) return null;
+  try {
+    const url=new URL(text);
+    if(!url.hostname || url.username || url.password || url.hostname.includes('..')) return null;
+    return url.href;
+  } catch { return null; }
+}
+function linkSuffix(label,target) {
+  if(!target) return '';
+  const display=target.startsWith('mailto:') ? target.slice(7) : target;
+  const needle=display.replace(/^https?:\/\//i,'').replace(/\/$/,'').toLowerCase();
+  return needle && label.toLowerCase().includes(needle) ? '' : ` (${display})`;
+}
+function scanWordXml(xml,visitor) {
+  if(typeof xml!=='string' || encoder.encode(xml).length>DOCX_LIMIT || /<!DOCTYPE|<!ENTITY/i.test(xml) || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/u.test(xml)) throw new Error('Unsupported or oversized Word XML.');
+  const tokens=/<!--[\s\S]*?-->|<\?[\s\S]*?\?>|<!\[CDATA\[[\s\S]*?\]\]>|<\/?[A-Za-z_][\w:.-]*(?:\s+[A-Za-z_][\w:.-]*\s*=\s*(?:"[^"<]*"|'[^'<]*'))*\s*\/?>|[^<]+/g;
+  const stack=[];
+  let cursor=0,root=false,closed=false,count=0;
+  for(const match of xml.matchAll(tokens)) {
+    if(match.index!==cursor || ++count>100000) throw new Error('The Word document contains malformed or overly complex XML.');
+    const token=match[0];cursor+=token.length;
+    if(token.startsWith('<!--')) { if(token.slice(4,-3).includes('--')) throw new Error('The Word document contains a malformed XML comment.'); continue; }
+    if(token.startsWith('<?')) continue;
+    if(token.startsWith('<![CDATA[')) { if(!stack.length) throw new Error('Malformed Word XML.'); visitor.text?.(token.slice(9,-3),stack); continue; }
+    if(!token.startsWith('<')) {
+      if(token.includes(']]>')) throw new Error('Malformed Word XML.');
+      const text=decodeEntities(token);
+      if(!stack.length && text.trim()) throw new Error('Malformed Word XML.');
+      visitor.text?.(text,stack);continue;
+    }
+    const closing=token.startsWith('</'),selfClosing=token.endsWith('/>'),name=token.match(/^<\/?([\w:.-]+)/)[1];
+    if(closing) {
+      if(!/^<\/[\w:.-]+\s*>$/.test(token) || stack.at(-1)?.name!==name) throw new Error('The Word document contains unbalanced XML.');
+      visitor.close?.(stack.at(-1),stack);stack.pop();if(!stack.length) closed=true;continue;
+    }
+    if(!stack.length) { if(root || closed) throw new Error('The Word document contains multiple XML roots.');root=true; }
+    const attributes=new Map(),namespaces=Object.assign(Object.create(null),stack.at(-1)?.namespaces || {xml:'http://www.w3.org/XML/1998/namespace'});
+    for(const match of token.matchAll(/\s+([A-Za-z_][\w:.-]*)\s*=\s*(?:"([^"<]*)"|'([^'<]*)')/g)) {
+      if(attributes.has(match[1])) throw new Error('The Word document contains duplicate XML attributes.');
+      const value=decodeEntities(match[2] ?? match[3]);attributes.set(match[1],value);
+      if(match[1]==='xmlns') namespaces['']=value;
+      else if(match[1].startsWith('xmlns:')) {
+        const prefix=match[1].slice(6);
+        if(!/^[A-Za-z_][\w.-]*$/.test(prefix) || prefix==='xmlns' || prefix==='xml' && value!=='http://www.w3.org/XML/1998/namespace') throw new Error('The Word document contains invalid XML namespaces.');
+        namespaces[prefix]=value;
+      }
+    }
+    const parts=name.split(':');
+    if(parts.length>2 || parts.some(part=>!/^[A-Za-z_][\w.-]*$/.test(part)) || parts.length===2 && !namespaces[parts[0]]) throw new Error('The Word document contains an invalid XML namespace.');
+    const node={name,local:parts.at(-1),uri:namespaces[parts.length===2 ? parts[0] : ''] || '',attributes,namespaces};
+    node.attribute=(uris,local)=>{
+      const allowed=typeof uris==='string' ? new Set([uris]) : uris;
+      for(const [key,value] of attributes) {
+        const parts=key.split(':');
+        if(parts.length===2 && allowed.has(namespaces[parts[0]]) && parts[1]===local) return value;
+      }
+      return undefined;
+    };
+    const expandedNames=new Set();
+    for(const key of attributes.keys()) {
+      if(key==='xmlns' || key.startsWith('xmlns:')) continue;
+      const parts=key.split(':');
+      if(parts.length>2 || parts.some(part=>!/^[A-Za-z_][\w.-]*$/.test(part)) || parts.length===2 && !namespaces[parts[0]]) throw new Error('The Word document contains an invalid XML attribute.');
+      const expanded=`${parts.length===2 ? namespaces[parts[0]] : ''}\0${parts.at(-1)}`;
+      if(expandedNames.has(expanded)) throw new Error('The Word document contains duplicate XML attributes.');expandedNames.add(expanded);
+    }
+    stack.push(node);if(stack.length>128) throw new Error('The Word document is too complex or contains too much text.');
+    visitor.open?.(node,stack);
+    if(selfClosing) { visitor.close?.(node,stack);stack.pop();if(!stack.length) closed=true; }
+  }
+  if(cursor!==xml.length || stack.length || !root || !closed) throw new Error('The Word document contains incomplete XML.');
+}
+export function extractWordXml(xml,{relationships=new Map(),allowEmpty=false,roots=['document','hdr','ftr','footnotes','endnotes'],references,noteIds}={}) {
+  let text='',paragraphs=0;
+  const fields=[],foundNotes=new Set();
+  const append=value=>{ text+=value;if(text.length>50002) throw new Error('The Word document is too complex or contains too much text.'); };
+  const line=()=>{ if(text && !text.endsWith('\n') && !text.endsWith('\t')) append('\n'); };
+  const visible=stack=>!stack.some(node=>node.skip || node.run && node.hidden);
+  const fieldTarget=instruction=>safeImportedLink(instruction.match(/^\s*HYPERLINK\s+(?:"([^"]*)"|(\S+))/i)?.slice(1).find(Boolean));
+  scanWordXml(xml,{
+    open(node,stack) {
+      const parent=stack.at(-2),word=WORD_URIS.has(node.uri),drawing=DRAWING_URIS.has(node.uri);
+      if(stack.length===1 && (!word || !roots.includes(node.local))) throw new Error('Choose a supported Word document text part.');
+      node.skip=Boolean(parent?.skip || word && ['del','moveFrom'].includes(node.local));
+      if(word && ['footnote','endnote'].includes(node.local) && ['separator','continuationSeparator','continuationNotice'].includes(node.attribute(WORD_URIS,'type'))) node.skip=true;
+      if(word && ['footnote','endnote'].includes(node.local) && noteIds && !noteIds.has(node.attribute(WORD_URIS,'id'))) node.skip=true;
+      if(word && ['footnote','endnote'].includes(node.local) && noteIds && !node.skip) foundNotes.add(node.attribute(WORD_URIS,'id'));
+      if(node.uri===MC_NS && ['Choice','Fallback'].includes(node.local)) {
+        const alternative=parent?.uri===MC_NS && parent.local==='AlternateContent' ? parent : null;
+        if(alternative) {
+          if(node.local==='Choice') { node.skip||=Boolean(alternative.choiceSeen);alternative.choiceSeen=true;node.alternative=alternative;node.start=text.length; }
+          else node.skip||=Boolean(alternative.choiceText);
+        }
+      }
+      if(word && node.local==='r') node.run=true;
+      if(word && ['vanish','webHidden'].includes(node.local)) {
+        const run=stack.findLast(item=>item.run);
+        if(run) run.hidden=!['0','false','off'].includes(node.attribute(WORD_URIS,'val') || '1');
+      }
+      if(references && word && visible(stack)) {
+        if(['headerReference','footerReference'].includes(node.local) && stack.some(item=>WORD_URIS.has(item.uri) && item.local==='sectPr')) {
+          const kind=node.local==='headerReference' ? 'header' : 'footer',id=node.attribute(RELATIONSHIP_URIS,'id');
+          if(!id) throw new Error('A Word header or footer reference has no relationship.');
+          references[kind].push(id);
+        }
+        if(['footnoteReference','endnoteReference'].includes(node.local)) {
+          const id=node.attribute(WORD_URIS,'id');
+          if(!/^-?\d+$/.test(id || '')) throw new Error('A Word footnote or endnote reference has an invalid identifier.');
+          references[node.local==='footnoteReference' ? 'footnotes' : 'endnotes'].add(id);
+        }
+      }
+      if((word || drawing) && node.local==='p' && visible(stack)) {
+        if(++paragraphs>10000) throw new Error('The Word document is too complex or contains too much text.');
+        line();node.paragraph=true;
+      }
+      if(word && ['hyperlink','fldSimple'].includes(node.local)) {
+        node.linkStart=text.length;
+        node.linkTarget=node.local==='hyperlink' ? safeImportedLink(relationships.get(node.attribute(RELATIONSHIP_URIS,'id'))) : fieldTarget(node.attribute(WORD_URIS,'instr') || '');
+      }
+      if(word && node.local==='fldChar' && visible(stack)) {
+        const type=node.attribute(WORD_URIS,'fldCharType');
+        if(type==='begin') { if(fields.length>=32) throw new Error('The Word document contains too many nested fields.');fields.push({instruction:'',start:text.length,stage:'instruction'}); }
+        else if(type==='separate' && fields.length) { fields.at(-1).stage='result';fields.at(-1).start=text.length; }
+        else if(type==='end' && fields.length) { const field=fields.pop();if(field.stage==='result') append(linkSuffix(text.slice(field.start),fieldTarget(field.instruction))); }
+      }
+      if(word && ['tab','br','cr'].includes(node.local) && visible(stack)) append(node.local==='tab' ? '\t' : '\n');
+    },
+    text(value,stack) {
+      const node=stack.at(-1);
+      if(!node || !visible(stack)) return;
+      if(WORD_URIS.has(node.uri) && node.local==='instrText' && fields.length && fields.at(-1).stage==='instruction') {
+        fields.at(-1).instruction+=value;if(fields.at(-1).instruction.length>4096) throw new Error('The Word document field instruction is too large.');
+      }
+      if((WORD_URIS.has(node.uri) || DRAWING_URIS.has(node.uri)) && node.local==='t') append(value);
+    },
+    close(node,stack) {
+      if(node.alternative && text.slice(node.start).trim()) node.alternative.choiceText=true;
+      if(!visible(stack)) return;
+      if(node.linkStart!==undefined) append(linkSuffix(text.slice(node.linkStart),node.linkTarget));
+      if(node.paragraph) append('\n');
+      if(WORD_URIS.has(node.uri) && node.local==='tc') { text=text.replace(/\n+$/,'');append('\t'); }
+      if(WORD_URIS.has(node.uri) && node.local==='tr') { text=text.replace(/\t+$/,'');append('\n'); }
+    },
+  });
+  if(noteIds && [...noteIds].some(id=>!foundNotes.has(id))) throw new Error('A referenced Word footnote or endnote is missing from its text part.');
+  if(allowEmpty && !text.trim()) return '';
+  return normalisePlainText(text);
 }
 async function inflate(bytes, expected) {
   if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot extract compressed Word documents. Use a current browser or import plain text.');
@@ -164,37 +290,130 @@ async function inflate(bytes, expected) {
   } catch(error) { await reader.cancel().catch(()=>{}); throw new Error(`Unable to extract Word document: ${error.message}`); }
   return concat(parts);
 }
-export async function extractDocx(input) {
-  const bytes=input instanceof Uint8Array ? input : new Uint8Array(input);
-  if (bytes.length<22 || bytes.length>DOCX_LIMIT) throw new Error('Choose a DOCX file smaller than 2 MB.');
+function wordArchive(bytes) {
   const v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
   let end=-1;
   for(let i=bytes.length-22;i>=Math.max(0,bytes.length-65557);i--) {
-    if(v.getUint32(i,true)===0x06054b50 && i+22+v.getUint16(i+20,true)===bytes.length) { end=i; break; }
+    if(v.getUint32(i,true)===0x06054b50 && i+22+v.getUint16(i+20,true)===bytes.length) { end=i;break; }
   }
   if(end<0 || v.getUint16(end+4,true)!==0 || v.getUint16(end+6,true)!==0) throw new Error('Choose a supported single-file DOCX archive.');
-  const count=v.getUint16(end+10,true), cdSize=v.getUint32(end+12,true), cdStart=v.getUint32(end+16,true);
+  const count=v.getUint16(end+10,true),cdSize=v.getUint32(end+12,true),cdStart=v.getUint32(end+16,true);
   if(!count || count>512 || v.getUint16(end+8,true)!==count || cdStart+cdSize!==end) throw new Error('The Word archive has an unsupported directory.');
-  const names=new Set(); let cursor=cdStart, documentEntry;
+  const entries=new Map(),ranges=[];
+  let cursor=cdStart,expandedTotal=0;
   for(let i=0;i<count;i++) {
     if(cursor+46>end || v.getUint32(cursor,true)!==0x02014b50) throw new Error('The Word archive directory is malformed.');
-    const flags=v.getUint16(cursor+8,true), method=v.getUint16(cursor+10,true), crc=v.getUint32(cursor+16,true);
-    const compressed=v.getUint32(cursor+20,true), expanded=v.getUint32(cursor+24,true), nameLength=v.getUint16(cursor+28,true);
-    const extra=v.getUint16(cursor+30,true), comment=v.getUint16(cursor+32,true), local=v.getUint32(cursor+42,true);
-    if(cursor+46+nameLength+extra+comment>end) throw new Error('The Word archive directory is truncated.');
+    const flags=v.getUint16(cursor+8,true),method=v.getUint16(cursor+10,true),crc=v.getUint32(cursor+16,true);
+    const compressed=v.getUint32(cursor+20,true),expanded=v.getUint32(cursor+24,true),nameLength=v.getUint16(cursor+28,true);
+    const extra=v.getUint16(cursor+30,true),comment=v.getUint16(cursor+32,true),local=v.getUint32(cursor+42,true);
+    if(cursor+46+nameLength+extra+comment>end || v.getUint16(cursor+34,true)!==0) throw new Error('The Word archive directory is truncated or split.');
     const name=decoder.decode(bytes.subarray(cursor+46,cursor+46+nameLength));
-    if(names.has(name) || name.includes('\\') || name.startsWith('/') || name.split('/').includes('..') || name.includes('\0')) throw new Error('The Word archive contains invalid or duplicate paths.');
-    names.add(name);
-    if(name==='word/document.xml') documentEntry={flags,method,crc,compressed,expanded,local};
-    cursor += 46+nameLength+extra+comment;
+    if(!name || entries.has(name) || /[\\\u0000-\u001f]/u.test(name) || name.startsWith('/') || /^[a-z]:/i.test(name) || name.split('/').some(part=>part==='..' || part==='.')) throw new Error('The Word archive contains invalid or duplicate paths.');
+    if(flags&0x41 || ![0,8].includes(method) || compressed===0xffffffff || expanded===0xffffffff || local===0xffffffff) throw new Error('Encrypted, oversized or unsupported Word documents cannot be imported.');
+    if(name==='word/document.xml' && expanded>DOCX_LIMIT) throw new Error('Encrypted, oversized or unsupported Word documents cannot be imported.');
+    expandedTotal+=expanded;if(expandedTotal>8_000_000) throw new Error('The Word document archive expands beyond the supported 8 MB.');
+    if(local+30>cdStart || v.getUint32(local,true)!==0x04034b50) throw new Error('The Word archive contains an invalid local entry.');
+    const localFlags=v.getUint16(local+6,true),localMethod=v.getUint16(local+8,true),localNameLength=v.getUint16(local+26,true),localExtra=v.getUint16(local+28,true);
+    const dataStart=local+30+localNameLength+localExtra,dataEnd=dataStart+compressed;
+    if(localFlags!==flags || localMethod!==method || dataStart>cdStart || dataEnd>cdStart || decoder.decode(bytes.subarray(local+30,local+30+localNameLength))!==name) throw new Error('The Word document archive contains conflicting entries.');
+    if(!(flags&8) && (v.getUint32(local+14,true)!==crc || v.getUint32(local+18,true)!==compressed || v.getUint32(local+22,true)!==expanded)) throw new Error('The Word document archive expands beyond its declared size or contains conflicting entries.');
+    if(method===0 && compressed!==expanded) throw new Error('The Word document archive contains conflicting sizes.');
+    ranges.push([local,dataEnd]);entries.set(name,{name,method,crc,compressed,expanded,dataStart});
+    cursor+=46+nameLength+extra+comment;
   }
-  if(cursor!==end || !documentEntry) throw new Error('This archive has no Word document text.');
-  const entry=documentEntry, {local}=entry;
-  if(entry.flags&1 || ![0,8].includes(entry.method) || entry.expanded>DOCX_LIMIT || local+30>cdStart || v.getUint32(local,true)!==0x04034b50) throw new Error('Encrypted, oversized or unsupported Word documents cannot be imported.');
-  const localFlags=v.getUint16(local+6,true), localMethod=v.getUint16(local+8,true), nameLength=v.getUint16(local+26,true), extra=v.getUint16(local+28,true);
-  const start=local+30+nameLength+extra;
-  if(localFlags!==entry.flags || localMethod!==entry.method || start>cdStart || start+entry.compressed>cdStart || decoder.decode(bytes.subarray(local+30,local+30+nameLength))!=='word/document.xml') throw new Error('The Word document archive contains conflicting entries.');
-  const packed=bytes.subarray(start,start+entry.compressed), unpacked=entry.method===0 ? packed : await inflate(packed,entry.expanded);
+  if(cursor!==end || !entries.has('word/document.xml')) throw new Error('This archive has no Word document text.');
+  ranges.sort((a,b)=>a[0]-b[0]);
+  if(ranges.some((range,index)=>index && range[0]<ranges[index-1][1])) throw new Error('The Word archive contains overlapping entries.');
+  return entries;
+}
+async function readWordPart(bytes,entry,signal) {
+  if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
+  if(!entry) throw new Error('A referenced Word document text part is missing.');
+  if(entry.expanded>DOCX_LIMIT) throw new Error('The Word document text part is oversized.');
+  const packed=bytes.subarray(entry.dataStart,entry.dataStart+entry.compressed),unpacked=entry.method===0 ? packed : await inflate(packed,entry.expanded);
   if(unpacked.length!==entry.expanded || crc32(unpacked)!==entry.crc) throw new Error('The Word document text is damaged.');
-  return extractWordXml(decoder.decode(unpacked));
+  if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
+  return decoder.decode(unpacked);
+}
+function relationshipPath(part) {
+  const slash=part.lastIndexOf('/');return `${part.slice(0,slash+1)}_rels/${part.slice(slash+1)}.rels`;
+}
+function resolveWordTarget(part,target) {
+  if(typeof target!=='string' || /[\\\u0000-\u0020?#]/u.test(target) || /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('//')) throw new Error('A Word text relationship has an unsafe internal target.');
+  let decoded;
+  try { decoded=decodeURIComponent(target); } catch { throw new Error('A Word text relationship has an invalid internal target.'); }
+  if(/[\\\u0000-\u001f?#]/u.test(decoded)) throw new Error('A Word text relationship has an unsafe internal target.');
+  const parts=target.startsWith('/') ? [] : part.split('/').slice(0,-1);
+  for(const segment of decoded.replace(/^\//,'').split('/')) {
+    if(!segment || segment==='.') continue;
+    if(segment==='..') { if(!parts.length) throw new Error('A Word text relationship escapes the document package.');parts.pop(); }
+    else parts.push(segment);
+  }
+  return parts.join('/');
+}
+function wordRelationships(xml,part) {
+  const links=new Map(),parts=[],ids=new Set();
+  scanWordXml(xml,{open(node,stack) {
+    if(stack.length===1 && (node.uri!==PACKAGE_RELS || node.local!=='Relationships')) throw new Error('The Word relationships part is malformed.');
+    if(node.uri!==PACKAGE_RELS || node.local!=='Relationship') return;
+    const id=node.attributes.get('Id'),type=node.attributes.get('Type'),target=node.attributes.get('Target'),mode=node.attributes.get('TargetMode') || 'Internal';
+    if(!id || ids.has(id) || !type || target===undefined) throw new Error('The Word document contains malformed or duplicate relationships.');
+    ids.add(id);
+    const match=type.match(/^(?:http:\/\/schemas\.openxmlformats\.org\/officeDocument\/2006\/relationships|http:\/\/purl\.oclc\.org\/ooxml\/officeDocument\/relationships)\/(header|footer|footnotes|endnotes|hyperlink)$/);
+    if(!match) return;
+    if(match[1]==='hyperlink') { if(mode==='External') { const link=safeImportedLink(target);if(link) links.set(id,link); } return; }
+    if(mode!=='Internal') throw new Error('External Word text parts cannot be imported. Save a self-contained DOCX copy.');
+    parts.push({id,kind:match[1],path:resolveWordTarget(part,target)});
+  }});
+  return {links,parts};
+}
+export async function extractDocx(input,{signal}={}) {
+  const bytes=input instanceof Uint8Array ? input : new Uint8Array(input);
+  if(bytes.length<22 || bytes.length>DOCX_LIMIT) throw new Error('Choose a DOCX file smaller than 2 MB.');
+  if(signal?.aborted) throw new DOMException('Import cancelled.','AbortError');
+  const entries=wordArchive(bytes),main='word/document.xml',relationCache=new Map();
+  const relationships=async part=>{
+    if(!relationCache.has(part)) {
+      const entry=entries.get(relationshipPath(part));
+      relationCache.set(part,entry ? wordRelationships(await readWordPart(bytes,entry,signal),part) : {links:new Map(),parts:[]});
+    }
+    return relationCache.get(part);
+  };
+  const mainRelationships=await relationships(main),references={header:[],footer:[],footnotes:new Set(),endnotes:new Set()};
+  const body=extractWordXml(await readWordPart(bytes,entries.get(main),signal),{relationships:mainRelationships.links,allowEmpty:true,roots:['document'],references});
+  const groups={header:[],document:[main],footnotes:[],endnotes:[],footer:[]},seen=new Set([main]);
+  const add=reference=>{
+    if(!entries.has(reference.path)) throw new Error('A referenced Word document text part is missing.');
+    if(!seen.has(reference.path)) { groups[reference.kind].push(reference.path);seen.add(reference.path); }
+  };
+  for(const kind of ['header','footer']) {
+    for(const id of references[kind]) {
+      const reference=mainRelationships.parts.find(part=>part.id===id && part.kind===kind);
+      if(!reference) throw new Error('A Word header or footer reference has no matching relationship.');
+      add(reference);
+    }
+  }
+  for(const kind of ['footnotes','endnotes']) {
+    if(!references[kind].size) continue;
+    const parts=mainRelationships.parts.filter(part=>part.kind===kind);
+    if(parts.length!==1) throw new Error('A Word note reference has no unique matching notes part.');
+    add(parts[0]);
+  }
+  if(seen.size>64) throw new Error('The Word document contains more than 64 supported text parts.');
+  const text=[];
+  let length=0;
+  for(const kind of ['header','document','footnotes','endnotes','footer']) {
+    for(const part of groups[kind]) {
+      if(kind==='document') {
+        if(body) { length+=body.length+(text.length ? 1 : 0);if(length>50000) throw new Error('Imported text must contain at most 50,000 characters.');text.push(body); }
+        continue;
+      }
+      const rels=await relationships(part),xml=await readWordPart(bytes,entries.get(part),signal);
+      const value=extractWordXml(xml,{relationships:rels.links,allowEmpty:true,roots:[{header:'hdr',footer:'ftr',footnotes:'footnotes',endnotes:'endnotes'}[kind]],noteIds:references[kind] instanceof Set ? references[kind] : undefined});
+      if(!value) continue;
+      length+=value.length+(text.length ? 1 : 0);if(length>50000) throw new Error('Imported text must contain at most 50,000 characters.');
+      text.push(value);
+    }
+  }
+  return normalisePlainText(text.join('\n'));
 }

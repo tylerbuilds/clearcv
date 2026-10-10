@@ -21,7 +21,7 @@ if (dataDirectory) {
   if ([realRoot, await realpath('.')].some(folder => actualDataDirectory === folder || actualDataDirectory.startsWith(folder + sep))) throw new Error('Keep shared data outside the source and public app directories, including symlinked ancestors.');
 }
 const workspaceHandler = await createWorkspaceHandler({dataDirectory, allowedOrigin: value('--public-origin', '') || undefined, validators: {'clearcv': validateDocument, 'stencil-studio': () => {throw new Error('This document belongs to another app.');}}});
-const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon', '.woff2':'font/woff2', '.bcmap':'application/octet-stream', '.pfb':'application/octet-stream', '.ttf':'font/ttf', '.wasm':'application/wasm' };
+const mime = { '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8', '.css':'text/css; charset=utf-8', '.json':'application/json', '.svg':'image/svg+xml', '.png':'image/png', '.jpg':'image/jpeg', '.webp':'image/webp', '.ico':'image/x-icon', '.woff2':'font/woff2', '.bcmap':'application/octet-stream', '.pfb':'application/octet-stream', '.ttf':'font/ttf', '.wasm':'application/wasm', '.aff':'text/plain; charset=utf-8', '.dic':'text/plain; charset=utf-8', '.gz':'application/gzip' };
 const server = http.createServer(async (req, res) => {
   try {
     if (['127.0.0.1', 'localhost', '::1'].includes(host)) {

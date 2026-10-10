@@ -1,0 +1,5 @@
+English OCR model: 4.0.0/eng.traineddata.gz from naptha/tessdata, commit 806cd9adc8c6e8abc11c782db1818c990576bebc.
+Model bytes match upstream Git blob e83c1267675ff3a6641b110002363782db7a1885.
+The training data is distributed under Apache-2.0; see LICENSE.txt in this directory.
+The npm wrapper @tesseract.js-data/eng 1.0.0 separately declares MIT in its package metadata.
+Source: https://github.com/naptha/tessdata/tree/806cd9adc8c6e8abc11c782db1818c990576bebc
