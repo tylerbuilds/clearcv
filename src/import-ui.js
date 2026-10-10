@@ -169,5 +169,6 @@ export function createDocumentImportUI({ element, field, selectField, sectionTit
     }) }), element('button', { id: 'export-import-proposal', type: 'button', class: 'button button-quiet', text: 'Download reviewed JSON', onClick: () => safeAction(() => download(JSON.stringify(validateDocument(proposal.document), null, 2), 'application/json', 'json', name || 'reviewed-cv')) })]));
     section.append(mapping);
   }
-  return { render, openFile };
+  function cancelPending() { invalidate(); pendingPdf = null; pendingOcr = null; pdfSource = null; }
+  return { render, openFile, cancelPending };
 }

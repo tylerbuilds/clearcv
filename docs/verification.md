@@ -1,6 +1,18 @@
 # Release verification
 
-## Current 0.4 workflows
+## Current 0.5 consumer workflows
+
+The 0.5 source passes **174 Node tests** on Fedora with Node.js 24.14.0. The final source also passes **124 named actual Chromium checks**: 20 fresh-consumer, nine populated-library preservation, 59 storage and stale-work guard, 12 consumer panel/navigation and 24 existing workflow checks. Three additional production-built smoke checkpoints pass; these are composite checkpoints rather than three independent user flows. Named counts include routine render, error and source-stability checks. The source stayed fixed throughout each final pass, with no uncaught browser errors, console errors, failed requests or external requests. No model generation was used in this wave.
+
+A fresh browser opens a genuine blank CV and master, offering Create blank CV, Import CV and Explore example separately. Header and Library New actions add independent blanks immediately. The first-consumer pass names the CV, writes identity, experience, education and skills, chooses a style, downloads real TXT, editable DOCX and document JSON, prints a Chromium PDF and reloads the saved facts. Phone Preview → New returns to a visible, focused name field. The populated-library pass retains every existing CV, snapshot, master, letter, job record and submitted copy through blank/example creation and a whole-workspace backup. See [your first CV](first-cv.md).
+
+The failure-path passes exercise quota and capacity rejection, present-empty and corrupt saved recovery values, deferred imports, real delayed image decoding and competing tabs. A stale tab refuses to overwrite a completed newer save, keeps its open workspace for export, and offers an explicit validated reload with confirmation and a second durable-byte check. Reload itself does not write. This is **not an atomic simultaneous-writer mutex**; the [storage safety guide](storage-safety.md) describes that bound. Independent controlled-handler checks cover reload cancellation, malformed data and a change during confirmation; those are separate from native browser qualification.
+
+Independent visual review opens **21 actual screenshots** from the final 258-file runtime source set. It accepts the warm paper/editor identity, direct New and separate blank/import/example choices at desktop, tablet, 390px and 320px, labelled export menus, settled phone Preview and contained recovery actions with 44px targets. [Desktop](screenshots/blank-start-0.5.png) and [phone](screenshots/blank-start-mobile-0.5.png) welcome captures contain genuine empty fields and no automatically loaded career example. Headless Chromium PDF content is checked; the operating-system print dialogue and native macOS clipboard are not automated by these Fedora checks. This is not a complete accessibility certification.
+
+The [Linux/macOS workflow](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml) runs the exact commit's tests, build and browser smoke on Ubuntu and macOS before Pages publication. Its exact-head status is the authority for remote qualification; local source checks do not establish a remote macOS or hosted deployment result. The older document-upgrade and parity qualifications below remain historical, with their stated limits. No full commercial parity or native installer claim is made.
+
+## Preserved 0.4 workflows
 
 The 0.4 candidate passes **163 Node tests** on Fedora with Node.js 24.14.0. A separate **31-check actual Chromium pass** covers PDF, DOCX, supported Word97–2003 DOC, ODT, RTF, TXT, Markdown and inert HTML intake, local image and mixed-page OCR, password-protected PDF opening, source comparison, editable field review, new and explicitly merged independent CVs, spelling review and guarded Undo. It checks original CVs, job records and submitted copies remain unchanged, and downloads actual PDF, TXT and DOCX from the reviewed candidate before applying it.
 

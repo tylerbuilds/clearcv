@@ -1,6 +1,6 @@
 # ClearCV
 
-![Reviewed document upgrade in ClearCV](docs/screenshots/document-upgrade-0.4.png)
+![Start a genuinely blank CV in ClearCV](docs/screenshots/blank-start-0.5.png)
 
 [Try the live demo](https://tylerbuilds.github.io/clearcv/) · [Linux/macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
 
@@ -29,9 +29,17 @@ npm run preview     # Serves the production build on port 4201
 
 This is a browser application for Linux and macOS, not a native desktop package. Windows should work with the same commands but is not part of the initial qualification target.
 
+## Start your own CV
+
+A fresh browser opens an empty CV, with **Create blank CV**, **Import CV** and **Explore example** as separate choices. Choose Create blank CV to use that first page, name the version in Content, then add your name and experience. Design lets you choose the layout and typography. The preview contains your supplied facts.
+
+**New CV** stays in the header and is also available at the top of Library. It adds an independent blank immediately, keeping your current documents, master, snapshots, letters and applications. **Explore example** adds a separate worked example; **New from master** copies your reusable history. Neither is the blank-start action.
+
+Use **Save as PDF**, or open **Export** for TXT, DOCX, current-CV JSON and whole-workspace JSON. On a phone, Edit and Preview switch between the form and paper. [The first-CV guide](docs/first-cv.md) describes naming, saving and backup limits.
+
 ## What works
 
-- Named CV library: create, duplicate, rename, switch and delete independent documents.
+- Blank first use with a visible New CV action, import and an explicitly chosen example. Named CV library: create, duplicate, rename, switch and delete independent documents.
 - A complete master CV for reusable career history; named snapshots with recovery when restoring.
 - Editable profile, experience, education, skills and custom sections, with live preview and accessible ordering.
 - Section headings, visibility and order; three original templates, accent colours, fonts, size, spacing, margins, A4/Letter paper and optional locally resized portraits.
@@ -56,7 +64,7 @@ The library, job descriptions, photos, letters and applications stay in this bro
 
 Optional AI sends only the selected source text and context when you click Generate; the operator supplies the provider configuration outside the browser and repository. A configured provider has its own data handling. The static demo makes no model calls.
 
-Anyone with access to the same browser profile may be able to read your library. Private browsing, restricted storage and quota limits can prevent saves; the app reports this and keeps edits open for export.
+Anyone with access to the same browser profile may be able to read your library. Private browsing, restricted storage and quota limits can prevent saves; the app reports this and keeps edits open for export. If another tab changed the saved library, saving refuses to overwrite that copy. Export the open workspace, then explicitly reload the newer saved library in Library. This is a stale-tab guard, not simultaneous collaborative editing.
 
 To improve an existing document, open **Improve an existing CV** in Content or Library. Upload, drop or paste; review the mapped fields and original extracted text; preview the paper and exports; then create the reviewed CV or an upgraded copy. Review offers spelling and whitespace cleanup, and Design controls the template, typography, spacing and accent. [The upgrade guide](docs/document-upgrades.md) describes exact format support, OCR, preservation and limits.
 

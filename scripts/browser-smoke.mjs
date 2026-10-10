@@ -26,14 +26,29 @@ try {
   page.on('console', message => {if (message.type() === 'error') errors.push(message.text())});
   const response = await page.goto(`http://127.0.0.1:${port}/`, {waitUntil:'networkidle'});
   expect(response.status()).toBe(200);
+  const click = async selector => {
+    const target = page.locator(selector);
+    const disclosure = await target.evaluate(node => node.closest('details')?.id || null);
+    if (disclosure && !(await page.locator(`#${disclosure}`).evaluate(node => node.open))) await page.locator(`#${disclosure} > summary`).click();
+    await target.click();
+  };
   const download = async (selector, filename) => {
     const pending = page.waitForEvent('download');
-    await page.locator(selector).click();
+    await click(selector);
     const file = await pending;
     expect(await file.failure()).toBeNull();
     const path = resolve(output, filename); await file.saveAs(path); return readFile(path);
   };
   if (name === 'clearcv') {
+    await expect(page.locator('#new-cv')).toBeVisible();
+    await expect(page.locator('#welcome-start-blank')).toBeVisible();
+    await expect(page.locator('#profile-name')).toHaveValue('');
+    const initial = JSON.parse(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+    expect(initial.documents).toHaveLength(1);
+    expect(initial.documents[0].document.experience).toEqual([]);
+    expect(initial.masterDocument.profile.name).toBe('');
+    await page.locator('#welcome-start-blank').click();
+    await expect(page.locator('#profile-name')).toBeFocused();
     await page.locator('#profile-name').fill('Avery Test');
     await expect(page.locator('#cv-preview .cv-name')).toHaveText('Avery Test');
     await page.locator('#tab-design').click();
@@ -153,6 +168,28 @@ try {
     await page.reload();await page.locator('#tab-content').click();
     await expect(page.locator('#profile-name')).toHaveValue('Jordan Reed');
     await expect(page.locator('#profile-summary')).toHaveValue('I organise research and recieve feedback.');
+    const beforeNew = JSON.parse(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+    await page.locator('#new-cv').click();
+    await expect(page.locator('#profile-name')).toHaveValue('');
+    const afterNew = JSON.parse(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+    expect(afterNew.documents).toHaveLength(beforeNew.documents.length + 1);
+    expect(afterNew.documents.slice(0, -1)).toEqual(beforeNew.documents);
+    expect(afterNew.masterDocument).toEqual(beforeNew.masterDocument);
+    expect(afterNew.masterProfile).toEqual(beforeNew.masterProfile);
+    expect(afterNew.applications).toEqual(beforeNew.applications);
+    expect(afterNew.documents.at(-1).document.experience).toEqual([]);
+    await page.locator('#content-document-name').fill('From scratch');
+    await page.locator('#profile-name').fill('Avery New');
+    await page.reload();
+    await expect(page.locator('#profile-name')).toHaveValue('Avery New');
+    await page.locator('#tab-library').click();
+    await expect(page.locator('#library-new-cv')).toBeVisible();
+    await page.locator('#library-new-cv').click();
+    await expect(page.locator('#profile-name')).toHaveValue('');
+    const afterLibraryNew = JSON.parse(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+    expect(afterLibraryNew.documents).toHaveLength(beforeNew.documents.length + 2);
+    expect(afterLibraryNew.documents.slice(0, beforeNew.documents.length)).toEqual(beforeNew.documents);
+    expect(afterLibraryNew.applications).toEqual(beforeNew.applications);
   } else if (name === 'stencil-studio') {
     await page.locator('#document-title').fill('Avery design');
     await page.locator('#document-title').press('Tab');

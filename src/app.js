@@ -1,4 +1,4 @@
-import { sampleDocument, createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument } from './model.js';
+import { createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument } from './model.js';
 
 import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES } from './workspace.js';
 import { reviewCV, tailoringSuggestions, coverLetterDraft } from './review.js';
@@ -10,6 +10,8 @@ import { createCloudUI } from './cloud-ui.js';
 import { safeContactHref } from './links.js';
 import { createJobsUI } from './jobs-ui.js';
 import { applicationSubmission, copySubmissionToLibrary } from './workspace.js';
+import { initialWorkspace, addNewCV, isBlankCV, isFirstBlankWorkspace } from './new-cv.js';
+import { persistWorkspace, WorkspaceConflictError } from './storage.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
 let workspace;
@@ -26,30 +28,37 @@ let aiUndo = null;
 let aiController = null;
 const practiceRecords = new Map();
 let rawWorkspace = null;
+let savedWorkspaceBaseline = null;
+let storageConflict = false;
+let portraitGeneration = 0;
 let recoveryRaw = '';
 let recoveryBackedUp = false;
 let recoveryDownloaded = false;
 let recoveryStorageKey = '';
+let recoveryPresent = false;
+let welcomeDismissed = false;
 
 let activeTab = 'content';
 let noticeTimer;
-let pendingReset = 'blank';
 let initialNotice = '';
 let initialNoticeIsError = false;
 let state;
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
   rawWorkspace = saved;
-  if (saved) workspace = parseWorkspace(saved);
+  savedWorkspaceBaseline = saved;
+  if (saved !== null) workspace = initialWorkspace(saved, null).workspace;
   else {
     const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
-    const doc = legacy ? parseDocument(legacy) : sampleDocument();
-    workspace = createWorkspace(doc, 'initial-cv', legacy ? 'Migrated CV' : 'My CV');
-    localStorage.setItem(STORAGE_KEY, serialiseWorkspace(workspace));
-    if (legacy) initialNotice = 'Your previous CV is now in your library. Its original saved copy has been kept.';
+    const loaded = initialWorkspace(null, legacy);
+    workspace = loaded.workspace;
+    savedWorkspaceBaseline = persistWorkspace(localStorage, STORAGE_KEY, workspace, savedWorkspaceBaseline);
+    if (loaded.migrated) initialNotice = 'Your previous CV is now in your library. Its original saved copy has been kept.';
   }
 } catch (error) {
-  if (rawWorkspace) {
+  if (error instanceof WorkspaceConflictError) storageConflict = true;
+  if (rawWorkspace !== null) {
+    recoveryPresent = true;
     recoveryRaw = rawWorkspace;
     recoveryStorageKey = `${STORAGE_KEY}.recovery.${Date.now()}`;
     try { localStorage.setItem(recoveryStorageKey, recoveryRaw); recoveryBackedUp = true; }
@@ -57,10 +66,12 @@ try {
   }
   if (!workspace) {
     try { workspace = createWorkspace(parseDocument(localStorage.getItem(LEGACY_STORAGE_KEY)), 'recovered-cv', 'Recovered CV'); }
-    catch { workspace = createWorkspace(sampleDocument()); }
+    catch { workspace = createWorkspace(createDocument(), 'recovered-cv', 'Untitled CV'); }
   }
   initialNoticeIsError = true;
-  initialNotice = `The saved workspace could not be read or saved: ${error.message} The original unreadable workspace is ${recoveryBackedUp ? 'kept in a separate recovery copy' : 'protected from replacement; saving is locked'}. Open Library to export recovery data and a backup of the open library.`;
+  initialNotice = recoveryPresent
+    ? `The saved workspace could not be read or saved: ${error.message} The original unreadable workspace is ${recoveryBackedUp ? 'kept in a separate recovery copy' : 'protected from replacement; saving is locked'}. Open Library to export recovery data and a backup of the open library.`
+    : `This browser could not read or save your library: ${error.message} Your open CV is editable; export a workspace backup before closing.`;
   document.querySelector('#save-status').textContent = 'Saved copy unavailable';
 }
 state = activeEntry(workspace).document;
@@ -89,18 +100,25 @@ function announce(message, error = false) {
   noticeTimer = setTimeout(() => { box.hidden = true; }, error ? 12000 : 5000);
 }
 function save() {
-  if (recoveryRaw && !recoveryBackedUp) {
+  if (recoveryPresent && !recoveryBackedUp) {
     document.querySelector('#save-status').textContent = 'Recovery locked · export originals';
     announce('The original saved workspace is unreadable and protected. Open Library to download recovery data before explicitly replacing it. Current edits remain open.', true);
     return false;
   }
   try {
-    localStorage.setItem(STORAGE_KEY, serialiseWorkspace(workspace));
+    savedWorkspaceBaseline = persistWorkspace(localStorage, STORAGE_KEY, workspace, savedWorkspaceBaseline);
+    storageConflict = false;
     document.querySelector('#save-status').textContent = 'Saved on this device';
     return true;
-  } catch {
-    document.querySelector('#save-status').textContent = 'Not saved · export a backup';
-    announce('Your changes are open, but this browser could not save them. Export a JSON backup before closing this page.', true);
+  } catch (error) {
+    if (error instanceof WorkspaceConflictError) {
+      storageConflict = true;
+      document.querySelector('#save-status').textContent = 'Newer saved library · export open edits';
+      announce(error.message, true);
+    } else {
+      document.querySelector('#save-status').textContent = 'Not saved · export a backup';
+      announce('Your changes are open, but this browser could not save them. Export a workspace backup before closing this page.', true);
+    }
     return false;
   }
 }
@@ -143,8 +161,39 @@ function field(label, value, id, options = {}) {
   if (options.hint) wrapper.append(element('span', { class: 'field-hint', text: options.hint }));
   return wrapper;
 }
+function cvNameField(id) {
+  const entry = activeEntry(workspace);
+  const wrapper = field('CV name in your library', entry.name, id, { hint: 'Name this version so you can find it again.', data: { 'data-document-name': entry.id } });
+  const input = wrapper.querySelector('input'); input.maxLength = 100;
+  input.addEventListener('blur', () => { if (input.isConnected && !input.value.trim()) input.value = activeEntry(workspace).name; });
+  return wrapper;
+}
+function renderWelcome() {
+  panel.append(element('section', { id: 'welcome-start', class: 'welcome-start', 'aria-labelledby': 'welcome-title' }, [
+    element('span', { class: 'eyebrow', text: 'YOUR STORY STARTS HERE' }),
+    element('h2', { id: 'welcome-title', text: 'How would you like to begin?' }),
+    element('p', { text: 'Start with a blank page, bring in your existing CV, or explore a worked example. Your words stay in this browser.' }),
+    element('div', { class: 'welcome-actions' }, [
+      element('button', { id: 'welcome-start-blank', type: 'button', class: 'button button-primary', text: 'Create blank CV', onClick: () => safeAction(() => {
+        if (!isFirstBlankWorkspace(workspace)) { createCV('blank'); return; }
+        cancelPendingLocalWork(); const saved = save(); welcomeDismissed = true; openNewCVEditor();
+        announce(saved ? 'Your blank CV is ready. Start with your name, then choose a style.' : 'Your blank CV is open but not saved. Export a workspace backup before closing.', !saved);
+      }) }),
+      element('button', { id: 'welcome-import-cv', type: 'button', class: 'button button-quiet', text: 'Import CV', onClick: openCVIntake }),
+      element('button', { id: 'welcome-explore-example', type: 'button', class: 'text-button', text: 'Explore example', onClick: () => createCV('example') })
+    ])
+  ]));
+}
 function renderContent() {
-  panel.append(element('button', { id: 'improve-existing-cv', type: 'button', class: 'button button-quiet improve-existing', text: 'Improve an existing CV', onClick: () => switchTab('library') }));
+  const welcome = !welcomeDismissed && isFirstBlankWorkspace(workspace);
+  if (welcome) renderWelcome();
+  else if (isBlankCV(state)) panel.append(element('section', { id: 'blank-cv-guide', class: 'blank-cv-guide' }, [
+    sectionTitle('A fresh page for your story'),
+    element('p', { class: 'panel-intro', text: 'Start with your name and title. Add your experience, education and skills when you are ready.' }),
+    element('button', { id: 'choose-cv-style', type: 'button', class: 'button button-quiet', text: 'Choose a style', onClick: () => switchTab('design', true) })
+  ]));
+  else panel.append(element('button', { id: 'improve-existing-cv', type: 'button', class: 'button button-quiet improve-existing', text: 'Improve an existing CV', onClick: () => switchTab('library') }));
+  panel.append(cvNameField('content-document-name'));
   panel.append(sectionTitle('The essentials', '01 / YOUR INTRODUCTION'));
   for (const [key, label, placeholder, type] of [
     ['name', 'Full name', 'Your name'], ['headline', 'Professional title', 'What do you do?'],
@@ -173,6 +222,7 @@ function entryActions(collection, item, index) {
 }
 function renderCollection(collection, title, caption) {
   const section = element('section', { class: 'form-section', 'aria-label': `${title} editor` }, [sectionTitle(title, caption)]);
+  if (!state[collection].length) section.append(element('p', { class: 'field-hint collection-empty', text: { experience: 'Add a role, placement or relevant volunteering. Use your own dates and achievements.', education: 'Add a qualification, course or training that is relevant to your next role.', skills: 'Add skills you can confidently bring to the role.' }[collection] }));
   state[collection].forEach((item, index) => {
     if (collection === 'skills') {
       const id = `skill-${item.id}`;
@@ -331,6 +381,7 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
     if (state.hiddenSections.includes(id)) section.remove();
     else preview.append(section);
   }
+  if (isBlankCV(state)) preview.append(element('div', { class: 'cv-empty-guide' }, [element('p', { text: 'A blank page, ready for your story.' }), element('span', { text: 'Add your name and experience in Content. Choose a layout in Design; your preview updates as you write.' })]));
 }
 function switchTab(tab, focus = false) {
   const workspace = document.querySelector('.workspace');
@@ -378,8 +429,9 @@ panel.addEventListener('input', event => {
     else if (input.dataset.letter) change({ ...state, coverLetter: { ...state.coverLetter, [input.dataset.letter]: input.value } });
     else if (input.dataset.layout) change({ ...state, layout: { ...state.layout, [input.dataset.layout]: input.type === 'range' ? Number(input.value) : input.value } });
     else if (input.dataset.sectionTitle) change({ ...state, sectionTitles: { ...state.sectionTitles, [input.dataset.sectionTitle]: input.value } });
-    else if (input.id === 'document-name') {
-      if (input.value.trim()) changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, name: input.value } : entry) }, false);
+    else if (input.dataset.documentName) {
+      if (input.dataset.documentName !== workspace.activeId) throw new Error('The open CV changed. Rename the current CV instead.');
+      if (input.value.trim()) changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, name: input.value.trim() } : entry) }, false);
     }
   });
   if (!accepted) {
@@ -402,7 +454,30 @@ document.querySelector('#export-json').addEventListener('click', () => safeActio
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   announce('JSON backup downloaded. It contains your CV and job description; keep it somewhere you trust.');
 }));
-document.querySelector('#import-json').addEventListener('click', () => document.querySelector('#import-file').click());
+function exportWorkspaceBackup() {
+  return safeAction(() => {
+    download(serialiseWorkspace(workspace), 'application/json', 'json', 'clearcv-workspace');
+    announce('Workspace backup downloaded. It contains your whole library; keep this file private.');
+  });
+}
+document.querySelector('#header-export-workspace').addEventListener('click', exportWorkspaceBackup);
+function reloadNewerWorkspace() {
+  return safeAction(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw === null) throw new Error('The saved library was removed. Keep a workspace backup of your open edits before reopening the app.');
+    const next = parseWorkspace(raw);
+    if (!window.confirm('Have you exported the open workspace? Reloading the saved library replaces this tab’s open unsaved edits. Your downloaded backup can be imported later.')) return;
+    if (localStorage.getItem(STORAGE_KEY) !== raw) throw new Error('The saved library changed while you were deciding. Your open edits are kept. Try Reload again after keeping a backup.');
+    cancelPendingLocalWork(); document.querySelector('#submitted-dialog[open]')?.close();
+    savedWorkspaceBaseline = raw; storageConflict = false;
+    workspace = next; state = activeEntry(workspace).document;
+    renderDocumentSwitcher(); renderPreview(); renderPanel();
+    document.querySelector('#save-status').textContent = 'Saved on this device';
+    announce('The newer saved library is open. Import your exported workspace if you want to recover the other tab’s open changes.');
+  });
+}
+function openCVIntake() { switchTab('library'); document.querySelector('#import-file').click(); }
+document.querySelector('#import-json').addEventListener('click', openCVIntake);
 function getDocumentImportUI() {
   if (!documentImportUI) documentImportUI = createDocumentImportUI({ element, field, selectField, sectionTitle, getWorkspace: () => workspace, changeWorkspace, safeAction, announce, switchTab, download, renderPreview, openPreview: showImportPreview, chooseFile: () => document.querySelector('#import-file').click(), isActive: () => activeTab === 'library' });
   return documentImportUI;
@@ -412,22 +487,32 @@ document.querySelector('#import-file').addEventListener('change', event => {
   if (file) void getDocumentImportUI().openFile(file);
 });
 
-function requestReset(kind) {
-  pendingReset = kind;
-  document.querySelector('#reset-title').textContent = kind === 'blank' ? 'A fresh start?' : 'Open the example?';
-  document.querySelector('#reset-confirm').textContent = kind === 'blank' ? 'Start a blank CV' : 'Load example';
-  document.querySelector('#reset-dialog').showModal();
-}
-document.querySelector('#new-cv').addEventListener('click', () => requestReset('blank'));
-document.querySelector('#load-example').addEventListener('click', () => requestReset('example'));
-document.querySelector('#reset-dialog').addEventListener('close', event => {
-  if (event.target.returnValue !== 'confirm') return;
-  const saved = changeWorkspace(addDocument(workspace, pendingReset === 'blank' ? createDocument() : sampleDocument(), crypto.randomUUID(), pendingReset === 'blank' ? 'Untitled CV' : 'Example CV'));
+function openNewCVEditor() {
   switchTab('content');
-  document.querySelector('#profile-name').focus();
-  const message = pendingReset === 'blank' ? 'A fresh CV is ready for your story.' : 'The example CV is ready to explore.';
-  announce(saved ? message : `${message} This browser could not save it; export a JSON backup before closing.`, !saved);
-});
+  document.querySelector('.editor').scrollTop = 0;
+  const input = document.querySelector('#profile-name'); input.focus({ preventScroll: true });
+  if (matchMedia('(max-width: 700px)').matches) input.scrollIntoView({ block: 'center', behavior: 'auto' });
+}
+function cancelPendingLocalWork() { portraitGeneration++; documentImportUI?.cancelPending(); writingUI?.cancelPending(); }
+function createCV(kind) {
+  return safeAction(() => {
+    const next = addNewCV(workspace, crypto.randomUUID(), kind);
+    cancelPendingLocalWork();
+    document.querySelector('#submitted-dialog[open]')?.close();
+    const saved = changeWorkspace(next);
+    welcomeDismissed = true; openNewCVEditor();
+    const message = kind === 'blank' ? 'A blank CV is open. Your other CVs and history are kept.' : 'An example CV is open to explore. Your other CVs and history are kept.';
+    announce(saved ? message : storageConflict
+      ? `${message} Another tab has a newer saved library. This CV is not saved: export a workspace backup, then open Library to reload the newer copy.`
+      : `${message} It is not saved; export a workspace backup before closing.`, !saved);
+  });
+}
+document.querySelector('#new-cv').addEventListener('click', () => createCV('blank'));
+document.querySelector('#load-example').addEventListener('click', () => createCV('example'));
+const exportMenu = document.querySelector('#header-export');
+document.addEventListener('click', event => { if (!exportMenu.contains(event.target)) exportMenu.open = false; });
+exportMenu.addEventListener('keydown', event => { if (event.key === 'Escape') { exportMenu.open = false; exportMenu.querySelector('summary').focus(); } });
+for (const button of exportMenu.querySelectorAll('button')) button.addEventListener('click', () => { exportMenu.open = false; exportMenu.querySelector('summary').focus({ preventScroll: true }); });
 renderDocumentSwitcher();
 renderPanel();
 renderPreview();
@@ -467,20 +552,25 @@ function renderLayoutControls() {
   const upload = element('input', { id: 'photo-upload', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload a portrait photo' });
   upload.addEventListener('change', async event => {
     const file = event.target.files?.[0]; if (!file) return;
+    event.target.value = '';
+    const request = ++portraitGeneration, docId = workspace.activeId, original = JSON.stringify(state);
+    let bitmap;
     try {
       if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5_000_000) throw new Error('Choose a PNG, JPEG or WebP photo smaller than 5 MB.');
-      const bitmap = await createImageBitmap(file);
+      bitmap = await createImageBitmap(file);
+      if (request !== portraitGeneration) return;
+      if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('The CV changed while the portrait was being read. No photo was applied; choose it again for the current CV.', true); return; }
       const canvas = document.createElement('canvas');
       canvas.width = 240; canvas.height = 240;
       const side = Math.min(bitmap.width, bitmap.height);
       canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
-      bitmap.close();
-      change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
-      announce('Portrait cropped to a square and stored locally. You can remove it at any time.');
-    } catch (error) { announce(error.message, true); }
+      const saved = change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
+      announce(saved ? 'Portrait cropped to a square and stored locally. You can remove it at any time.' : 'Portrait is open but not saved. Export a workspace backup before closing; Library explains any competing-tab conflict.', !saved);
+    } catch (error) { if (request === portraitGeneration) announce(error.message, true); }
+    finally { bitmap?.close(); }
   });
   section.append(upload, element('p', { class: 'field-hint', text: 'Optional. Consider whether a photo is appropriate for the role and country. Images are resized locally.' }));
-  if (state.photo) section.append(element('button', { id: 'remove-photo', class: 'text-button', type: 'button', text: 'Remove portrait', onClick: () => change({ ...state, photo: '' }, true) }));
+  if (state.photo) section.append(element('button', { id: 'remove-photo', class: 'text-button', type: 'button', text: 'Remove portrait', onClick: () => { portraitGeneration++; change({ ...state, photo: '' }, true); } }));
   panel.append(section);
 }
 function renderSectionControls() {
@@ -500,16 +590,31 @@ function renderSectionControls() {
   });
   panel.append(section);
 }
+function storageConflictCard() {
+  return element('section', { id: 'storage-conflict-card', class: 'recovery-card' }, [
+    sectionTitle('Keep both versions of your library'),
+    element('p', { class: 'panel-intro', text: 'Another tab changed the saved library. This tab keeps its open edits, including newly created CVs, but cannot replace that newer copy. Export this whole workspace before choosing Reload. You can import that backup to merge its documents later.' }),
+    element('div', { class: 'action-row' }, [element('button', { id: 'export-conflict-workspace', type: 'button', class: 'button button-primary', text: 'Download open workspace', onClick: exportWorkspaceBackup }), element('button', { id: 'reload-newer-workspace', type: 'button', class: 'button button-quiet', text: 'Reload newer saved library', onClick: reloadNewerWorkspace })])
+  ]);
+}
 function renderLibrary() {
+  panel.append(element('section', { class: 'library-start', 'aria-label': 'Create a CV' }, [
+    sectionTitle('Start another chapter'),
+    element('p', { class: 'panel-intro', text: 'Create a separate blank CV or explore an example. Your saved CVs, letters and history are kept.' }),
+    element('div', { class: 'action-row' }, [
+      element('button', { id: 'library-new-cv', type: 'button', class: 'button button-primary', text: '+ New blank CV', onClick: () => createCV('blank') }),
+      element('button', { id: 'library-explore-example', type: 'button', class: 'button button-quiet', text: 'Explore example', onClick: () => createCV('example') })
+    ])
+  ]));
+  if (storageConflict) panel.append(storageConflictCard());
   panel.append(sectionTitle('A CV for every chapter', `${workspace.documents.length} / 25 LOCAL CVS`));
-  if (recoveryRaw) {
+  if (recoveryPresent) {
     panel.append(element('section', { class: 'recovery-card' }, [sectionTitle('Keep your original saved data'), element('p', { class: 'panel-intro', text: recoveryBackedUp ? `An unreadable workspace was retained at ${recoveryStorageKey}. Download its original bytes for recovery; current editing can save safely.` : 'The unreadable saved workspace is protected from replacement. Download its original bytes first; your open edits are not yet saved.' }),
       element('button', { id: 'export-recovery', type: 'button', class: 'button button-primary', text: 'Download original recovery JSON', onClick: () => { download(recoveryRaw, 'application/json', 'json', 'clearcv-unreadable-original'); recoveryDownloaded = true; renderPanel(); } }),
-      !recoveryBackedUp ? element('button', { id: 'resume-recovery-save', type: 'button', class: 'button button-quiet', text: 'Replace saved data with open library', disabled: !recoveryDownloaded, onClick: () => { if (window.confirm('Have you kept the downloaded original? This explicitly replaces the unreadable saved workspace with the open library.')) { recoveryBackedUp = true; const saved = save(); if (!saved) recoveryBackedUp = false; else { recoveryRaw = ''; recoveryStorageKey = ''; } renderPanel(); } } }) : null
+      !recoveryBackedUp ? element('button', { id: 'resume-recovery-save', type: 'button', class: 'button button-quiet', text: 'Replace saved data with open library', disabled: !recoveryDownloaded, onClick: () => { if (window.confirm('Have you kept the downloaded original? This explicitly replaces the unreadable saved workspace with the open library.')) { recoveryBackedUp = true; const saved = save(); if (!saved) recoveryBackedUp = false; else { recoveryRaw = ''; recoveryStorageKey = ''; recoveryPresent = false; } renderPanel(); } } }) : null
     ]));
   }
-  const name = field('Current CV name', activeEntry(workspace).name, 'document-name');
-  name.querySelector('input').maxLength = 100; panel.append(name);
+  panel.append(cvNameField('document-name'));
   panel.append(element('div', { class: 'action-row' }, [
     element('button', { id: 'duplicate-cv', type: 'button', class: 'button button-primary', text: 'Duplicate current CV', onClick: () => safeAction(() => changeWorkspace(duplicateDocument(workspace, crypto.randomUUID(), `${activeEntry(workspace).name} copy`.slice(0, 100)))) }),
     element('button', { id: 'blank-cv', type: 'button', class: 'button button-quiet', text: 'New from master', onClick: () => safeAction(() => changeWorkspace(addDocument(workspace, { ...structuredClone(workspace.masterDocument), jobAd: '', coverLetter: createDocument().coverLetter }, crypto.randomUUID(), 'Untitled CV'))) })
@@ -521,7 +626,7 @@ function renderLibrary() {
     element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Delete CV ${entry.name}`, disabled: workspace.documents.length === 1, 'data-delete-document': entry.id, onClick: () => { if (window.confirm(`Delete “${entry.name}” and its snapshots? Linked job records will be kept without this CV link.`)) safeAction(() => changeWorkspace(deleteDocument(workspace, entry.id))); } })
   ]));
   panel.append(list);
-  const master = element('section', { class: 'form-section' }, [sectionTitle('Your master profile'), element('p', { class: 'panel-intro', text: 'Keep a complete career CV: profile, experience, education, skills and custom sections. New CVs start from this master without its job description or letter; existing tailored CVs stay independent.' }), element('p', { class: 'master-preview', text: `${workspace.masterProfile.name || 'No name yet'} · ${workspace.masterProfile.headline || 'No title yet'}` })]);
+  const master = element('section', { class: 'form-section' }, [sectionTitle('Your master profile'), element('p', { class: 'panel-intro', text: 'Keep a complete career CV: profile, experience, education, skills and custom sections. Choose New from master to copy this history without its job description or letter. New blank CV starts empty; existing tailored CVs stay independent.' }), element('p', { class: 'master-preview', text: `${workspace.masterProfile.name || 'No name yet'} · ${workspace.masterProfile.headline || 'No title yet'}` })]);
   master.append(element('div', { class: 'action-row' }, [
     element('button', { id: 'save-master', type: 'button', class: 'button button-quiet', text: 'Use current CV as master', onClick: () => safeAction(() => { const saved = changeWorkspace({ ...workspace, masterProfile: structuredClone(state.profile), masterDocument: structuredClone(state) }); announce(saved ? 'Master CV updated. Your other CVs have been kept.' : 'Master profile is open but not saved; export a workspace backup.', !saved); }) }),
     element('button', { id: 'apply-master', type: 'button', class: 'button button-quiet', text: 'Apply master to this CV', onClick: () => { if (window.confirm('Replace the profile fields in this CV with your master profile? Experience, sections and letter will be kept.')) safeAction(() => change({ ...state, profile: structuredClone(workspace.masterProfile) }, true)); } })
@@ -533,8 +638,10 @@ function renderLibrary() {
     element('button', { type: 'button', class: 'text-button', text: 'Restore', 'data-restore-snapshot': version.id, onClick: () => safeAction(() => changeWorkspace(restoreSnapshot(workspace, version.id, crypto.randomUUID()))) }),
     element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Remove snapshot ${version.name}`, onClick: () => safeAction(() => changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, versions: entry.versions.filter(snapshot => snapshot.id !== version.id) } : entry) })) })
   ])); panel.append(snapshots);
-  panel.append(element('section', { class: 'form-section' }, [sectionTitle('Keep your whole workspace'), element('p', { class: 'panel-intro', text: 'A workspace backup includes every CV, snapshot, cover letter, master profile and tracked application. Importing merges it into the current library without overwriting existing CVs.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: () => safeAction(() => { download(serialiseWorkspace(workspace), 'application/json', 'json', 'clearcv-workspace'); announce('Workspace backup downloaded. Keep this file private.'); }) })]));
+  panel.append(element('section', { class: 'form-section' }, [sectionTitle('Keep your whole workspace'), element('p', { class: 'panel-intro', text: 'A workspace backup includes every CV, snapshot, cover letter, master profile and tracked application. Importing merges it into the current library without overwriting existing CVs.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: exportWorkspaceBackup })]));
   getDocumentImportUI().render(panel);
+  const conflict = panel.querySelector('#storage-conflict-card'); if (conflict) panel.prepend(conflict);
+  const start = panel.querySelector('.library-start'); if (start) panel.prepend(start);
 }
 function renderLetter() {
   panel.append(sectionTitle('A letter with intention'), element('p', { class: 'panel-intro', text: 'A cover letter belongs to this CV. Write a focused introduction, explain your relevant experience and make a clear connection to the role.' }));
@@ -814,7 +921,30 @@ window.addEventListener('resize', () => {
 });
 requestAnimationFrame(updateTabOverflow);
 
+// Keep the sticky header, rail and phone view switch clear of one another as
+// controls wrap. This changes layout only; it never changes focus or CV state.
+function updateHeaderHeight() {
+  const height = document.querySelector('.app-header').getBoundingClientRect().height;
+  if (height > 0) document.documentElement.style.setProperty('--app-header-height', `${Math.ceil(height)}px`);
+}
+new ResizeObserver(updateHeaderHeight).observe(document.querySelector('.app-header'));
+requestAnimationFrame(updateHeaderHeight);
+
 function contactElement(kind, text) {
   const href = safeContactHref(kind, text);
   return href ? element('a', { href, text, ...(kind === 'website' ? { target: '_blank', rel: 'noopener noreferrer' } : {}) }) : element('span', { text });
 }
+
+window.addEventListener('storage', event => {
+  if (event.storageArea !== localStorage || event.key !== STORAGE_KEY) return;
+  try {
+    if (localStorage.getItem(STORAGE_KEY) === savedWorkspaceBaseline) return;
+    storageConflict = true;
+    document.querySelector('#save-status').textContent = 'Newer saved library · export open edits';
+    announce('Another tab changed the saved library. Your open edits are kept. Export a workspace backup, then open Library to reload the newer copy.', true);
+    if (activeTab === 'library' && !panel.querySelector('#storage-conflict-card')) panel.prepend(storageConflictCard());
+  } catch {
+    document.querySelector('#save-status').textContent = 'Not saved · export a backup';
+    announce('This browser could not check the saved library. Keep a workspace backup of your open edits before closing.', true);
+  }
+});

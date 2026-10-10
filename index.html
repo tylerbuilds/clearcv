@@ -15,10 +15,14 @@
     <a class="brand" href="./" aria-label="ClearCV home"><span class="brand-mark">c<span>↗</span></span>ClearCV<span class="brand-tag">WORKSPACE</span></a>
     <div class="header-actions">
       <span id="save-status" class="save-status" role="status">Saved on this device</span>
-      <button id="export-txt" class="button button-quiet" type="button">TXT</button>
-      <button id="export-docx" class="button button-quiet" type="button">DOCX</button>
-      <button id="export-json" class="button button-quiet" type="button">Export JSON</button>
+      <button id="new-cv" class="button button-new" type="button">+ New CV</button>
       <button id="import-json" class="button button-quiet" type="button" title="Import or improve a CV or restore a JSON backup">Import CV</button>
+      <details id="header-export" class="header-export"><summary class="button button-quiet">Export <span aria-hidden="true">⌄</span></summary><div class="header-export-menu" aria-label="Other export formats">
+        <button id="export-txt" class="button button-quiet" type="button">Plain text · TXT</button>
+        <button id="export-docx" class="button button-quiet" type="button">Editable Word · DOCX</button>
+        <button id="export-json" class="button button-quiet" type="button">CV backup · JSON</button>
+        <button id="header-export-workspace" class="button button-quiet" type="button">Workspace backup · JSON</button>
+      </div></details>
       <button id="print-cv" class="button button-primary" type="button"><span aria-hidden="true">↗</span> Save as PDF</button>
       <input id="import-file" type="file" accept=".json,.pdf,.docx,.odt,.rtf,.txt,.md,.markdown,.html,.htm,.png,.jpg,.jpeg,.webp,.bmp,.doc" hidden>
     </div>
@@ -51,7 +55,7 @@
         <button id="tab-cloud" type="button" role="tab" data-tab="cloud" aria-selected="false" aria-controls="editor-panel" tabindex="-1">Share</button>
       </div>
       <div id="editor-panel" role="tabpanel" aria-labelledby="tab-content"></div>
-      <div class="editor-footer"><p>✧ Your library stays in this browser. Keep a workspace backup.</p><button id="new-cv" class="text-button" type="button">Start a blank CV</button><button id="load-example" class="text-button" type="button">Load example</button></div>
+      <div class="editor-footer"><p>✧ Your library stays in this browser. Keep a workspace backup.</p><button id="load-example" class="text-button" type="button">Explore example</button></div>
     </section>
     <section class="preview-area" aria-label="Live CV preview">
       <div class="preview-toolbar"><span><span class="live-dot"></span> LIVE PREVIEW</span><span id="preview-kind" class="page-size">A4 · CV preview</span></div>
@@ -60,7 +64,6 @@
     </section>
   </main>
   <div id="notification" class="notification" role="status" aria-live="polite" hidden></div>
-  <dialog id="reset-dialog"><form method="dialog"><span class="eyebrow">A FRESH PAGE</span><h2 id="reset-title">Start again?</h2><p id="reset-message">A new CV will be added to your library. Your current CV and its snapshots will be kept.</p><div class="dialog-actions"><button value="cancel" class="button button-quiet">Keep my CV</button><button id="reset-confirm" value="confirm" class="button button-primary">Start a blank CV</button></div></form></dialog>
   <noscript>ClearCV needs JavaScript to edit and save your CV. All processing happens in your browser.</noscript>
 </body>
 </html>
