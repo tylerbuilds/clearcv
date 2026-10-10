@@ -60,6 +60,24 @@ try {
     expect(await page.locator('#profile-name').evaluate(input => [input.selectionStart, input.selectionEnd])).toEqual([15, 15]);
     await expect(page.locator('#profile-name')).toBeFocused();
     await page.locator('#profile-name').fill('Avery Test');
+    const phone = page.locator('#profile-phone');
+    const contact = page.locator('#cv-preview .cv-contact > span');
+    for (const value of ['+', '+44 7700 900123', '07700 900124']) {
+      await phone.fill(value);
+      await expect(contact).toHaveText(value);
+      await expect(phone).toBeFocused();
+      const workspace = JSON.parse(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+      expect(workspace.documents.find(entry => entry.id === workspace.activeId).document.profile.phone).toBe(value);
+    }
+    await phone.press('End');
+    await phone.press('Backspace');
+    await phone.pressSequentially('5');
+    await expect(contact).toHaveText('07700 900125');
+    await expect(phone).toBeFocused();
+    expect(await phone.evaluate(input => [input.selectionStart, input.selectionEnd])).toEqual([12, 12]);
+    await phone.fill('');
+    await expect(page.locator('#cv-preview .cv-contact > *')).toHaveCount(0);
+    await expect(phone).toBeFocused();
     await page.locator('#tab-design').click();
     await page.locator('#template-classic').click();
     await expect(page.locator('#cv-preview')).toHaveClass(/template-classic/);
