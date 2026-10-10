@@ -1,16 +1,16 @@
 {
   "browser-current": {
     "proof_id": "browser-current",
-    "receipt_sha256": "9769b101db3b1a17f8096b9e3b9bb5afbc5ac048424b3129f6a42f06eb3de266",
-    "started_at_utc": "2026-10-09T22:49:16.739Z",
-    "finished_at_utc": "2026-10-09T22:49:29.440Z",
+    "receipt_sha256": "ded0903019689fa3cd6153c21366cdecf3db745c3809411ef8f632db94154705",
+    "started_at_utc": "2026-10-09T23:55:17.926Z",
+    "finished_at_utc": "2026-10-09T23:55:30.752Z",
     "overall_passed": true,
     "source_snapshot_matches_current": true,
     "checks": [
       {
         "name": "app renders without empty placeholder content",
         "passed": true,
-        "ms": 23
+        "ms": 18
       },
       {
         "name": "actual 0.1.0 CV migrates into library and preserves original bytes",
@@ -20,72 +20,72 @@
       {
         "name": "duplicate CV edits independently and reload preserves active selection",
         "passed": true,
-        "ms": 315
+        "ms": 432
       },
       {
         "name": "named snapshot restore retains the replaced CV as a recovery snapshot",
         "passed": true,
-        "ms": 212
+        "ms": 196
       },
       {
         "name": "custom content, renamed headings and section order persist in preview",
         "passed": true,
-        "ms": 281
+        "ms": 214
       },
       {
         "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
         "passed": true,
-        "ms": 329
+        "ms": 425
       },
       {
         "name": "full master CV creates independent new CV with existing career and custom sections",
         "passed": true,
-        "ms": 172
+        "ms": 192
       },
       {
         "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
         "passed": true,
-        "ms": 331
+        "ms": 315
       },
       {
         "name": "DOCX import extracts reviewed text and creates a separate CV",
         "passed": true,
-        "ms": 144
+        "ms": 134
       },
       {
         "name": "actual selectable-text PDF import extracts locally for review and creates a separate CV",
         "passed": true,
-        "ms": 1140
+        "ms": 1150
       },
       {
         "name": "job tracker status, dates, linked CV and filtering survive reload",
         "passed": true,
-        "ms": 437
+        "ms": 574
       },
       {
         "name": "transparent review responds to corrections and hidden sections stay out of match text",
         "passed": true,
-        "ms": 373
+        "ms": 402
       },
       {
         "name": "whole workspace JSON merges with fresh identities and invalid import preserves library",
         "passed": true,
-        "ms": 139
+        "ms": 205
       },
       {
         "name": "deleting linked CV keeps job record and clears its invalid link",
         "passed": true,
-        "ms": 99
+        "ms": 91
       },
       {
         "name": "corrupt workspace quota recovery preserves original until download and explicit resume",
         "passed": true,
-        "ms": 974
+        "ms": 1033
       },
       {
         "name": "optional AI is honest about disabled local service without making generation calls",
         "passed": true,
-        "ms": 4166
+        "ms": 4068
       },
       {
         "name": "mobile library, cover letter and jobs tabs remain accessible",
@@ -95,27 +95,27 @@
       {
         "name": "safe contact links remain clickable in preview and actual PDF annotations",
         "passed": true,
-        "ms": 157
+        "ms": 156
       },
       {
         "name": "older delayed file read cannot overwrite newer edited import review",
         "passed": true,
-        "ms": 351
+        "ms": 301
       },
       {
         "name": "actual encrypted PDF unlocks locally without storing its password",
         "passed": true,
-        "ms": 551
+        "ms": 466
       },
       {
         "name": "mobile edit/preview switches preserve edits and importing from preview reveals review",
         "passed": true,
-        "ms": 541
+        "ms": 419
       },
       {
         "name": "mobile layout has no document overflow",
         "passed": true,
-        "ms": 203
+        "ms": 202
       },
       {
         "name": "no uncaught browser errors or failed requests",
@@ -127,107 +127,203 @@
         "passed": true
       }
     ],
-    "qualification": "Current Linux Chrome run; only the named checks are qualified. Original authenticated product behaviour and macOS browser behaviour were not exercised."
+    "qualification": "Recorded next-wave Linux Chrome checks qualify their exact source snapshot only. Coordinator source freeze is confirmed for this comparison. Original authenticated product and macOS browser behaviour were not exercised."
   },
   "component-1": {
     "proof_id": "component-1",
-    "receipt_kind": "ai/live-summary.json",
-    "receipt_sha256": "22d737c3df75ea6daba8d48578339b6840530a530ff32a346b041f19be37993a",
-    "overall_passed": null,
-    "checks": [],
-    "case_observations": [],
-    "native_media_summary": [],
-    "result": {
-      "text": "Product designer with six years of experience. Led an onboarding redesign reducing time to first value by 32%. Developed a design system for four product teams.",
-      "model": "fedora-vllm-qwen-coder"
-    },
-    "url_annotation_count": null,
-    "artifact_sha256": null,
-    "qualification": "Retained independent component receipt; proof applies only to its original scope.",
-    "qualified_feature_components": {},
-    "all_qualified_feature_components_match": null,
-    "mismatched_recorded_source_files": [],
-    "all_compared_components_match": null,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
-  },
-  "component-2": {
-    "proof_id": "component-2",
     "receipt_kind": "backend/verification-receipt.json",
-    "receipt_sha256": "cc287b5bc5422c0bef5723f3f1d43b22e91aa04ffd91eaa9c21cf6e744452acb",
+    "receipt_sha256": "341cf72eff6a039812cfd06cb8ef16ab44012a475c288a0639dd12ac862a1a8e",
     "overall_passed": null,
+    "recorded_pass_count": null,
     "checks": [],
     "case_observations": [],
     "native_media_summary": [],
     "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Retained independent component receipt; proof applies only to its original scope.",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Only isolated 0.3 worktree native data module and focused cloud document integration tests; no canonical edits",
+    "qualified_feature_components": {},
+    "all_qualified_feature_components_match": null,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": null,
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-2": {
+    "proof_id": "component-2",
+    "receipt_kind": "clearcv/implementation-receipt.json",
+    "receipt_sha256": "dc177df0de752bf8eda710aada9f57c152cf1aad684b2aa2f4e1b7d9306c3db8",
+    "overall_passed": null,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "node_tests",
+        "passed_count": 85,
+        "failed_count": 0
+      },
+      {
+        "name": "build",
+        "passed": true
+      },
+      {
+        "name": "browser",
+        "passed_count": 24
+      },
+      {
+        "name": "native_submitted_pdf",
+        "passed": true
+      },
+      {
+        "name": "submitted_callbacks",
+        "passed_count": 4
+      },
+      {
+        "name": "submitted_print_layout",
+        "passed_count": 3
+      },
+      {
+        "name": "independent_cloud_isolation",
+        "passed_count": 2
+      },
+      {
+        "name": "tracker_browser",
+        "passed_count": 12
+      },
+      {
+        "name": "narrow_accessibility_recheck"
+      },
+      {
+        "name": "responsive_tab_recheck"
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
     "qualified_feature_components": {
-      "scripts/workspace-backend.mjs": true,
-      "src/cloud-client.mjs": true
+      "src/app.js": true,
+      "src/jobs-ui.js": true,
+      "src/workspace.js": true,
+      "src/tracker.js": true
     },
     "all_qualified_feature_components_match": true,
-    "mismatched_recorded_source_files": [
-      "tests/workspace-backend.test.mjs"
-    ],
-    "all_compared_components_match": false,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
   "component-3": {
     "proof_id": "component-3",
-    "receipt_kind": "comparison/final/clearcv/pdf-link-inspection.json",
-    "receipt_sha256": "2a749495d161410b1a433d6540b3de7ebc2e6bd51b1c7e3babcf1418ebb52b91",
+    "receipt_kind": "comparison/clearcv/pdf-link-inspection.json",
+    "receipt_sha256": "5135e6367a9de5227f55d3488d82ade0925a2e27028db70cea99bf7211326830",
     "overall_passed": null,
+    "recorded_pass_count": null,
     "checks": [],
     "case_observations": [],
     "native_media_summary": [],
     "result": "url-annotations-present",
     "url_annotation_count": 2,
-    "artifact_sha256": "4c97ea71a50e4d7b8e77b7f86db0667d5ba3aa41bf19012a6e1829c4aec9097e",
+    "artifact_sha256": "b1d8fea566def40ce5a37e022d9e4d4afbbf15bb04647518f761e71b35376f7e",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
     "qualification": "Read-only Poppler inspection of retained native Linux browser export; not a new browser run.",
     "qualified_feature_components": {},
     "all_qualified_feature_components_match": null,
     "mismatched_recorded_source_files": [],
     "all_compared_components_match": null,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
   "component-4": {
     "proof_id": "component-4",
-    "receipt_kind": "review/backend/authority-edges.json",
-    "receipt_sha256": "2093b012d51a27baceda89b7c7b2271d3bfd4affb9a43b4a71d4bfdec83a76e7",
+    "receipt_kind": "review/clearcv/csv.json",
+    "receipt_sha256": "b85a014b13a9efd5b1569376f598cc77b1c887a153ec7942d7e256421625414e",
     "overall_passed": null,
-    "checks": [],
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "Uniform RFC CSV records retain commas, quotes, multiline text and Unicode",
+        "passed": true
+      },
+      {
+        "name": "Formula-like company is apostrophe-prefixed and custom labels remain case-distinct",
+        "passed": true
+      },
+      {
+        "name": "Tasks and submitted metadata parse independently while full document contents are absent",
+        "passed": true
+      },
+      {
+        "name": "Supplied archived rows are exported with their archive flag",
+        "passed": true
+      }
+    ],
     "case_observations": [],
     "native_media_summary": [],
-    "result": "passed",
+    "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Actual optional backend through ephemeral loopback HTTP with real app validators and synthetic v1 fixtures; no browser or deployment proof. Tokens held in RAM only; evidence omits capability credentials.",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Python standard CSV parser independently verifies actual tracker export; no spreadsheet execution/CSV-import claim",
     "qualified_feature_components": {
-      "scripts/workspace-backend.mjs": true,
-      "src/cloud-client.mjs": true
+      "src/model.js": true,
+      "src/workspace.js": true,
+      "src/tracker.js": true
     },
     "all_qualified_feature_components_match": true,
     "mismatched_recorded_source_files": [],
     "all_compared_components_match": true,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
   "component-5": {
     "proof_id": "component-5",
-    "receipt_kind": "review/clearcv-cloud-async.json",
-    "receipt_sha256": "011d5058c503029725c5a23e3044e3b83603e7859f238f48083650d7e30b6181",
+    "receipt_kind": "review/clearcv/invariants.json",
+    "receipt_sha256": "ca3d7540aa47a3cba93f1777c14268f0e9472d48381979e7d9a293f1c7e8883c",
     "overall_passed": null,
+    "recorded_pass_count": null,
     "checks": [
       {
-        "name": "A sharing response remains attached to requested CV A after active CV switches to B",
+        "name": "Populated 0.2 workspace migration preserves every original field and supplies only missing additions",
         "passed": true
       },
       {
-        "name": "Refresh completing after active-CV change refuses replacement or snapshots of unrelated CV",
+        "name": "Explicit malformed new fields and nested collisions reject without changing the accepted library",
         "passed": true
       },
       {
-        "name": "Save completion keeps unrelated CV untouched and original session associated with A",
+        "name": "Submission captures the linked CV and full letter even when a different CV is active",
+        "passed": true
+      },
+      {
+        "name": "Two applications retain different submitted letters even when both link the same editable CV",
+        "passed": true
+      },
+      {
+        "name": "Submission survives source edit, rename, deletion and recovery copy edits",
+        "passed": true
+      },
+      {
+        "name": "Workspace backup merge remaps live CV/job IDs and preserves immutable snapshots",
+        "passed": true
+      },
+      {
+        "name": "Submission/task limits reject atomically and strict submitted dates cannot normalise a bad day",
+        "passed": true
+      },
+      {
+        "name": "Analytics and filters use explicit calendar dates, exclude archived rows, and never search hidden snapshot content",
         "passed": true
       }
     ],
@@ -236,43 +332,38 @@
     "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Actual Cloud UI and client modules; synthetic DOM controls and deferred protocol responses, no live cloud/browser claim",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Independent expectations against actual workspace/tracker functions; synthetic immutable 0.2 fixture; no browser or CSV-import claim",
     "qualified_feature_components": {
-      "src/cloud-ui.js": true
+      "src/model.js": true,
+      "src/workspace.js": true,
+      "src/tracker.js": true
     },
     "all_qualified_feature_components_match": true,
     "mismatched_recorded_source_files": [],
     "all_compared_components_match": true,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
   "component-6": {
     "proof_id": "component-6",
-    "receipt_kind": "review/ui/clearcv-mobile-import.json",
-    "receipt_sha256": "9f60bc315277d654bd48113cebab3b6ac499be980c46e3d06c257f147d8b69ed",
+    "receipt_kind": "review/clearcv/resize-only-source-comparison.json",
+    "receipt_sha256": "c25f13686b9e690dc83cde84b843148e9e362d99643f012688e2eca6c19e81dc",
     "overall_passed": null,
+    "recorded_pass_count": null,
     "checks": [
       {
-        "name": "TXT import from mobile Preview opens visible Library and preserves reviewed extracted text",
+        "name": "Exact previous app bytes reconstructed by replacing only the resized-tab listener block",
         "passed": true
       },
       {
-        "name": "Older delayed text import cannot replace a later reviewed candidate",
+        "name": "Every other native AI receipt source file remains byte-identical at final app source",
         "passed": true
       },
       {
-        "name": "Encrypted-PDF branch from mobile Preview opens visible Library and retains pending original bytes",
-        "passed": true
-      },
-      {
-        "name": "Older successful PDF extraction preserves later reviewed text",
-        "passed": true
-      },
-      {
-        "name": "Older password failure cannot revive stale PDF prompt or status",
-        "passed": true
-      },
-      {
-        "name": "Older password extraction preserves newer imported review and pending-PDF identity",
+        "name": "Historical real AI checks pass and no unexpected browser/request errors are recorded",
         "passed": true
       }
     ],
@@ -281,20 +372,168 @@
     "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Actual TXT/password-PDF import handlers and switchTab with fake local PDF failure plus DOM/matchMedia stubs; no native PDF/layout claim",
+    "related_native_receipt_sha256": "5ee1d1cfc0a428c245208b6f58a39a7e2faee09051814015022bd52af3aa1ebd",
+    "historical_app_sha256": "53d6e08277d06dbe53672d986b08826071687dc5108505dd778c6a7a96c00237",
+    "reconstructed_historical_app_sha256": "53d6e08277d06dbe53672d986b08826071687dc5108505dd778c6a7a96c00237",
+    "qualification": "Component binding only: actual10-check/four-model-request native AI proof ran at prior53d6 app. Final8d62 differs solely in resize-tab horizontal scrolling and no additional model request occurred. Current whole-app resize/core/keyboard UI proof is a separate required owner gate.",
+    "qualified_feature_components": {
+      "src/app.js": true,
+      "src/ai-client.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-7": {
+    "proof_id": "component-7",
+    "receipt_kind": "review/clearcv/submission-print-layout.json",
+    "receipt_sha256": "889a4ea171de60df8fa08c7808ac880185ba0d8a4e77baf208984e45c05f346b",
+    "overall_passed": null,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "Background main-document rerender preserves submitted snapshot page layout for keyboard/native print",
+        "passed": true
+      },
+      {
+        "name": "Submitted PDF button uses captured page layout after background update",
+        "passed": true
+      },
+      {
+        "name": "Closing submitted review restores the active document page layout",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Actual submitted-dialog/setPrintLayout/renderPreview functions with controlled background main-preview render and DOM/print stubs; CSS authority only, no native PDF geometry claim",
     "qualified_feature_components": {
       "src/app.js": true
     },
     "all_qualified_feature_components_match": true,
     "mismatched_recorded_source_files": [],
     "all_compared_components_match": true,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
-  "component-7": {
-    "proof_id": "component-7",
-    "receipt_kind": "runtime/clearcv-cloud/receipt.json",
-    "receipt_sha256": "5608b45614562e12ae45e7898eb2a93b3a67f96ead2349e6a75925e4bb3c73b3",
+  "component-8": {
+    "proof_id": "component-8",
+    "receipt_kind": "review/clearcv/submitted-handlers.json",
+    "receipt_sha256": "29e7e03737d8f9ec4b5c69d1f32afc66e474ce4e342fea69b7928ac65ed82b45",
+    "overall_passed": null,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "Open read-only submission uses captured letter after current source edits",
+        "passed": true
+      },
+      {
+        "name": "JSON callback exports exact captured full document including hidden/private fields",
+        "passed": true
+      },
+      {
+        "name": "Selected-letter DOCX callback produces actual Word bytes",
+        "passed": true
+      },
+      {
+        "name": "Failed save when copying submission keeps explicit unsaved/export message visible",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Actual submitted-dialog callbacks and actual workspace/document/Word functions with controlled DOM and save-failure stubs; no native print/layout claim",
+    "qualified_feature_components": {
+      "src/app.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "scoped observation; consult recorded counts and component hashes",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-9": {
+    "proof_id": "component-9",
+    "receipt_kind": "runtime/clearcv-built-smoke/receipt.json",
+    "receipt_sha256": "c05dea9f2d2181b887b7a94adb7e2448eaedc24b6f485c27012eab66cea07fc4",
     "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "build",
+        "passed": true
+      },
+      {
+        "name": "built-browser-smoke",
+        "passed": true
+      },
+      {
+        "name": "product and smoke source stayed stable through build and execution",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true,
+      "scripts/build.mjs": true,
+      "scripts/serve.mjs": true,
+      "scripts/browser-smoke.mjs": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-10": {
+    "proof_id": "component-10",
+    "receipt_kind": "runtime/clearcv-cloud/receipt.json",
+    "receipt_sha256": "18bb4132f3177336ad4608dce68bd4b9a38bf1827a9ab1163131a8612c607119",
+    "overall_passed": true,
+    "recorded_pass_count": null,
     "checks": [
       {
         "name": "app renders without empty placeholder content",
@@ -346,31 +585,143 @@
     "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Retained independent component receipt; proof applies only to its original scope.",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/model.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-11": {
+    "proof_id": "component-11",
+    "receipt_kind": "runtime/clearcv-legacy-file/receipt.json",
+    "receipt_sha256": "ac6bae8f4ec186c3f5151efdf1b2477b4ebf9c04c9d4b304244238bb4a9c052c",
+    "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "actual 0.1.0 JSON file import preserves legacy content and exports current schema",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
     "qualified_feature_components": {
       "src/ai-client.js": true,
       "src/app.js": true,
       "src/cloud-client.mjs": true,
       "src/cloud-ui.js": true,
       "src/formats.js": true,
+      "src/jobs-ui.js": true,
       "src/links.js": true,
       "src/model.js": true,
       "src/pdf-import.js": true,
       "src/review.js": true,
+      "src/tracker.js": true,
       "src/workspace.js": true
     },
     "all_qualified_feature_components_match": true,
-    "mismatched_recorded_source_files": [
-      "styles.css"
-    ],
-    "all_compared_components_match": false,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   },
-  "component-8": {
-    "proof_id": "component-8",
-    "receipt_kind": "runtime/clearcv-real-ai/receipt.json",
-    "receipt_sha256": "a174fe61cb715136b3760b33b52ff23b01ee827c8bca42a08299d2cf909ba757",
+  "component-12": {
+    "proof_id": "component-12",
+    "receipt_kind": "runtime/clearcv-mobile-targets/receipt.json",
+    "receipt_sha256": "220e84a1f6ccd19d33add6339b821ba62a48555858a0840e99342e051dd70049",
     "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "mobile submitted modal stays in viewport and exposes labelled 44px task and action targets",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-13": {
+    "proof_id": "component-13",
+    "receipt_kind": "runtime/clearcv-real-ai/receipt.json",
+    "receipt_sha256": "5ee1d1cfc0a428c245208b6f58a39a7e2faee09051814015022bd52af3aa1ebd",
+    "overall_passed": true,
+    "recorded_pass_count": null,
     "checks": [
       {
         "name": "app renders without empty placeholder content",
@@ -418,24 +769,297 @@
     "result": null,
     "url_annotation_count": null,
     "artifact_sha256": null,
-    "qualification": "Retained independent component receipt; proof applies only to its original scope.",
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": false,
+      "src/model.js": true
+    },
+    "all_qualified_feature_components_match": false,
+    "mismatched_recorded_source_files": [
+      "src/app.js"
+    ],
+    "all_compared_components_match": false,
+    "binding_status": "earlier-source-observation; current qualification limited to matching components",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-14": {
+    "proof_id": "component-14",
+    "receipt_kind": "runtime/clearcv-tab-resize/receipt.json",
+    "receipt_sha256": "c1f3ffd70cbd613d1a831d30e50402eef03ca29972b4f7690c64f82e50c58a44",
+    "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "selected Jobs tab remains fully visible through sequential resize without moving keyboard focus or page position",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
     "qualified_feature_components": {
       "src/ai-client.js": true,
       "src/app.js": true,
       "src/cloud-client.mjs": true,
       "src/cloud-ui.js": true,
       "src/formats.js": true,
+      "src/jobs-ui.js": true,
       "src/links.js": true,
       "src/model.js": true,
       "src/pdf-import.js": true,
       "src/review.js": true,
+      "src/tracker.js": true,
       "src/workspace.js": true
     },
     "all_qualified_feature_components_match": true,
-    "mismatched_recorded_source_files": [
-      "styles.css"
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-15": {
+    "proof_id": "component-15",
+    "receipt_kind": "runtime/clearcv-tracker-focus/receipt.json",
+    "receipt_sha256": "4ddb7348e28d72d9541b4983bf9f670aa518370f8a4ef98b5444e4d286797217",
+    "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "tracker selects retain keyboard focus through rerender and Tab stays in the record",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
     ],
-    "all_compared_components_match": false,
-    "limitation": "Matching app/model/client/backend component hashes qualify their recorded workflows. Changed CSS/geometry is qualified separately by browser-current; earlier whole-source receipts remain distinct. Untested criteria, provider quality and deployment are not inferred."
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-16": {
+    "proof_id": "component-16",
+    "receipt_kind": "runtime/clearcv-tracker/receipt.json",
+    "receipt_sha256": "9cc0f4dedba5169d0c602a33239611bb217688e2c17f948a16c831f1a94b693e",
+    "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "capture actual linked CV and cover letter as an independent submitted attachment",
+        "passed": true
+      },
+      {
+        "name": "submitted preview and native downloads retain original content after linked edits",
+        "passed": true
+      },
+      {
+        "name": "submitted print action and Chromium PDF include the captured letter and exclude current workspace",
+        "passed": true
+      },
+      {
+        "name": "restored library copy and source deletion cannot mutate the submitted attachment",
+        "passed": true
+      },
+      {
+        "name": "task drafts custom disclosures and due/done filters survive real rerenders",
+        "passed": true
+      },
+      {
+        "name": "real CSV preserves multiline values and prevents spreadsheet formula execution",
+        "passed": true
+      },
+      {
+        "name": "archive search analytics and workspace backup preserve the complete application",
+        "passed": true
+      },
+      {
+        "name": "mobile tracker and read-only submitted paper remain reachable and bounded",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
+  },
+  "component-17": {
+    "proof_id": "component-17",
+    "receipt_kind": "runtime/clearcv-ui-polish/receipt.json",
+    "receipt_sha256": "2b4da21a9edc2a16032fabad54db476210a3d3a3a962b5c952b2fc12c86d24dc",
+    "overall_passed": true,
+    "recorded_pass_count": null,
+    "checks": [
+      {
+        "name": "app renders without empty placeholder content",
+        "passed": true
+      },
+      {
+        "name": "keyboard dialogs and native action navigation preserve working content",
+        "passed": true
+      },
+      {
+        "name": "desktop 1440px layout exposes primary controls without document overflow",
+        "passed": true
+      },
+      {
+        "name": "tablet 768px layout exposes primary controls without document overflow",
+        "passed": true
+      },
+      {
+        "name": "mobile 390px layout exposes primary controls without document overflow",
+        "passed": true
+      },
+      {
+        "name": "small-mobile 320px layout exposes primary controls without document overflow",
+        "passed": true
+      },
+      {
+        "name": "200% text enlargement reflows without document overflow",
+        "passed": true
+      },
+      {
+        "name": "mobile layout has no document overflow",
+        "passed": true
+      },
+      {
+        "name": "no uncaught browser errors or failed requests",
+        "passed": true
+      },
+      {
+        "name": "app source remained stable during verification",
+        "passed": true
+      }
+    ],
+    "case_observations": [],
+    "native_media_summary": [],
+    "result": null,
+    "url_annotation_count": null,
+    "artifact_sha256": null,
+    "related_native_receipt_sha256": null,
+    "historical_app_sha256": null,
+    "reconstructed_historical_app_sha256": null,
+    "qualification": "Retained independent receipt; only the listed checks/counts and source components are exported.",
+    "qualified_feature_components": {
+      "src/ai-client.js": true,
+      "src/app.js": true,
+      "src/cloud-client.mjs": true,
+      "src/cloud-ui.js": true,
+      "src/formats.js": true,
+      "src/jobs-ui.js": true,
+      "src/links.js": true,
+      "src/model.js": true,
+      "src/pdf-import.js": true,
+      "src/review.js": true,
+      "src/tracker.js": true,
+      "src/workspace.js": true
+    },
+    "all_qualified_feature_components_match": true,
+    "mismatched_recorded_source_files": [],
+    "all_compared_components_match": true,
+    "binding_status": "current-component-bound-passing-receipt",
+    "limitation": "Only the listed feature components bind this proof to current source. Mismatching recorded files outside that set retain their earlier snapshot; current complete UI binding is browser-current. Untested criteria, provider quality and deployment are not inferred."
   }
 }

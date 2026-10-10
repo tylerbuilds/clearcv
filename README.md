@@ -36,7 +36,9 @@ This is a browser application for Linux and macOS, not a native desktop package.
 - Editable profile, experience, education, skills and custom sections, with live preview and accessible ordering.
 - Section headings, visibility and order; three original templates, accent colours, fonts, size, spacing, margins, A4/Letter paper and optional locally resized portraits.
 - Cover letters stored with each CV, editable preview and PDF/TXT/DOCX exports. A clearly labelled rule-based draft reuses supplied facts.
-- Manual job tracking with stages, notes, application/follow-up dates and linked CVs/letters. Links point to editable documents: duplicate or snapshot a CV at submission to retain its exact content.
+- Manual job tracking with stages, search, archive/restore, notes, application/follow-up dates and linked CVs/letters.
+- Independent read-only submitted CV and letter copies, reviewed/downloaded as PDF, TXT, DOCX or document JSON. Later edits, renaming and deletion of the linked CV cannot change those copies.
+- Multiple follow-up tasks with due dates and completion, editable custom text fields, CSV export and transparent current-stage/date-based analytics.
 - Automatic browser-local saves; current-CV JSON export and whole-workspace backups. Importing adds or merges documents, preserving the existing library.
 - TXT and bounded PDF/DOCX text extraction into an editable review area before creating a new CV. Formatting, photos and semantic field mapping are not imported; scanned-page OCR is unavailable. Encrypted PDFs can be unlocked locally with a password that is not stored.
 - Browser PDF printing, plain text and editable DOCX exports.
@@ -55,17 +57,27 @@ Optional AI sends only the selected source text and context when you click Gener
 
 Anyone with access to the same browser profile may be able to read your library. Private browsing, restricted storage and quota limits can prevent saves; the app reports this and keeps edits open for export.
 
-A workspace JSON backup includes **every CV, snapshot, letter, image, job description, master CV and application record**. Keep it somewhere you trust. Document JSON is limited to 1 MB and workspace JSON to 4 MB. Unknown fields, invalid layouts, duplicate IDs and malformed values are rejected before changing the library. Workspace imports merge with new IDs and preserve the current master.
+A workspace JSON backup includes **every CV, snapshot, submitted copy, letter, image, job description, master CV, application, task and custom field**. Keep it somewhere you trust. Document JSON is limited to 1 MB and workspace JSON to 4 MB. Unknown fields, invalid layouts, duplicate IDs and malformed values are rejected before changing the library. Workspace imports merge with new IDs and preserve the current master.
 
 Original release version 1 CV exports are migrated with additive defaults. The original `clearcv.document.v1` browser value is retained when the new `clearcv.workspace.v1` library is created. If a saved workspace cannot be read, its raw bytes are copied to a recovery key before replacement. If that copy cannot save, ordinary autosaves are locked: Library offers original recovery download and an explicit replacement action. No ordinary edit discards an unbacked original.
 
-Practical local bounds are 25 CVs, 10 named snapshots per CV, 20 custom sections, 60 items per basic section and 150 application records. These keep browser storage bounded; they are not subscription tiers. Snapshots contain complete CV and cover-letter state. AI Undo lasts while the page remains open; save a named snapshot for persistent history.
+Practical local bounds are 25 CVs, 10 named snapshots per CV, 20 custom sections, 60 items per basic section and 150 application records. Each application supports 30 tasks, 20 custom fields and 8 submitted copies, within the shared 4 MB workspace limit. These keep browser storage bounded; they are not subscription tiers. Snapshots contain complete CV and cover-letter state. AI Undo lasts while the page remains open; save a named snapshot for persistent history.
+
+## Keep an application record
+
+Open **Jobs**, add a role and choose its linked CV. The link opens the current editable CV. **Save submitted CV + letter copy** captures an independent document bundle with its original CV name and a UTC capture timestamp; the interface displays that time in your browser's local timezone. It does not send an application or certify the employer's receipt. Hidden sections and the pasted job description stay in the private captured document and JSON backups; visible CV/letter exports use the captured layout and content. Reviewing a copy never overwrites the current CV. Creating an editable library copy leaves the submitted copy intact.
+
+Tasks have separate due dates and completion controls. The older single follow-up date remains available and is pending until cleared; it has no completion flag. Due means today or earlier, and overdue means before today. Search includes application metadata, notes, task titles and custom fields, rather than private submitted document text. Archive removes a record from the active view and analytics while retaining its tasks and submitted copies; restoring brings it back.
+
+**Your search at a glance** derives counts from unarchived records. It shows current stages, open/done tasks, overdue/today tasks and the applied dates you supplied for the last seven local calendar days, including today. Future and missing applied dates are identified separately. These are current-state counts, not a historical funnel, conversion rates or a hiring prediction. No background reminders are delivered.
+
+CSV exports either the shown records or all records, including archived ones. It quotes commas, quotes, line breaks and Unicode; formula-like prefixes receive a protective leading apostrophe that may remain visible in a spreadsheet. Custom columns use a case-sensitive label union, prefixed `Custom: `; repeated same-label values are joined with a line break. Task and submission metadata are included, but captured CV/letter contents are excluded. Use workspace JSON for a complete portable backup. Spreadsheet software can alter escaping on re-save, so CSV is not a full-fidelity workspace import format. CSV/spreadsheet import remains unavailable.
 
 ## Research and scope
 
 [Free and premium parity ledger](docs/research/parity-ledger.md), [all-tier source comparison](docs/research/feature-comparison.md) and [feature map](docs/research/feature-map.md) distinguish source observations, implementation decisions and gaps. [REA provenance](docs/research/rea-provenance.md) records the pinned reverse-engineering tool used for public discovery. Sanitised proof metadata and [verification](docs/verification.md) document the actual checks.
 
-Remaining limits include LinkedIn extraction, semantic ATS validation, full-document AI translation, the full target template/section catalogue, automatic multi-user merging and full-workspace cloud synchronisation, job-provider feeds and alerts, a browser extension, company research and voice interview services, team branding and native installers. Custom statuses/columns, tracker spreadsheet import and automatic reminders are not shipped. DOCX export contains editable text and layout settings, but does not embed the portrait.
+Remaining limits include LinkedIn extraction, semantic ATS validation, full-document AI translation, the full target template/section catalogue, automatic multi-user merging and full-workspace cloud synchronisation, job-provider feeds and alerts, a browser extension, company research and voice interview services, team branding and native installers. Custom pipeline stages, board dragging/sorting, tracker spreadsheet import, structured interview/offer models and automatic reminders are not shipped. DOCX export contains editable text and layout settings, but does not embed the portrait. Optional sharing sends only the active CV; application records and submitted copies are not cloud-shared.
 
 See the ledger for each official source, known tier and delivered/remaining/unknown boundary. Optional AI depends on a configured provider; rules remain available without it. No generated claim is automatically accepted as true.
 

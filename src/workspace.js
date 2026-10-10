@@ -1,4 +1,5 @@
 import { validateDocument, parseDocument, createDocument, MAX_DOCUMENT_BYTES } from './model.js';
+import { validateTrackerFields } from './tracker.js';
 export const WORKSPACE_SCHEMA = 'clearcv.workspace';
 export const WORKSPACE_VERSION = 1;
 export const MAX_WORKSPACE_BYTES = 4_000_000;
@@ -44,9 +45,10 @@ export function validateWorkspace(value) {
   next.masterDocument = validateDocument(Object.hasOwn(next, 'masterDocument') ? next.masterDocument : { ...next.documents[0].document, profile: next.masterProfile });
   if (!ids.has(next.activeId)) fail('The active CV must exist in the library.');
   if (!Array.isArray(next.applications) || next.applications.length > 150) fail('Use at most 150 tracked applications.');
+  next.applications = next.applications.map(validateTrackerFields);
   const appIds = new Set();
   for (const application of next.applications) {
-    object(application, APP_KEYS, 'Application'); identifier(application.id);
+    identifier(application.id);
     if (appIds.has(application.id)) fail('Duplicate application ID.'); appIds.add(application.id);
     for (const key of APP_KEYS.filter(key => key !== 'id')) text(application[key], `Application ${key}`, key === 'notes' ? 10000 : 300);
     if (!JOB_STATUSES.includes(application.status)) fail('Choose a supported application status.');
@@ -104,12 +106,78 @@ export function addApplication(workspace, id) {
   return validateWorkspace(next);
 }
 export function updateApplication(workspace, id, field, value) {
-  if (!APP_KEYS.includes(field) || field === 'id') fail('Unknown application field.');
+  if ((!APP_KEYS.includes(field) && field !== 'archived') || field === 'id') fail('Unknown application field.');
   const next = validateWorkspace(workspace);
   const application = next.applications.find(app => app.id === id);
   if (!application) fail('Application not found.');
   application[field] = value;
   return validateWorkspace(next);
+}
+function applicationEntry(workspace, id) {
+  const application = workspace.applications.find(app => app.id === id);
+  if (!application) fail('Application not found.');
+  return application;
+}
+function editApplicationList(workspace, applicationId, collection, edit) {
+  const next = validateWorkspace(workspace);
+  const application = applicationEntry(next, applicationId);
+  application[collection] = edit(application[collection]);
+  return validateWorkspace(next);
+}
+export function addApplicationTask(workspace, applicationId, id) {
+  return editApplicationList(workspace, applicationId, 'tasks', tasks => [...tasks, { id, title: 'Follow up', dueDate: '', done: false }]);
+}
+export function updateApplicationTask(workspace, applicationId, id, field, value) {
+  if (!['title', 'dueDate', 'done'].includes(field)) fail('Unknown task field.');
+  return editApplicationList(workspace, applicationId, 'tasks', tasks => {
+    if (!tasks.some(task => task.id === id)) fail('Task not found.');
+    return tasks.map(task => task.id === id ? { ...task, [field]: value } : task);
+  });
+}
+export function removeApplicationTask(workspace, applicationId, id) {
+  return editApplicationList(workspace, applicationId, 'tasks', tasks => {
+    if (!tasks.some(task => task.id === id)) fail('Task not found.');
+    return tasks.filter(task => task.id !== id);
+  });
+}
+export function addApplicationCustomField(workspace, applicationId, id) {
+  return editApplicationList(workspace, applicationId, 'customFields', fields => [...fields, { id, label: 'Custom field', value: '' }]);
+}
+export function updateApplicationCustomField(workspace, applicationId, id, field, value) {
+  if (!['label', 'value'].includes(field)) fail('Unknown custom field property.');
+  return editApplicationList(workspace, applicationId, 'customFields', fields => {
+    if (!fields.some(item => item.id === id)) fail('Custom field not found.');
+    return fields.map(item => item.id === id ? { ...item, [field]: value } : item);
+  });
+}
+export function removeApplicationCustomField(workspace, applicationId, id) {
+  return editApplicationList(workspace, applicationId, 'customFields', fields => {
+    if (!fields.some(item => item.id === id)) fail('Custom field not found.');
+    return fields.filter(item => item.id !== id);
+  });
+}
+export function captureApplicationSubmission(workspace, applicationId, id, name, submittedAt = new Date().toISOString()) {
+  const next = validateWorkspace(workspace);
+  const application = applicationEntry(next, applicationId);
+  const linked = next.documents.find(entry => entry.id === application.cvId);
+  if (!linked) fail('Link a CV before saving a submitted copy.');
+  application.submissions.push({ id, name: name?.trim() || linked.name, submittedAt, cvName: linked.name, document: structuredClone(linked.document) });
+  return validateWorkspace(next);
+}
+export function removeApplicationSubmission(workspace, applicationId, id) {
+  return editApplicationList(workspace, applicationId, 'submissions', copies => {
+    if (!copies.some(copy => copy.id === id)) fail('Submitted copy not found.');
+    return copies.filter(copy => copy.id !== id);
+  });
+}
+export function applicationSubmission(workspace, applicationId, id) {
+  const copy = applicationEntry(validateWorkspace(workspace), applicationId).submissions.find(copy => copy.id === id);
+  if (!copy) fail('Submitted copy not found.');
+  return copy;
+}
+export function copySubmissionToLibrary(workspace, applicationId, submissionId, id) {
+  const copy = applicationSubmission(workspace, applicationId, submissionId);
+  return addDocument(workspace, copy.document, id, `${copy.name} (submitted copy)`.slice(0, 100));
 }
 export function serialiseWorkspace(workspace) { return JSON.stringify(validateWorkspace(workspace), null, 2); }
 export function parseWorkspace(json) {

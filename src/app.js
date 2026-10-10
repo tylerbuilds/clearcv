@@ -6,6 +6,8 @@ import { exportDocx, extractDocx, normalisePlainText } from './formats.js';
 import { getAiStatus, generateWriting } from './ai-client.js';
 import { createCloudUI } from './cloud-ui.js';
 import { safeContactHref } from './links.js';
+import { createJobsUI } from './jobs-ui.js';
+import { applicationSubmission, copySubmissionToLibrary } from './workspace.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
 let workspace;
@@ -14,6 +16,7 @@ let importLabel = '';
 let pendingPdf = null;
 let importGeneration = 0;
 let cloudUI = null;
+let jobsUI = null;
 let aiStatus = { enabled: false };
 let aiBusy = false;
 let aiTask = 'summary';
@@ -266,21 +269,31 @@ function renderPanel() {
   else if (activeTab === 'match') renderMatch();
   else if (activeTab === 'library') renderLibrary();
   else if (activeTab === 'letter') renderLetter();
-  else if (activeTab === 'jobs') renderJobs();
+  else if (activeTab === 'jobs') {
+    if (!jobsUI) jobsUI = createJobsUI({ element, field, selectField, sectionTitle, getWorkspace: () => workspace, changeWorkspace, safeAction, announce, switchTab, download, openSubmission: showSubmittedCopy });
+    jobsUI.render(panel);
+  }
   else if (activeTab === 'review') renderReview();
   else if (activeTab === 'ai') renderAi();
   else renderCloud();
 }
-function renderPreview() {
+function setPrintLayout(doc) {
+  let printStyle = document.querySelector('#document-print-style');
+  if (!printStyle) { printStyle = element('style', { id: 'document-print-style' }); document.head.append(printStyle); }
+  printStyle.textContent = `@media print{@page{size:${doc.layout.pageSize};margin:${(doc.layout.margin / 3.78).toFixed(1)}mm}}`;
+}
+function renderPreview(documentOverride = state, kind = activeTab === 'letter' ? 'letter' : 'cv', target = preview) {
+  const state = documentOverride;
+  const preview = target;
   preview.replaceChildren();
   preview.className = `paper template-${state.style.template}`;
   preview.style.setProperty('--paper-accent', state.style.accent);
   for (const [key, value] of Object.entries({ 'font-size': `${state.layout.fontSize}px`, 'line-height': state.layout.lineHeight, 'spacing': `${state.layout.spacing}px`, 'margin': `${state.layout.margin}px`, 'font': {sans:'ui-sans-serif, system-ui, sans-serif',serif:'Georgia, serif',mono:'ui-monospace, monospace'}[state.layout.font] })) preview.style.setProperty(`--cv-${key}`, value);
-  let printStyle = document.querySelector('#document-print-style');
-  if (!printStyle) { printStyle = element('style', { id: 'document-print-style' }); document.head.append(printStyle); }
-  printStyle.textContent = `@media print{@page{size:${state.layout.pageSize};margin:${(state.layout.margin / 3.78).toFixed(1)}mm}}`;
-  document.querySelector('#preview-kind').textContent = `${state.layout.pageSize} · ${activeTab === 'letter' ? 'cover letter' : 'CV preview'}`;
-  if (activeTab === 'letter') { renderLetterPreview(); return; }
+  if (target.id === 'cv-preview') {
+    if (!document.querySelector('#submitted-dialog[open]')) setPrintLayout(state);
+    document.querySelector('#preview-kind').textContent = `${state.layout.pageSize} · ${kind === 'letter' ? 'cover letter' : 'CV preview'}`;
+  }
+  if (kind === 'letter') { renderLetterPreview(state, preview); return; }
   const profile = state.profile;
   const header = element('header', { class: 'cv-header' }, [
     element('h1', { class: `cv-name${profile.name ? '' : ' cv-placeholder'}`, text: profile.name || 'Your name' }),
@@ -364,10 +377,6 @@ panel.addEventListener('input', event => {
     else if (input.dataset.letter) change({ ...state, coverLetter: { ...state.coverLetter, [input.dataset.letter]: input.value } });
     else if (input.dataset.layout) change({ ...state, layout: { ...state.layout, [input.dataset.layout]: input.type === 'range' ? Number(input.value) : input.value } });
     else if (input.dataset.sectionTitle) change({ ...state, sectionTitles: { ...state.sectionTitles, [input.dataset.sectionTitle]: input.value } });
-    else if (input.dataset.applicationField) {
-      // Text links are validated on blur to allow typing the URL progressively.
-      if (input.dataset.applicationField !== 'url') changeWorkspace(updateApplication(workspace, input.dataset.applicationId, input.dataset.applicationField, input.value), false);
-    }
     else if (input.id === 'document-name') {
       if (input.value.trim()) changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, name: input.value } : entry) }, false);
     }
@@ -613,7 +622,7 @@ function renderLetter() {
   } }));
   panel.append(element('p', { class: 'design-note', text: 'This draft is assembled from your stored facts by explicit rules, not an AI model. Check each sentence and personalise it. Save as PDF, TXT and DOCX export the cover letter while this view is open.' }));
 }
-function renderLetterPreview() {
+function renderLetterPreview(state, preview) {
   const p = state.profile; const letter = state.coverLetter;
   preview.classList.add('letter-paper');
   preview.append(element('header', { class: 'cv-header' }, [element('h1', { class: 'cv-name', text: p.name || 'Your name' }), element('div', { class: 'cv-contact' }, ['email', 'phone', 'location', 'website'].filter(key => p[key].trim()).map(key => contactElement(key, p[key]))) ]));
@@ -622,29 +631,32 @@ function renderLetterPreview() {
   if (letter.subject || letter.role) preview.append(element('h2', { class: 'letter-subject', text: letter.subject || `Application: ${letter.role}` }));
   preview.append(element('p', { text: letter.salutation }), element('div', { class: 'letter-body', text: letter.body }), element('p', { class: 'letter-closing', text: `${letter.closing}\n${p.name}` }));
 }
-let jobFilter = 'all';
-function renderJobs() {
-  panel.append(sectionTitle('Move your search forward', `${workspace.applications.length} LOCAL APPLICATIONS`));
-  panel.append(element('p', { class: 'panel-intro', text: 'Keep the role, a linked CV and the next step together. Linked CVs stay editable: duplicate or save a named snapshot at submission. This tracker never sends an application or contacts an employer.' }));
-  const counts = element('div', { class: 'job-counts' });
-  for (const status of JOB_STATUSES) counts.append(element('span', { text: `${status}: ${workspace.applications.filter(app => app.status === status).length}` }));
-  panel.append(counts, element('button', { id: 'add-application', type: 'button', class: 'button button-primary', text: '+ Track a job', onClick: () => safeAction(() => changeWorkspace(addApplication(workspace, crypto.randomUUID()))) }));
-  const filter = selectField('View', jobFilter, 'job-filter', [['all', 'All applications'], ...JOB_STATUSES.map(status => [status, status[0].toUpperCase() + status.slice(1)])]);
-  filter.querySelector('select').addEventListener('change', event => { jobFilter = event.target.value; renderJobsPanel(); }); panel.append(filter);
-  for (const application of workspace.applications.filter(app => jobFilter === 'all' || app.status === jobFilter)) {
-    const card = element('section', { class: 'entry application-card', 'data-application-id': application.id }, [sectionTitle(application.company || 'New application', application.status)]);
-    for (const [key, label, type] of [['company', 'Company'], ['role', 'Role'], ['url', 'Job URL', 'url'], ['appliedDate', 'Applied date', 'date'], ['followUpDate', 'Next follow-up', 'date'], ['notes', 'Notes & next steps']]) card.append(field(label, application[key], `application-${application.id}-${key}`, { type, multiline: key === 'notes', rows: '4', data: { 'data-application-field': key, 'data-application-id': application.id } }));
-    card.append(selectField('Status', application.status, `application-${application.id}-status`, JOB_STATUSES.map(status => [status, status[0].toUpperCase() + status.slice(1)]), { 'data-application-field': 'status', 'data-application-id': application.id }));
-    card.append(selectField('Linked CV & cover letter', application.cvId, `application-${application.id}-cv`, [['', 'No CV linked'], ...workspace.documents.map(entry => [entry.id, entry.name])], { 'data-application-field': 'cvId', 'data-application-id': application.id }));
-    card.append(element('div', { class: 'action-row' }, [
-      application.cvId ? element('button', { type: 'button', class: 'text-button', text: 'Open linked CV', 'data-open-linked-cv': application.id, onClick: () => { changeWorkspace({ ...workspace, activeId: application.cvId }); switchTab('content'); } }) : null,
-      element('button', { type: 'button', class: 'text-button', text: 'Remove application', 'data-remove-application': application.id, onClick: () => { if (window.confirm('Remove this application record? Your CVs will be kept.')) safeAction(() => changeWorkspace({ ...workspace, applications: workspace.applications.filter(app => app.id !== application.id) })); } })
-    ]));
-    panel.append(card);
+function showSubmittedCopy(applicationId, submissionId) {
+  const copy = applicationSubmission(workspace, applicationId, submissionId);
+  const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog', 'aria-labelledby': 'submitted-title' });
+  const paper = element('article', { id: 'submitted-preview', class: 'paper' });
+  let kind = 'cv';
+  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { id: 'submitted-title', text: copy.name }), element('p', { class: 'panel-intro', text: `Read-only copy of ${copy.cvName}, captured ${new Date(copy.submittedAt).toLocaleString('en-GB')}. Editing or deleting its source CV cannot change this copy.` })]);
+  const views = element('div', { class: 'action-row' });
+  function display(selected) {
+    kind = selected;
+    for (const button of views.querySelectorAll('button')) button.setAttribute('aria-pressed', String(button.dataset.submissionKind === selected));
+    renderPreview(copy.document, kind, paper); setPrintLayout(copy.document);
   }
-  if (!workspace.applications.length) panel.append(element('p', { class: 'match-empty', text: 'Add the first role you are considering. Your application history will be included in workspace backups.' }));
+  for (const [value, label] of [['cv', 'Submitted CV'], ['letter', 'Submitted letter']]) views.append(element('button', { type: 'button', class: 'button button-quiet', 'data-submission-kind': value, id: `submitted-${value}`, text: label, onClick: () => display(value) }));
+  const actions = element('div', { class: 'action-row' }, [
+    element('button', { id: 'submitted-print', type: 'button', class: 'button button-primary', text: 'Save this copy as PDF', onClick: () => { setPrintLayout(copy.document); const title = document.title; document.title = `${copy.name} — ${kind === 'letter' ? 'submitted letter' : 'submitted CV'}`; window.print(); document.title = title; } }),
+    element('button', { id: 'submitted-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(copy.document, kind), 'text/plain;charset=utf-8', 'txt', `${copy.name}-${kind}`) }),
+    element('button', { id: 'submitted-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(copy.document, { kind }), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', `${copy.name}-${kind}`) }),
+    element('button', { id: 'submitted-json', type: 'button', class: 'button button-quiet', text: 'CV + letter JSON', onClick: () => download(serialiseDocument(copy.document), 'application/json', 'json', `${copy.name}-submitted`) }),
+    element('button', { id: 'submitted-copy-to-library', type: 'button', class: 'text-button', text: 'Create an editable library copy', onClick: () => safeAction(() => { const saved = changeWorkspace(copySubmissionToLibrary(workspace, applicationId, submissionId, crypto.randomUUID())); dialog.close(); switchTab('content'); announce(saved ? 'A separate editable CV is now in your library. The submitted copy is unchanged.' : 'An editable copy is open but could not be saved. Export a workspace JSON backup before closing; the submitted copy is unchanged.', !saved); }) }),
+    element('button', { id: 'submitted-close', type: 'button', class: 'text-button', text: 'Close review', onClick: () => dialog.close() })
+  ]);
+  controls.append(views, actions, element('p', { class: 'field-hint', text: 'JSON retains the full editable CV and letter, including hidden sections and the pasted job description. PDF, TXT and DOCX use the selected visible CV or letter. Keep these files private.' }));
+  dialog.append(controls, paper); document.body.append(dialog);
+  dialog.addEventListener('close', () => { dialog.remove(); renderPreview(); });
+  display('cv'); dialog.showModal(); document.querySelector('#submitted-close').focus();
 }
-function renderJobsPanel() { panel.replaceChildren(); renderJobs(); }
 function renderReview() {
   const review = reviewCV(state);
   panel.append(sectionTitle('Clarity, one detail at a time'), element('p', { class: 'panel-intro', text: review.method }));
@@ -674,15 +686,6 @@ function renderTailoring(container) {
 document.querySelector('#active-document').addEventListener('change', event => safeAction(() => changeWorkspace({ ...workspace, activeId: event.target.value })));
 document.querySelector('#export-txt').addEventListener('click', () => safeAction(() => download(plainTextDocument(state, activeTab === 'letter' ? 'letter' : 'cv'), 'text/plain;charset=utf-8', 'txt', `${activeEntry(workspace).name}${activeTab === 'letter' ? '-letter' : ''}`)));
 document.querySelector('#export-docx').addEventListener('click', () => safeAction(() => download(exportDocx(state, { kind: activeTab === 'letter' ? 'letter' : 'cv' }), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', `${activeEntry(workspace).name}${activeTab === 'letter' ? '-letter' : ''}`)));
-panel.addEventListener('focusout', event => {
-  const input = event.target;
-  if (input.dataset.applicationField === 'url') {
-    if (!safeAction(() => changeWorkspace(updateApplication(workspace, input.dataset.applicationId, 'url', input.value), false))) input.value = workspace.applications.find(app => app.id === input.dataset.applicationId).url;
-  }
-});
-panel.addEventListener('change', event => {
-  if (event.target.dataset.applicationField === 'status') renderJobsPanel();
-});
 
 function aiSource(target = aiTarget) {
   if (target === 'summary') return state.profile.summary;
@@ -852,7 +855,23 @@ function updateTabOverflow() {
   moreTabs.classList.toggle('at-end', editorTabs.scrollLeft + editorTabs.clientWidth >= editorTabs.scrollWidth - 4);
 }
 editorTabs.addEventListener('scroll', updateTabOverflow);
-window.addEventListener('resize', updateTabOverflow);
+let tabResizeFrame = 0;
+window.addEventListener('resize', () => {
+  if (tabResizeFrame) return;
+  tabResizeFrame = requestAnimationFrame(() => {
+    tabResizeFrame = 0;
+    updateTabOverflow();
+    const selected = editorTabs.querySelector('[aria-selected="true"]');
+    if (selected && editorTabs.clientWidth) {
+      const bounds = editorTabs.getBoundingClientRect();
+      const tabBounds = selected.getBoundingClientRect();
+      const delta = tabBounds.left < bounds.left ? tabBounds.left - bounds.left : tabBounds.right > bounds.right ? tabBounds.right - bounds.right : 0;
+      // Reveal horizontally without changing the page position or keyboard focus.
+      if (delta) editorTabs.scrollLeft = Math.max(0, Math.min(editorTabs.scrollWidth - editorTabs.clientWidth, editorTabs.scrollLeft + delta));
+    }
+    updateTabOverflow();
+  });
+});
 requestAnimationFrame(updateTabOverflow);
 
 function contactElement(kind, text) {

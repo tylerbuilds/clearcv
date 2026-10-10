@@ -1,15 +1,17 @@
 {
   "schema_version": 1,
+  "qualification_state": "final-source-freeze-qualified",
   "application": "clearcv",
+  "application_version": "0.3.0",
   "reference_product": "Enhancv",
-  "checked_at_utc": "2026-10-09T22:50:22.316659+00:00",
+  "checked_at_utc": "2026-10-10T00:00:47.143193+00:00",
   "tier_scope": [
     "Seven-day builder trial",
     "Free public generators/checker",
     "Free job tracker",
     "Pro monthly/quarterly/annual entitlements"
   ],
-  "scope": "Every row of the frozen all-tier reference inventory mapped to current app source and available evidence. This is not a complete reference catalogue or parity percentage.",
+  "scope": "Every frozen all-tier reference workflow is mapped to the isolated next-wave source. Classifications bind the coordinator-frozen source and listed native receipts. No complete catalogue, proprietary internals or full-parity claim.",
   "classification_definitions": {
     "implemented-local-equivalent": "Source implements the stated independent local workflow. This does not assert original algorithms, content catalogue, scale or authenticated behaviour.",
     "partial": "Real delivered subset exists; remaining gaps are named.",
@@ -19,56 +21,69 @@
   "counts": {
     "reference_rows": 48,
     "by_classification": {
-      "implemented-local-equivalent": 17,
-      "partial": 21,
-      "missing": 10
+      "implemented-local-equivalent": 23,
+      "partial": 18,
+      "missing": 7
     }
   },
   "verification_limits": [
-    "No tests or browser launched by this comparison task; existing receipts are reused with their own qualifications.",
+    "No app tests or browser launched by this comparison task. Each next-wave receipt retains its own source/component and acceptance scope; draft classifications become frozen only after coordinator approval.",
     "A test file proves test definitions exist; it does not prove those tests passed on this snapshot.",
     "The optional capability-link backend does not implement authenticated account identity or automatic concurrent merging.",
     "AI/provider samples, pure tests, browser outputs, platform CI and public deployment are separate proofs."
   ],
+  "coordinator_freeze": {
+    "confirmed": true,
+    "receipt_sha256": "9021b7761cac0b745d056ff80adf27584061a56ce159a8b018daec45ef5a56ac"
+  },
   "source_snapshot": {
-    "head": "5730e356d620233859fb400fc8518052822141a6",
+    "head": "472173127cd9aae0225f519cf0e84bde24717b2c",
     "file_sha256": {
       "scripts/ai.mjs": "d7dd0feff904789b7950217f7ee4c243e77a76f28f1567d7ebb72947272e3652",
-      "scripts/browser-smoke.mjs": "85688fee1050c5b0ec82484c5c0a54c984379af8a6ef3de879271e2977f119c5",
+      "scripts/browser-smoke.mjs": "4ed860f9e09d16c96528ffe40f29c1dfc7527242bc593cf9268914f83ded1eae",
       "scripts/build.mjs": "6674614d03eda8492eaf32b50877bba92de9bd036f9b83990f2fbea4881cbf8a",
       "scripts/prepare-assets.mjs": "500c1bb3d7cb9d9a3889a211ce0da8cdef9d53c36382dc8e9807818c51fc169e",
       "scripts/serve.mjs": "07a2cb0aed2004e6f4aad62f775857b7332a16f103f1140665faa2e974afc4c2",
       "scripts/workspace-backend.mjs": "1eb7f84754ca75d5634b60e8a76782933f8b1c21a1e138f0cdf1fd54bd0a30f3",
       "src/ai-client.js": "64ac2a79ec0e2b20750bf1095403b4a026ad92f6f29fe92559461d871c89e06a",
-      "src/app.js": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118",
+      "src/app.js": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8",
       "src/cloud-client.mjs": "7ce383928b72c3e11ea250297d11c0e0ccca60dc297f920f1ef724d6f6ef4360",
       "src/cloud-ui.js": "07c816cfe7874c988e2b04839fa2b9fac23eda7f0800a1e2f31794a09fea00d6",
       "src/formats.js": "1bee9303614caf4e1c8636650d0c66e4db73b7cd25a9b074cb9996e1f6859f03",
+      "src/jobs-ui.js": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe",
       "src/links.js": "b7bcf8b5533d020a65a45e8a40d5af035c390c0b71408bc57ba52fc6e1ac3310",
       "src/model.js": "b1bf91dad64dc4a37b4d4d4e032e28fc77337374ea4c90e97f36dcdbbb7942e7",
       "src/pdf-import.js": "03a165380b814d187b43a6fb62eb533f630aa2345a50497480c317ae01542ad7",
       "src/review.js": "f719f624468802e213492709e86734878420d8b5d5c55a89525d683e9b400e62",
-      "src/workspace.js": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2",
+      "src/tracker.js": "012a0795bb954a42dd3d6f866d422c1b03fccd833e1d8550e1ec5bf612f9989b",
+      "src/workspace.js": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5",
       "tests/ai.test.js": "27753d46fe03a7970f245054064dd542e58e222b4b4eb381c41d33f4bc4fc995",
+      "tests/cloud-document-preservation.test.mjs": "ab35d75841a0b263adc10d552ee0b0b46e4acb1f623325b1a54b2a7d93a7334c",
       "tests/cloud-server-boundaries.test.mjs": "26f98900b5e1fb39d62b873eb65f102e23cce1b36246ae8795ab8580f6b37ca7",
       "tests/formats.test.js": "1c31efa06efe727a7cd255f5824e8f1f52b8e90895a3931fd597ccb4218d052f",
       "tests/links.test.js": "18239fc8166f12e4bc44144678d14574defe06b63baed8f2eb1484afcad2524c",
       "tests/model.test.js": "ed586c3b15c5d5bd40c58a4927faea2a84903c6a04bea2ba2d0b056a60b70610",
       "tests/review.test.js": "265d09dcfdf701e69adbc23f7ceb09344237253f6b42b6d95671ede24809ed56",
       "tests/static-server.test.mjs": "8dce6e23c8ea50b9cb0ab0a8ff3a3f2fd2de049f20e56c1fd2c7eeb3959e665c",
+      "tests/tracker-workspace.test.js": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
+      "tests/tracker.test.js": "2381c5e7c7d85696a2990d5874cfb162f1642dbc20a9f2cbf13f0cb3211ef799",
       "tests/workspace-backend.test.mjs": "63979955e4cb04a542931593ce21349b9c7d2b326989d52a53554d91e2b3c3d0",
       "tests/workspace.test.js": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
       "index.html": "77347f636badc822781531aa14ed3c8a042f92ae0c81ec64cb06afce2f53c8b2",
-      "styles.css": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3",
-      "package.json": "a2617c4e60da0d565fe6449bf8489ba44d9dcc5be4a5e8f45d9870e69b0a5a25"
+      "styles.css": "49703152f2de07d18f3515238227ab11105132fadcc938cba652b5083887c703",
+      "package.json": "c54f38df719739473b279e3477ab8a0a9b3da44718b827553608bfe9bd345d54"
     },
-    "qualification": "Frozen release working tree inspected after UI fixes; file hashes identify these contents independently of HEAD."
+    "qualification": "Current file hashes identify the isolated implementation independently of its base HEAD. Coordinator source freeze and listed native checks are bound to this snapshot; CI/deployment remain separate."
   },
   "reference_inventory": {
     "file": "official-feature-inventory.json",
     "sha256": "dc90a4d2e485dcb6a5cf62ecd90f47a52e910fd57c4e6c1a387933d624ff6fe1"
   },
-  "comparison_input_sha256": "ce158d23dae1e7d6cb814dec6344098078ac883b80b5ff10cf747ee9e81cfc07",
+  "comparison_input_sha256": "60bc0835f273ca7dbe8badc7fbd855457d47c88fa66f240d14a5f51cd28e1e5d",
+  "historical_0_2_comparison": {
+    "sha256": "e59ef852631a102268bb41f5d5b859536b6d02383768334a197915b49f7ee05c",
+    "scope": "Historical classifications and observations only; no retained 0.2 browser proof is upgraded to current next-wave qualification."
+  },
   "features": [
     {
       "reference_id": "cv-start",
@@ -93,9 +108,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 537,
+          "line": 546,
           "symbol_or_handler": "renderLibrary",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -166,6 +181,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -175,17 +192,22 @@
           {
             "name": "full master CV creates independent new CV with existing career and custom sections",
             "passed": true,
-            "ms": 172
+            "ms": 192
           },
           {
             "name": "DOCX import extracts reviewed text and creates a separate CV",
             "passed": true,
-            "ms": 144
+            "ms": 134
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -214,9 +236,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 475,
+          "line": 484,
           "symbol_or_handler": "renderCustomSections",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -252,6 +274,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -261,12 +285,17 @@
           {
             "name": "custom content, renamed headings and section order persist in preview",
             "passed": true,
-            "ms": 281
+            "ms": 214
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -336,6 +365,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -344,7 +375,7 @@
         "browser_checks": [],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -370,9 +401,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 520,
+          "line": 529,
           "symbol_or_handler": "renderSectionControls",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -408,6 +439,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -417,12 +450,17 @@
           {
             "name": "custom content, renamed headings and section order persist in preview",
             "passed": true,
-            "ms": 281
+            "ms": 214
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -444,15 +482,15 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 203,
+          "line": 206,
           "symbol_or_handler": "renderDesign",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/app.js",
-          "line": 490,
+          "line": 499,
           "symbol_or_handler": "renderLayoutControls",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -488,6 +526,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -497,12 +537,17 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -525,18 +570,20 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 274,
+          "line": 285,
           "symbol_or_handler": "renderPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "styles.css",
           "line": 6,
           "symbol_or_handler": "@media print",
-          "sha256": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3"
+          "sha256": "49703152f2de07d18f3515238227ab11105132fadcc938cba652b5083887c703"
         }
       ],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -546,12 +593,17 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -573,12 +625,14 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 274,
+          "line": 285,
           "symbol_or_handler": "renderPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -588,12 +642,17 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -616,15 +675,15 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 274,
+          "line": 285,
           "symbol_or_handler": "renderPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/app.js",
-          "line": 858,
+          "line": 877,
           "symbol_or_handler": "contactElement",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/links.js",
@@ -634,9 +693,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 385,
+          "line": 394,
           "symbol_or_handler": "window.print()",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -656,6 +715,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -665,19 +726,23 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           },
           {
             "name": "safe contact links remain clickable in preview and actual PDF annotations",
             "passed": true,
-            "ms": 157
+            "ms": 156
           }
         ],
         "additional_proof_ids": [
-          "component-3"
+          "component-3",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -704,9 +769,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 675,
+          "line": 687,
           "symbol_or_handler": "#export-txt",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -777,6 +842,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -786,17 +853,22 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           },
           {
             "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
             "passed": true,
-            "ms": 331
+            "ms": 315
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -816,18 +888,20 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 490,
+          "line": 499,
           "symbol_or_handler": "renderLayoutControls",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "styles.css",
           "line": 6,
           "symbol_or_handler": "@page",
-          "sha256": "2ac5c25bd8d12b686869403ea8a41d2a3c00a23c2814960b5c92bd5da54598d3"
+          "sha256": "49703152f2de07d18f3515238227ab11105132fadcc938cba652b5083887c703"
         }
       ],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -837,12 +911,17 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -865,15 +944,15 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 537,
+          "line": 546,
           "symbol_or_handler": "renderLibrary",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/workspace.js",
-          "line": 19,
+          "line": 20,
           "symbol_or_handler": "validateWorkspace",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         }
       ],
       "test_evidence": [
@@ -909,6 +988,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -918,12 +999,18 @@
           {
             "name": "duplicate CV edits independently and reload preserves active selection",
             "passed": true,
-            "ms": 315
+            "ms": 432
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9",
+          "component-11"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -945,15 +1032,15 @@
       "source_evidence": [
         {
           "file": "src/workspace.js",
-          "line": 70,
+          "line": 72,
           "symbol_or_handler": "addDocument",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/app.js",
-          "line": 537,
+          "line": 546,
           "symbol_or_handler": "renderLibrary",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -989,6 +1076,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -998,12 +1087,17 @@
           {
             "name": "full master CV creates independent new CV with existing career and custom sections",
             "passed": true,
-            "ms": 172
+            "ms": 192
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1023,9 +1117,9 @@
       "source_evidence": [
         {
           "file": "src/workspace.js",
-          "line": 75,
+          "line": 77,
           "symbol_or_handler": "duplicateDocument",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         }
       ],
       "test_evidence": [
@@ -1061,6 +1155,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1070,12 +1166,12 @@
           {
             "name": "duplicate CV edits independently and reload preserves active selection",
             "passed": true,
-            "ms": 315
+            "ms": 432
           }
         ],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1097,21 +1193,21 @@
       "source_evidence": [
         {
           "file": "src/workspace.js",
-          "line": 85,
+          "line": 87,
           "symbol_or_handler": "saveSnapshot",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/workspace.js",
-          "line": 91,
+          "line": 93,
           "symbol_or_handler": "restoreSnapshot",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/app.js",
-          "line": 537,
+          "line": 546,
           "symbol_or_handler": "renderLibrary",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -1147,6 +1243,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1156,17 +1254,23 @@
           {
             "name": "named snapshot restore retains the replaced CV as a recovery snapshot",
             "passed": true,
-            "ms": 212
+            "ms": 196
           },
           {
             "name": "full master CV creates independent new CV with existing career and custom sections",
             "passed": true,
-            "ms": 172
+            "ms": 192
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9",
+          "component-11"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1270,6 +1374,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1277,13 +1383,11 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-2",
-          "component-4",
-          "component-7",
-          "component-5"
+          "component-1",
+          "component-10"
         ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1318,9 +1422,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 537,
+          "line": 546,
           "symbol_or_handler": "renderLibrary",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -1360,6 +1464,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1369,19 +1475,23 @@
           {
             "name": "DOCX import extracts reviewed text and creates a separate CV",
             "passed": true,
-            "ms": 144
+            "ms": 134
           },
           {
             "name": "actual selectable-text PDF import extracts locally for review and creates a separate CV",
             "passed": true,
-            "ms": 1140
+            "ms": 1150
           }
         ],
         "additional_proof_ids": [
-          "component-6"
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9",
+          "component-11"
         ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1402,6 +1512,8 @@
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1410,7 +1522,7 @@
         "browser_checks": [],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1430,9 +1542,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 601,
+          "line": 610,
           "symbol_or_handler": "renderLetter",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/model.js",
@@ -1478,6 +1590,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1487,12 +1601,17 @@
           {
             "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
             "passed": true,
-            "ms": 331
+            "ms": 315
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1514,18 +1633,20 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 616,
+          "line": 625,
           "symbol_or_handler": "renderLetterPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/app.js",
-          "line": 274,
+          "line": 285,
           "symbol_or_handler": "renderPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1535,12 +1656,17 @@
           {
             "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
             "passed": true,
-            "ms": 331
+            "ms": 315
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1555,64 +1681,66 @@
       "reference_acceptance_criteria": [
         "Keep separate letters linked to different applications; changes to one letter do not alter another."
       ],
-      "classification": "partial",
-      "delivered_scope": "Separate letters exist in independently duplicated CV documents and can be linked via CV ID.",
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Captured CV-and-letter documents are independent per application; editable copies can be created without replacing submitted copies.",
       "remaining_gaps": [
-        "One letter per CV, not independently versioned letters or immutable per-application letter snapshots."
+        "Up to eight local submitted copies per application; no account service or independent rich letter-draft catalogue."
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 601,
-          "symbol_or_handler": "renderLetter",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
-        },
-        {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
-        },
-        {
           "file": "src/workspace.js",
-          "line": 75,
-          "symbol_or_handler": "duplicateDocument",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "line": 159,
+          "symbol_or_handler": "captureApplicationSubmission",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 168,
+          "symbol_or_handler": "renderSubmissions",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
+        },
+        {
+          "file": "src/app.js",
+          "line": 634,
+          "symbol_or_handler": "showSubmittedCopy",
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
         {
-          "file": "tests/workspace.test.js",
-          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
           "test_cases": [
             {
-              "line": 6,
-              "name": "original release v1 document migrates without losing literal or Unicode content"
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
             },
             {
-              "line": 13,
-              "name": "custom section order and visibility are validated and affect export/feedback"
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
             },
             {
-              "line": 28,
-              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
             },
             {
-              "line": 42,
-              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
             },
             {
-              "line": 59,
-              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
             },
             {
-              "line": 75,
-              "name": "provided invalid master documents are rejected rather than silently defaulted"
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
             }
           ],
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1622,17 +1750,24 @@
           {
             "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
             "passed": true,
-            "ms": 331
-          },
-          {
-            "name": "job tracker status, dates, linked CV and filtering survive reload",
-            "passed": true,
-            "ms": 437
+            "ms": 315
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-8",
+          "component-7",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1652,15 +1787,15 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 616,
+          "line": 625,
           "symbol_or_handler": "renderLetterPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/app.js",
-          "line": 385,
+          "line": 394,
           "symbol_or_handler": "window.print()",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -1700,6 +1835,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1709,12 +1846,17 @@
           {
             "name": "cover letter edits, factual draft and native letter exports preserve reviewed content",
             "passed": true,
-            "ms": 331
+            "ms": 315
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1736,9 +1878,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/review.js",
@@ -1869,6 +2011,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -1876,11 +2020,15 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-1",
-          "component-8"
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "provider_limit": null,
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -1995,6 +2143,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2004,12 +2154,12 @@
           {
             "name": "transparent review responds to corrections and hidden sections stay out of match text",
             "passed": true,
-            "ms": 373
+            "ms": 402
           }
         ],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2118,6 +2268,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2127,12 +2279,12 @@
           {
             "name": "transparent review responds to corrections and hidden sections stay out of match text",
             "passed": true,
-            "ms": 373
+            "ms": 402
           }
         ],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2277,6 +2429,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2286,12 +2440,12 @@
           {
             "name": "transparent review responds to corrections and hidden sections stay out of match text",
             "passed": true,
-            "ms": 373
+            "ms": 402
           }
         ],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2312,6 +2466,8 @@
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2320,7 +2476,7 @@
         "browser_checks": [],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2342,15 +2498,15 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/app.js",
-          "line": 658,
+          "line": 670,
           "symbol_or_handler": "renderTailoring",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/review.js",
@@ -2475,15 +2631,24 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": true,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2501,14 +2666,14 @@
       "classification": "partial",
       "delivered_scope": "Configured summary, headline, objective and bullet tasks with editable candidate, apply, cancel and undo.",
       "remaining_gaps": [
-        "Retained real-model UI receipts cover summary, tailoring, interview notes and in-flight cancellation; headline/objective/translation and factual quality need expanded evidence."
+        "Historical 0.2 configured-model samples covered summary, tailoring, interview notes and cancellation. Those samples do not establish current all-task behaviour; headline/objective/translation, factual quality and original-model equivalence need separate evidence."
       ],
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "scripts/ai.mjs",
@@ -2554,6 +2719,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2561,11 +2728,15 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-1",
-          "component-8"
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "provider_limit": null,
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2587,9 +2758,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "scripts/ai.mjs",
@@ -2635,6 +2806,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2642,11 +2815,15 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-1",
-          "component-8"
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "provider_limit": null,
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2668,21 +2845,21 @@
       "source_evidence": [
         {
           "file": "src/workspace.js",
-          "line": 101,
+          "line": 103,
           "symbol_or_handler": "addApplication",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/workspace.js",
-          "line": 106,
+          "line": 108,
           "symbol_or_handler": "updateApplication",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/jobs-ui.js",
+          "line": 10,
+          "symbol_or_handler": "createJobsUI",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
         }
       ],
       "test_evidence": [
@@ -2718,6 +2895,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2727,12 +2906,23 @@
           {
             "name": "job tracker status, dates, linked CV and filtering survive reload",
             "passed": true,
-            "ms": 437
+            "ms": 574
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9",
+          "component-11"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2753,16 +2943,16 @@
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/jobs-ui.js",
+          "line": 10,
+          "symbol_or_handler": "createJobsUI",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
         },
         {
           "file": "src/workspace.js",
-          "line": 5,
+          "line": 6,
           "symbol_or_handler": "JOB_STATUSES",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         }
       ],
       "test_evidence": [
@@ -2798,6 +2988,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -2807,12 +2999,22 @@
           {
             "name": "job tracker status, dates, linked CV and filtering survive reload",
             "passed": true,
-            "ms": 437
+            "ms": 574
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2826,73 +3028,87 @@
       "reference_acceptance_criteria": [
         "Attach and reopen the precise submitted resume revision after later changes to the master document."
       ],
-      "classification": "partial",
-      "delivered_scope": "Applications link an existing local CV ID and can reopen it.",
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Named immutable submitted CV snapshots reopen after later edits or deletion of the linked CV; native review/download uses captured content and layout.",
       "remaining_gaps": [
-        "Link resolves mutable CV content, not the immutable exact revision sent; deleting the CV clears the link."
+        "User capture records saved content, not proof that an employer received that file; eight copies per application and 4 MB workspace bound."
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/workspace.js",
+          "line": 159,
+          "symbol_or_handler": "captureApplicationSubmission",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/workspace.js",
-          "line": 19,
-          "symbol_or_handler": "validateWorkspace",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "line": 173,
+          "symbol_or_handler": "applicationSubmission",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
+        },
+        {
+          "file": "src/app.js",
+          "line": 634,
+          "symbol_or_handler": "showSubmittedCopy",
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
         {
-          "file": "tests/workspace.test.js",
-          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
           "test_cases": [
             {
-              "line": 6,
-              "name": "original release v1 document migrates without losing literal or Unicode content"
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
             },
             {
-              "line": 13,
-              "name": "custom section order and visibility are validated and affect export/feedback"
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
             },
             {
-              "line": 28,
-              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
             },
             {
-              "line": 42,
-              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
             },
             {
-              "line": 59,
-              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
             },
             {
-              "line": 75,
-              "name": "provided invalid master documents are rejected rather than silently defaulted"
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
             }
           ],
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": true,
-        "browser_proof_id": "browser-current",
-        "browser_checks": [
-          {
-            "name": "job tracker status, dates, linked CV and filtering survive reload",
-            "passed": true,
-            "ms": 437
-          }
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-8",
+          "component-7",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2906,67 +3122,87 @@
       "reference_acceptance_criteria": [
         "Attach and reopen the application-specific cover letter without changing other applications."
       ],
-      "classification": "partial",
-      "delivered_scope": "Linked CV carries its current associated letter.",
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Each submitted copy retains its own complete letter and supports read-only letter preview and PDF/TXT/DOCX export.",
       "remaining_gaps": [
-        "No independently attached or immutable submitted letter; multiple applications sharing a CV share its current letter."
+        "Captured letters are immutable; tailoring continues through a separate editable CV-and-letter copy."
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/workspace.js",
+          "line": 159,
+          "symbol_or_handler": "captureApplicationSubmission",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/app.js",
-          "line": 601,
-          "symbol_or_handler": "renderLetter",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "line": 634,
+          "symbol_or_handler": "showSubmittedCopy",
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 168,
+          "symbol_or_handler": "renderSubmissions",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
         }
       ],
       "test_evidence": [
         {
-          "file": "tests/workspace.test.js",
-          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
           "test_cases": [
             {
-              "line": 6,
-              "name": "original release v1 document migrates without losing literal or Unicode content"
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
             },
             {
-              "line": 13,
-              "name": "custom section order and visibility are validated and affect export/feedback"
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
             },
             {
-              "line": 28,
-              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
             },
             {
-              "line": 42,
-              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
             },
             {
-              "line": 59,
-              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
             },
             {
-              "line": 75,
-              "name": "provided invalid master documents are rejected rather than silently defaulted"
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
             }
           ],
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": true,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-8",
+          "component-7",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -2980,73 +3216,158 @@
       "reference_acceptance_criteria": [
         "Create due-dated tasks, mark them complete and preserve completion and due dates after reload."
       ],
-      "classification": "partial",
-      "delivered_scope": "One follow-up date and free-text next-step notes per application.",
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Independent task IDs, title, due date, completion, removal and due/open/done filters persist inside each application.",
       "remaining_gaps": [
-        "No task records, multiple due dates or completion states."
+        "Thirty tasks per application. A legacy follow-up date is pending until cleared; this does not implement delivered reminders."
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/workspace.js",
+          "line": 127,
+          "symbol_or_handler": "addApplicationTask",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         },
         {
           "file": "src/workspace.js",
-          "line": 19,
-          "symbol_or_handler": "validateWorkspace",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "line": 130,
+          "symbol_or_handler": "updateApplicationTask",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 135,
+          "symbol_or_handler": "renderTasks",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
+        },
+        {
+          "file": "src/tracker.js",
+          "line": 106,
+          "symbol_or_handler": "filterApplications",
+          "sha256": "012a0795bb954a42dd3d6f866d422c1b03fccd833e1d8550e1ec5bf612f9989b"
         }
       ],
       "test_evidence": [
         {
-          "file": "tests/workspace.test.js",
-          "sha256": "8e3be092d030ea913517914f4b273ee06565940f0ad423d9f798cec1867675db",
+          "file": "tests/tracker.test.js",
+          "sha256": "2381c5e7c7d85696a2990d5874cfb162f1642dbc20a9f2cbf13f0cb3211ef799",
           "test_cases": [
             {
-              "line": 6,
-              "name": "original release v1 document migrates without losing literal or Unicode content"
+              "line": 38,
+              "name": "legacy application values migrate with missing-only defaults and detached state"
             },
             {
-              "line": 13,
-              "name": "custom section order and visibility are validated and affect export/feedback"
+              "line": 51,
+              "name": "explicit malformed additions are rejected instead of being replaced with defaults"
             },
             {
-              "line": 28,
-              "name": "CV copies and snapshots remain independent and restores preserve the current CV"
+              "line": 62,
+              "name": "plain records, dense arrays, known fields and per-list unique IDs are required"
             },
             {
-              "line": 42,
-              "name": "tracker links follow CV deletion and reject unsafe or impossible fields"
+              "line": 84,
+              "name": "nested list limits and text bounds protect imports without trimming supplied text"
             },
             {
-              "line": 59,
-              "name": "workspace import merges and remaps links without overwriting master or existing IDs"
+              "line": 105,
+              "name": "task dates and booleans are strict and snapshot timestamps must be canonical ISO"
             },
             {
-              "line": 75,
-              "name": "provided invalid master documents are rejected rather than silently defaulted"
+              "line": 112,
+              "name": "submitted documents are validated and detached, including literal CV text"
+            },
+            {
+              "line": 135,
+              "name": "analytics describe active current state and supplied dates without inventing a historical funnel"
+            },
+            {
+              "line": 149,
+              "name": "weekly counts cross month/year boundaries and require an explicit valid today"
+            },
+            {
+              "line": 159,
+              "name": "follow-up filters treat legacy dates and unfinished tasks as pending while preserving order"
+            },
+            {
+              "line": 173,
+              "name": "search is literal and Unicode-normalised over metadata, never snapshot documents"
+            },
+            {
+              "line": 187,
+              "name": "helpers reject duplicate top-level application IDs and keep caller state unchanged"
+            },
+            {
+              "line": 201,
+              "name": "CSV preserves commas, quotes, CR/LF and Unicode with fixed columns and exact supplied row order"
+            },
+            {
+              "line": 213,
+              "name": "CSV custom labels have a stable case-sensitive union and never collide with fixed headers"
+            },
+            {
+              "line": 228,
+              "name": "CSV neutralises formula/control prefixes including Unicode variants without removing supplied text"
+            },
+            {
+              "line": 238,
+              "name": "CSV includes task and submission metadata but excludes frozen snapshot document content"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
+          "test_cases": [
+            {
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
+            },
+            {
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
+            },
+            {
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
+            },
+            {
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
+            },
+            {
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
+            },
+            {
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
             }
           ],
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": true,
-        "browser_proof_id": "browser-current",
-        "browser_checks": [
-          {
-            "name": "job tracker status, dates, linked CV and filtering survive reload",
-            "passed": true,
-            "ms": 437
-          }
+        "browser_proof_id": null,
+        "browser_checks": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3067,16 +3388,16 @@
       ],
       "source_evidence": [
         {
-          "file": "src/app.js",
-          "line": 626,
-          "symbol_or_handler": "renderJobs",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "file": "src/jobs-ui.js",
+          "line": 10,
+          "symbol_or_handler": "createJobsUI",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
         },
         {
           "file": "src/workspace.js",
-          "line": 19,
+          "line": 20,
           "symbol_or_handler": "validateWorkspace",
-          "sha256": "2b558c8dee7f489e3a21682fae086a2b86d2c6d79cbeba43c77486f3783b4fe2"
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
         }
       ],
       "test_evidence": [
@@ -3112,6 +3433,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3121,12 +3444,22 @@
           {
             "name": "job tracker status, dates, linked CV and filtering survive reload",
             "passed": true,
-            "ms": 437
+            "ms": 574
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3140,22 +3473,150 @@
       "reference_acceptance_criteria": [
         "Archive and restore an application while retaining notes, tasks and document links."
       ],
-      "classification": "missing",
-      "delivered_scope": "",
-      "remaining_gaps": [
-        "No archive/restore state; removing an application deletes its record."
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Archive/restore retains the same application ID, notes, tasks, custom fields, links and submitted copies; active/archived/all filters preserve history.",
+      "remaining_gaps": [],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 108,
+          "symbol_or_handler": "updateApplication",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 114,
+          "symbol_or_handler": "renderApplication",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
+        },
+        {
+          "file": "src/tracker.js",
+          "line": 106,
+          "symbol_or_handler": "filterApplications",
+          "sha256": "012a0795bb954a42dd3d6f866d422c1b03fccd833e1d8550e1ec5bf612f9989b"
+        }
       ],
-      "source_evidence": [],
-      "test_evidence": [],
+      "test_evidence": [
+        {
+          "file": "tests/tracker.test.js",
+          "sha256": "2381c5e7c7d85696a2990d5874cfb162f1642dbc20a9f2cbf13f0cb3211ef799",
+          "test_cases": [
+            {
+              "line": 38,
+              "name": "legacy application values migrate with missing-only defaults and detached state"
+            },
+            {
+              "line": 51,
+              "name": "explicit malformed additions are rejected instead of being replaced with defaults"
+            },
+            {
+              "line": 62,
+              "name": "plain records, dense arrays, known fields and per-list unique IDs are required"
+            },
+            {
+              "line": 84,
+              "name": "nested list limits and text bounds protect imports without trimming supplied text"
+            },
+            {
+              "line": 105,
+              "name": "task dates and booleans are strict and snapshot timestamps must be canonical ISO"
+            },
+            {
+              "line": 112,
+              "name": "submitted documents are validated and detached, including literal CV text"
+            },
+            {
+              "line": 135,
+              "name": "analytics describe active current state and supplied dates without inventing a historical funnel"
+            },
+            {
+              "line": 149,
+              "name": "weekly counts cross month/year boundaries and require an explicit valid today"
+            },
+            {
+              "line": 159,
+              "name": "follow-up filters treat legacy dates and unfinished tasks as pending while preserving order"
+            },
+            {
+              "line": 173,
+              "name": "search is literal and Unicode-normalised over metadata, never snapshot documents"
+            },
+            {
+              "line": 187,
+              "name": "helpers reject duplicate top-level application IDs and keep caller state unchanged"
+            },
+            {
+              "line": 201,
+              "name": "CSV preserves commas, quotes, CR/LF and Unicode with fixed columns and exact supplied row order"
+            },
+            {
+              "line": 213,
+              "name": "CSV custom labels have a stable case-sensitive union and never collide with fixed headers"
+            },
+            {
+              "line": 228,
+              "name": "CSV neutralises formula/control prefixes including Unicode variants without removing supplied text"
+            },
+            {
+              "line": 238,
+              "name": "CSV includes task and submission metadata but excludes frozen snapshot document content"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
+          "test_cases": [
+            {
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
+            },
+            {
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
+            },
+            {
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
+            },
+            {
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
+            },
+            {
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
+            },
+            {
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
-        "source_inspected": false,
+        "source_inspected": true,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3169,22 +3630,152 @@
       "reference_acceptance_criteria": [
         "Add typed custom fields and columns; edit, sort and preserve values across import and reload."
       ],
-      "classification": "missing",
-      "delivered_scope": "",
+      "classification": "partial",
+      "delivered_scope": "Up to twenty per-application text label/value fields survive reload and workspace merge; safe CSV exports union field labels as columns.",
       "remaining_gaps": [
-        "Strict fixed application schema rejects custom fields; no custom columns."
+        "No typed date/number/select fields, editable board columns, custom pipeline or tracker sorting. CSV column ordering is export behaviour."
       ],
-      "source_evidence": [],
-      "test_evidence": [],
+      "source_evidence": [
+        {
+          "file": "src/workspace.js",
+          "line": 143,
+          "symbol_or_handler": "addApplicationCustomField",
+          "sha256": "cf4bbdeea1200f134a72a4df69de2a23506bde4de7296d0fbbd4bb217324aca5"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 153,
+          "symbol_or_handler": "renderCustomFields",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
+        },
+        {
+          "file": "src/tracker.js",
+          "line": 227,
+          "symbol_or_handler": "applicationsToCsv",
+          "sha256": "012a0795bb954a42dd3d6f866d422c1b03fccd833e1d8550e1ec5bf612f9989b"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/tracker.test.js",
+          "sha256": "2381c5e7c7d85696a2990d5874cfb162f1642dbc20a9f2cbf13f0cb3211ef799",
+          "test_cases": [
+            {
+              "line": 38,
+              "name": "legacy application values migrate with missing-only defaults and detached state"
+            },
+            {
+              "line": 51,
+              "name": "explicit malformed additions are rejected instead of being replaced with defaults"
+            },
+            {
+              "line": 62,
+              "name": "plain records, dense arrays, known fields and per-list unique IDs are required"
+            },
+            {
+              "line": 84,
+              "name": "nested list limits and text bounds protect imports without trimming supplied text"
+            },
+            {
+              "line": 105,
+              "name": "task dates and booleans are strict and snapshot timestamps must be canonical ISO"
+            },
+            {
+              "line": 112,
+              "name": "submitted documents are validated and detached, including literal CV text"
+            },
+            {
+              "line": 135,
+              "name": "analytics describe active current state and supplied dates without inventing a historical funnel"
+            },
+            {
+              "line": 149,
+              "name": "weekly counts cross month/year boundaries and require an explicit valid today"
+            },
+            {
+              "line": 159,
+              "name": "follow-up filters treat legacy dates and unfinished tasks as pending while preserving order"
+            },
+            {
+              "line": 173,
+              "name": "search is literal and Unicode-normalised over metadata, never snapshot documents"
+            },
+            {
+              "line": 187,
+              "name": "helpers reject duplicate top-level application IDs and keep caller state unchanged"
+            },
+            {
+              "line": 201,
+              "name": "CSV preserves commas, quotes, CR/LF and Unicode with fixed columns and exact supplied row order"
+            },
+            {
+              "line": 213,
+              "name": "CSV custom labels have a stable case-sensitive union and never collide with fixed headers"
+            },
+            {
+              "line": 228,
+              "name": "CSV neutralises formula/control prefixes including Unicode variants without removing supplied text"
+            },
+            {
+              "line": 238,
+              "name": "CSV includes task and submission metadata but excludes frozen snapshot document content"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        },
+        {
+          "file": "tests/tracker-workspace.test.js",
+          "sha256": "245ddfb75a14881c57153a5c16959fadae093251b059b0c8abd64eabe553e659",
+          "test_cases": [
+            {
+              "line": 7,
+              "name": "0.2 tracker records migrate with every supplied field retained and additive defaults only"
+            },
+            {
+              "line": 19,
+              "name": "submitted CV and letter stay independent through source edits, rename, deletion and library restoration"
+            },
+            {
+              "line": 41,
+              "name": "archive retains tasks, custom fields and submitted copies; removing attachments is explicit and immutable"
+            },
+            {
+              "line": 53,
+              "name": "task and custom-field mutations are bounded, validated, independent and reject unknown identifiers"
+            },
+            {
+              "line": 71,
+              "name": "workspace merging remaps mutable links but preserves exact immutable submission payload and nested fields"
+            },
+            {
+              "line": 84,
+              "name": "submission count and shared workspace byte bounds reject additions without changing prior records"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
-        "source_inspected": false,
+        "source_inspected": true,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3201,19 +3792,27 @@
       "classification": "missing",
       "delivered_scope": "",
       "remaining_gaps": [
-        "JSON workspace merge exists, but spreadsheet/CSV tracker column mapping and duplicate reconciliation do not."
+        "CSV export exists; spreadsheet/CSV import, column mapping, validation preview and duplicate reconciliation do not."
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": false,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3227,22 +3826,115 @@
       "reference_acceptance_criteria": [
         "Compute weekly counts from saved application dates/statuses and verify totals against a fixed fixture."
       ],
-      "classification": "missing",
-      "delivered_scope": "",
+      "classification": "implemented-local-equivalent",
+      "delivered_scope": "Current-state counts, entered-date histograms, rolling seven-day applications and due/overdue/completed task totals are derived from active saved records.",
       "remaining_gaps": [
-        "Status totals exist, but no date-based weekly progress analytics or reporting."
+        "Archived rows are excluded; these are entered-date/current-state statistics, not event histories, conversions or original analytical algorithms."
       ],
-      "source_evidence": [],
-      "test_evidence": [],
+      "source_evidence": [
+        {
+          "file": "src/tracker.js",
+          "line": 146,
+          "symbol_or_handler": "applicationAnalytics",
+          "sha256": "012a0795bb954a42dd3d6f866d422c1b03fccd833e1d8550e1ec5bf612f9989b"
+        },
+        {
+          "file": "src/jobs-ui.js",
+          "line": 55,
+          "symbol_or_handler": "refreshMetrics",
+          "sha256": "fc5e192080469e3736c48d8aeaaeed6149a6ea6074b6cb511553d7763600dfbe"
+        }
+      ],
+      "test_evidence": [
+        {
+          "file": "tests/tracker.test.js",
+          "sha256": "2381c5e7c7d85696a2990d5874cfb162f1642dbc20a9f2cbf13f0cb3211ef799",
+          "test_cases": [
+            {
+              "line": 38,
+              "name": "legacy application values migrate with missing-only defaults and detached state"
+            },
+            {
+              "line": 51,
+              "name": "explicit malformed additions are rejected instead of being replaced with defaults"
+            },
+            {
+              "line": 62,
+              "name": "plain records, dense arrays, known fields and per-list unique IDs are required"
+            },
+            {
+              "line": 84,
+              "name": "nested list limits and text bounds protect imports without trimming supplied text"
+            },
+            {
+              "line": 105,
+              "name": "task dates and booleans are strict and snapshot timestamps must be canonical ISO"
+            },
+            {
+              "line": 112,
+              "name": "submitted documents are validated and detached, including literal CV text"
+            },
+            {
+              "line": 135,
+              "name": "analytics describe active current state and supplied dates without inventing a historical funnel"
+            },
+            {
+              "line": 149,
+              "name": "weekly counts cross month/year boundaries and require an explicit valid today"
+            },
+            {
+              "line": 159,
+              "name": "follow-up filters treat legacy dates and unfinished tasks as pending while preserving order"
+            },
+            {
+              "line": 173,
+              "name": "search is literal and Unicode-normalised over metadata, never snapshot documents"
+            },
+            {
+              "line": 187,
+              "name": "helpers reject duplicate top-level application IDs and keep caller state unchanged"
+            },
+            {
+              "line": 201,
+              "name": "CSV preserves commas, quotes, CR/LF and Unicode with fixed columns and exact supplied row order"
+            },
+            {
+              "line": 213,
+              "name": "CSV custom labels have a stable case-sensitive union and never collide with fixed headers"
+            },
+            {
+              "line": 228,
+              "name": "CSV neutralises formula/control prefixes including Unicode variants without removing supplied text"
+            },
+            {
+              "line": 238,
+              "name": "CSV includes task and submission metadata but excludes frozen snapshot document content"
+            }
+          ],
+          "status": "test definitions inspected; not rerun by comparison agent"
+        }
+      ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
-        "source_inspected": false,
+        "source_inspected": true,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3263,15 +3955,23 @@
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": false,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3288,19 +3988,27 @@
       "classification": "missing",
       "delivered_scope": "",
       "remaining_gaps": [
-        "Follow-up dates are stored only; no scheduler/outbox, delivery route, deduplication or notification receipt."
+        "Stored task dates and due filters have no durable reminder outbox, scheduler, authorised delivery route, deduplication or delivery receipt."
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
         "source_inspected": false,
         "browser_proof_id": null,
         "browser_checks": [],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-2",
+          "component-5",
+          "component-4",
+          "component-16",
+          "component-15"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3399,6 +4107,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3406,13 +4116,11 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-2",
-          "component-4",
-          "component-7",
-          "component-5"
+          "component-1",
+          "component-10"
         ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3434,9 +4142,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "scripts/ai.mjs",
@@ -3482,6 +4190,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3489,11 +4199,15 @@
         "browser_proof_id": null,
         "browser_checks": [],
         "additional_proof_ids": [
-          "component-1",
-          "component-8"
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
         ],
-        "provider_limit": "Real-model samples and UI checks cover only the recorded tasks, source snapshots and explicit review/cancellation workflows; no all-task quality or original-model equivalence is established.",
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "provider_limit": null,
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3514,6 +4228,8 @@
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3522,7 +4238,7 @@
         "browser_checks": [],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3543,6 +4259,8 @@
       ],
       "source_evidence": [],
       "test_evidence": [],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3551,7 +4269,7 @@
         "browser_checks": [],
         "additional_proof_ids": [],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3580,9 +4298,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 475,
+          "line": 484,
           "symbol_or_handler": "renderCustomSections",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -3618,6 +4336,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3627,12 +4347,17 @@
           {
             "name": "custom content, renamed headings and section order persist in preview",
             "passed": true,
-            "ms": 281
+            "ms": 214
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3654,9 +4379,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 648,
+          "line": 660,
           "symbol_or_handler": "renderReview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/review.js",
@@ -3666,9 +4391,9 @@
         },
         {
           "file": "src/app.js",
-          "line": 700,
+          "line": 703,
           "symbol_or_handler": "renderAi",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         }
       ],
       "test_evidence": [
@@ -3787,6 +4512,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3796,12 +4523,19 @@
           {
             "name": "transparent review responds to corrections and hidden sections stay out of match text",
             "passed": true,
-            "ms": 373
+            "ms": 402
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-13",
+          "component-6",
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     },
     {
@@ -3823,9 +4557,9 @@
       "source_evidence": [
         {
           "file": "src/app.js",
-          "line": 274,
+          "line": 285,
           "symbol_or_handler": "renderPreview",
-          "sha256": "22d99d7a8c0f99def1a7f5fa4186843cd9306e8191dfe777cf90a16ae4b4d118"
+          "sha256": "8d62c7085af06bf02edeadfcc9e6b6408d81cf1202d46b3a4d150b581974efc8"
         },
         {
           "file": "src/model.js",
@@ -3877,6 +4611,8 @@
           "status": "test definitions inspected; not rerun by comparison agent"
         }
       ],
+      "classification_basis": "current-source-inspection",
+      "comparison_snapshot_frozen": true,
       "original_authenticated_behaviour": "not-exercised",
       "algorithm_equivalence": "not-established",
       "verification": {
@@ -3886,12 +4622,17 @@
           {
             "name": "layout, hidden sections and local portrait affect real PDF, TXT and DOCX exports",
             "passed": true,
-            "ms": 329
+            "ms": 425
           }
         ],
-        "additional_proof_ids": [],
+        "additional_proof_ids": [
+          "component-12",
+          "component-17",
+          "component-14",
+          "component-9"
+        ],
         "provider_limit": null,
-        "qualification": "Current Linux browser receipt qualifies only its listed checks and source pins; macOS browser, platform CI and deployment remain separate evidence."
+        "qualification": "Next-wave receipts qualify only their listed checks and exact source/component pins. Coordinator final source freeze is pending unless qualification_state is final; macOS browser, CI and deployment remain separate."
       }
     }
   ],
