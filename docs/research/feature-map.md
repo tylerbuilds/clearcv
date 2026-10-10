@@ -1,8 +1,8 @@
 # Public feature map
 
-Research date: 9 October 2026. The [free and premium parity ledger](parity-ledger.md) is the detailed capability record for the functional expansion; this page retains the initial public observation map. Target: [Enhancv public features page](https://enhancv.com/features/). This page was read without signing in. Public marketing claims are evidence of advertised capabilities, not proof of their internal implementation or effectiveness.
+Research date: 9 October 2026. This page records the first observations of the [Enhancv public features page](https://enhancv.com/features/), read without signing in. For the wider comparison, see the [free and premium feature ledger](parity-ledger.md). Public descriptions show what a product advertises; they don't prove how it works or how effective it is.
 
-REA tooling and pinned source are recorded in [rea-provenance.md](rea-provenance.md). REA/browser discovery receipts are added by the coordinating research workflow. Nothing here claims access to proprietary source code.
+The [REA investigation record](rea-provenance.md) lists the tool version, source revision and browser records. This research didn't access proprietary source code.
 
 | Capability | Observation from public source | ClearCV decision | Status / gap |
 | --- | --- | --- | --- |
@@ -12,18 +12,18 @@ REA tooling and pinned source are recorded in [rea-provenance.md](rea-provenance
 | Writing assistance | The page advertises generated objectives, headlines and bullet points. | Users edit their own content; optional configured AI can generate reviewed summaries, bullets and letter bodies. | Actual configured runtime and UI qualification need separate receipts; no target model or effectiveness claim is adopted. |
 | Career tools | Public navigation and feature sections advertise job tracking, interview help and translation. | Local stages, notes, dates, tasks, archive/search, custom fields, immutable submitted CV/letter copies, CSV and explicit current-state analytics are integrated. Optional AI supplies selected-field translation and reviewed interview notes. | External boards, automatic reminder delivery, spreadsheet import, custom pipeline stages, full-document translation and company/voice interview services remain gaps. |
 
-## Implementation inferences
+## ClearCV's design choices
 
-The minimum useful independent CV builder needs stateful editing, a legible preview and an output path. ClearCV implements automatic browser-local saves, validated JSON backups and browser printing from that product decision. These are ClearCV decisions; this research page does not establish how Enhancv stores documents or exports them.
+ClearCV lets you edit a CV, check a preview and export it. It saves in the browser, validates JSON backups and uses browser printing. These are ClearCV's design choices. This research doesn't establish how Enhancv stores or exports documents.
 
-Entry controls use explicit move-up/move-down actions. Content is rendered as plain text. Each description line becomes a bullet. This provides an accessible, small dependency-free workflow and is not evidence about the target’s internal editor.
+Entries have move-up and move-down controls. Content is shown as plain text, with each description line becoming a bullet. These choices keep the editor small and provide keyboard-accessible ordering; they don't describe Enhancv's internal editor.
 
-## Honest boundaries
+## What this research can establish
 
-- No authenticated Enhancv editor state, paid workflow, private account content or proprietary source was used to build this app.
-- Marketing wording is paraphrased only to identify capability families. ClearCV’s UI, sample content, assets and layouts were written independently.
-- Exact token overlap cannot assess suitability, factual accuracy, semantic similarity or how a particular applicant-tracking system will parse a CV.
-- Linux and macOS support refers to a modern browser served by Node. Native desktop packaging is not shipped.
-- Automated model checks validate state transitions and import rejection. Browser/PDF and OS qualification require their own receipts; a local unit-test pass does not establish those results.
+- The app was built without signed-in Enhancv editor access, paid workflows, private account content or proprietary source.
+- Product descriptions identify the features being compared. ClearCV's interface, examples, assets and layouts were written independently.
+- Exact word matching can't assess suitability, facts, meaning or how an applicant-tracking system will read a CV.
+- Linux and macOS support means running the app in a modern browser with a Node server. There is no native installer.
+- Model tests check data changes and invalid imports. Browser, PDF and operating-system behaviour need separate checks.
 
-The document-upgrade workflow now maps reviewed local PDF/Word/ODT/RTF/text/Markdown/HTML and OCR output into existing editable CV fields. It keeps the complete extracted source, supports independent new/merged copies, and provides local British English spelling and whitespace review. Exact format support and remaining layout/parser limits are documented in the [upgrade guide](../document-upgrades.md). This is independently implemented behaviour, not proof of target algorithm parity.
+Document imports now suggest editable CV fields from PDF, Word, ODT, RTF, text, Markdown, HTML and local OCR. You can check the extracted text, create a new CV or merge into a separate copy, then review British English spelling and spacing. The complete extracted text is retained. See the [upgrade guide](../document-upgrades.md) for formats and limits. This feature was written independently and doesn't establish matching algorithms in the other product.

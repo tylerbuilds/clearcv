@@ -16,11 +16,11 @@ function text(value, label, limit = 300) {
 }
 function identifier(value) { if (typeof value !== 'string' || !/^[a-zA-Z0-9_-]{1,80}$/.test(value)) fail('Invalid workspace entry ID.'); }
 function date(value, label) { if (value && (!/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value)) fail(`${label} must be a valid date.`); }
-function size(value) { if (new TextEncoder().encode(JSON.stringify(value, null, 2)).length > MAX_WORKSPACE_BYTES) fail('The workspace exceeds 4 MB. Export a backup and remove unneeded snapshots or photos.'); }
+function size(value) { if (new TextEncoder().encode(JSON.stringify(value, null, 2)).length > MAX_WORKSPACE_BYTES) fail('Your library is over 4 MB. Download a backup, then remove snapshots or photos you no longer need.'); }
 export function validateWorkspace(value) {
   const core = ['schema', 'version', 'activeId', 'masterProfile', 'documents', 'applications'];
   object(value, [...core, 'masterDocument'], 'Workspace', core);
-  if (value.schema !== WORKSPACE_SCHEMA || value.version !== WORKSPACE_VERSION) fail('Unsupported ClearCV workspace version.');
+  if (value.schema !== WORKSPACE_SCHEMA || value.version !== WORKSPACE_VERSION) fail('This backup uses an unsupported ClearCV workspace version. Choose another backup.');
   object(value.masterProfile, PROFILE_KEYS, 'Master profile');
   validateDocument({ ...createDocument(), profile: value.masterProfile });
   if (!Array.isArray(value.documents) || value.documents.length < 1 || value.documents.length > 25) fail('Keep between 1 and 25 CVs in a workspace.');
@@ -38,7 +38,7 @@ export function validateWorkspace(value) {
       object(version, ['id', 'name', 'createdAt', 'document'], 'Snapshot'); identifier(version.id);
       if (versionIds.has(version.id)) fail('Duplicate snapshot ID.'); versionIds.add(version.id);
       text(version.name, 'Snapshot name', 100); text(version.createdAt, 'Snapshot date', 30);
-      if (!version.name.trim() || !/^\d{4}-\d{2}-\d{2}T/.test(version.createdAt) || !Number.isFinite(Date.parse(version.createdAt))) fail('Invalid snapshot name or date.');
+      if (!version.name.trim() || !/^\d{4}-\d{2}-\d{2}T/.test(version.createdAt) || !Number.isFinite(Date.parse(version.createdAt))) fail('A snapshot has an invalid name or date. Choose another backup.');
       version.document = validateDocument(version.document);
     }
   }
@@ -95,7 +95,7 @@ export function restoreSnapshot(workspace, id, recoveryId, createdAt = new Date(
   const entry = activeEntry(next);
   const snapshot = entry.versions.find(version => version.id === id);
   if (!snapshot) fail('Snapshot not found.');
-  if (entry.versions.length >= 10) fail('Remove an unneeded snapshot first; restore keeps a recovery snapshot of your current CV.');
+  if (entry.versions.length >= 10) fail('Remove a snapshot you no longer need before restoring. Restore also saves a snapshot of your current CV.');
   entry.versions.push({ id: recoveryId, name: 'Before restore', createdAt, document: structuredClone(entry.document) });
   entry.document = structuredClone(snapshot.document);
   return validateWorkspace(next);

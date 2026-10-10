@@ -97,13 +97,13 @@ export async function extractOcr(input,{signal,password,onProgress,forceOcr=fals
   const abort=()=>controller.abort();signal?.addEventListener('abort',abort,{once:true});
   const timer=setTimeout(()=>{timedOut=true;controller.abort();},OCR_LIMITS.timeoutMs);
   const stop=()=>{renderTask?.cancel();void pdfTask?.destroy();};controller.signal.addEventListener('abort',stop,{once:true});
-  const warnings=['Image text recognition uses English and can misread names, numbers and dates. Review the extracted text before applying.'];
+  const warnings=['Image recognition reads English. Check names, numbers and dates against your original.'];
   let imagePages=0;const texts=[];
   const recognise=async image=>{
     ensureActive(controller.signal);
     if(!engine){engine=recogniser(controller.signal,onProgress);await engine.ready();}
     const result=await engine.recognise(image);imagePages++;
-    if(result.confidence<65)warnings.push(`Page ${texts.length+1} has low-confidence text. Compare it with your original.`);
+    if(result.confidence<65)warnings.push(`Some text on page ${texts.length+1} may have been misread. Compare it with your original.`);
     return result.text;
   };
   try {
@@ -138,9 +138,9 @@ export async function extractOcr(input,{signal,password,onProgress,forceOcr=fals
     if(!text.trim())throw new Error('No readable text was found. Try a sharper image or a document with selectable text.');
     if(text.length>OCR_LIMITS.text)throw new Error('The extracted text exceeds 50,000 characters. Read a shorter document.');
     if(!imagePages)warnings.length=0;
-    onProgress?.({status:'Text ready for review',progress:1});return {text,warnings,imagePages};
+    onProgress?.({status:'Text ready to check',progress:1});return {text,warnings,imagePages};
   }catch(error){
-    if(timedOut)throw new Error('Document reading exceeded two minutes. Try a smaller or clearer document.');
+    if(timedOut)throw new Error('Reading took longer than two minutes. Try a smaller or clearer document.');
     if(controller.signal.aborted)throw cancelled();
     if(error.name==='PasswordException')throw new Error('This PDF needs a correct password. Enter it and try again.');
     throw error;

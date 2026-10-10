@@ -24,7 +24,7 @@ test('add, edit, reorder and remove preserve immutable state and IDs', () => {
   assert.deepEqual(moveItem(moved, 'experience', 'second', -1), moved);
   assert.throws(() => updateItem(moved, 'experience', 'missing', 'title', 'x'), /not found/);
   assert.throws(() => updateItem(moved, 'experience', 'first', 'id', 'x'), /field/);
-  assert.throws(() => addItem(moved, 'experience', 'first'), /unique/);
+  assert.throws(() => addItem(moved, 'experience', 'first'), /invalid or repeated entry ID/);
 });
 test('imports reject malformed or unexpected documents before replacing user work', () => {
   assert.throws(() => parseDocument('{'), /valid JSON/);

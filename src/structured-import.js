@@ -160,22 +160,22 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
   const order = id => { if (!visibleOrder.includes(id)) visibleOrder.push(id); };
   const bounded = (value, limit, label, rows) => {
     if (value.length <= limit) return value;
-    warn(`${label} exceeds ${limit.toLocaleString('en-GB')} characters; its complete text remains in the retained source and unmapped text.`);
+    warn(`${label} exceeds ${limit.toLocaleString('en-GB')} characters. Shorten it below; the full text is kept in Original text and Text we couldn’t place.`);
     leave(rows); return '';
   };
   const custom = (title, content, rows, review = false) => {
     if (!content.trim()) return;
     const parts = chunks(content);
     if (document.customSections.length + parts.length > customBudget) {
-      warn('More custom sections were found than the CV can hold. Additional sections remain in the retained source and unmapped text.'); leave(rows); return;
+      warn('More custom sections were found than this CV can hold. Check the extra sections in Original text and Text we couldn’t place.'); leave(rows); return;
     }
     for (const [index, part] of parts.entries()) {
       const id = `${idPrefix}-section-${document.customSections.length + 1}`;
       const suffix = parts.length > 1 ? ` (${index + 1}/${parts.length})` : '';
-      if (title.length + suffix.length > 100) warn('A custom section title was shortened to fit its limit. The complete heading remains in the retained source.');
+      if (title.length + suffix.length > 100) warn('A section heading was shortened. Its full wording is kept in Original text.');
       document.customSections.push({ id, title: title.slice(0, 100 - suffix.length) + suffix, content: part }); order(id);
     }
-    if (parts.length > 1) warn(`${title} was split into editable sections to fit the section size limit; no source text was removed.`);
+    if (parts.length > 1) warn(`${title} was split into editable sections because it was too long for one section. The full text is kept.`);
     if (review) leave(rows);
   };
   const rows = sourceText.split(/[\n\f\u2028\u2029]/).map((text, index) => ({ text, index }));
@@ -193,7 +193,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
     }
     if (found) {
       seenHeading = true;
-      if (found.unknown) warn(`“${found.title}” was retained as a custom section. Check its heading and placement.`);
+      if (found.unknown) warn(`“${found.title}” was added as an extra section. Check its heading and position.`);
       const next = { kind: found.kind, title: found.title, rows: [] };
       if (found.rest) next.rows.push({ text: found.rest, index: row.index });
       sections.push(next);
@@ -206,7 +206,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
     if (!value) return false;
     if (!document.profile[key]) { document.profile[key] = value; order('profile'); return true; }
     if (document.profile[key] === value) return true;
-    warn(`More than one ${key} was found. The additional value remains in unmapped text.`); leave([row]); return false;
+    warn(`More than one ${key} was found. Check the other value in Text we couldn’t place.`); leave([row]); return false;
   }
   function profileRows(section) {
     const remaining = [];
@@ -216,7 +216,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       const key = labelled && FIELD_ALIASES.get(headingKey(labelled[1]));
       if (key) { setProfile(key, labelled[2], row); continue; }
       if (documentaryMetadata(text)) {
-        leave([row]); warn('Document headings, page labels or confidentiality notices remain in unmapped text; they were not used as your name or professional title.'); continue;
+        leave([row]); warn('Document headings, page labels or confidentiality notices are in Text we couldn’t place. Check them for anything you want to include.'); continue;
       }
       // Removing recognised contact tokens from this local copy never alters
       // sourceText. Additional links or contact values remain reviewable.
@@ -226,13 +226,13 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       const emailTokens = text.includes('@') ? text.split(/[\s|<>·,;]+/) : [];
       for (const token of emailTokens) {
         if (!token.includes('@')) continue;
-        if (token.length > 1_000) { warn('An unusually long contact value remains in unmapped text.'); leave([row]); continue; }
+        if (token.length > 1_000) { warn('A contact detail was too long for its field. Check it in Text we couldn’t place.'); leave([row]); continue; }
         const match = token.match(/[\p{L}\p{N}.!#$%&'*+/=?^_`{|}~-]+@[\p{L}\p{N}](?:[\p{L}\p{N}.-]*[\p{L}\p{N}])?\.[\p{L}]{2,63}/u);
         if (match) { contact = true; setProfile('email', match[0], row); text = text.replace(match[0], ' '); }
       }
       const linkTokens = text.includes('.') || text.includes('://') ? text.split(/[\s|<>·]+/) : [];
       for (const token of linkTokens) {
-        if (token.length > 1_000) { if (/^(?:https?:\/\/|www\.)/i.test(token)) { warn('An unusually long contact value remains in unmapped text.'); leave([row]); } continue; }
+        if (token.length > 1_000) { if (/^(?:https?:\/\/|www\.)/i.test(token)) { warn('A contact detail was too long for its field. Check it in Text we couldn’t place.'); leave([row]); } continue; }
         const match = token.match(/(?:https?:\/\/|www\.|(?:linkedin\.com|github\.com)\/)[^\s|<>·]+|\b(?:[\p{L}\p{N}-]+\.)+(?:com|org|net|io|dev|me|design|app|uk|edu|info)(?:\/[^\s|<>·]*)?/iu);
         if (match) { contact = true; const link = match[0].replace(/[),;.]$/g, ''); setProfile('website', link, row); text = text.replace(match[0], ' '); }
       }
@@ -255,8 +255,8 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
     const candidateRows = new Set(candidates);
     const identities = [...new Set(candidates.map(row => row.text))];
     if (!document.profile.name && identities.length === 1) setProfile('name', identities[0], candidates[0]);
-    else if (!document.profile.name && identities.length > 1) warn('More than one possible name was found. The name is left blank; compare the source and enter the correct identity before applying.');
-    else if (document.profile.name && identities.some(value => value !== document.profile.name)) warn('An additional possible name remains in unmapped text. The explicitly supplied name has been kept; confirm the identity before applying.');
+    else if (!document.profile.name && identities.length > 1) warn('More than one possible name was found. Check the original and add the right name below.');
+    else if (document.profile.name && identities.some(value => value !== document.profile.name)) warn('An additional possible name is in Text we couldn’t place. Check that the name below is right.');
     const summary = [];
     for (const row of remaining) {
       const text = row.text;
@@ -268,7 +268,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       const words = text.split(/\s+/), nameLike = plausibleName(text);
       if (candidateRows.has(row)) { if (text !== document.profile.name) leave([row]); continue; }
       if (nameLike && words.length > 1 && !row.contact && !text.includes(',') && document.profile.headline) {
-        leave([row]); warn('An additional name-like header line remains in unmapped text. Confirm whether it is a name, location or other detail.'); continue;
+        leave([row]); warn('An extra heading could be a name, location or another detail. Check it in Text we couldn’t place.'); continue;
       }
       if (!document.profile.headline && !prose(text) && (ROLE.test(text) || (document.profile.name && !nameLike && words.length <= 12 && !text.includes(',') && !row.contact))) setProfile('headline', text, row);
       else if (!document.profile.location && !ROLE.test(text) && (row.contact || text.includes(',') || (document.profile.name && document.profile.headline && likelyLocation(text))) && /^[\p{L}\p{M} .,'’\-]+$/u.test(text) && words.length <= 10) setProfile('location', text, row);
@@ -286,7 +286,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
     const kind = section.kind, titleLike = kind === 'education' ? DEGREE : ROLE;
     if (section.title.length <= 100) document.sectionTitles[kind] = section.title;
     for (const block of sectionBlocks(section.rows, kind)) {
-      if (document[kind].length >= MAX_ITEMS) { warn(`Only the first 60 ${kind} entries fit in this CV. Further entries remain in the retained source and unmapped text.`); leave(block); continue; }
+      if (document[kind].length >= MAX_ITEMS) { warn(`Only the first 60 ${kind} entries fit in this CV. Check the rest in Original text and Text we couldn’t place.`); leave(block); continue; }
       const item = { id: `${idPrefix}-${kind}-${document[kind].length + 1}`, title: '', organisation: '', location: '', dates: '', description: '' };
       const headers = [], descriptions = [];
       let inDescription = false, inferred = false;
@@ -308,7 +308,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       if (parts.length >= 2 && ORGANISATION.test(parts[0].text) && titleLike.test(parts[1].text)) [parts[0], parts[1]] = [parts[1], parts[0]];
       const hasHeader = Boolean(item.title || item.organisation || (parts.length && (item.dates || titleLike.test(parts[0].text) || (parts.length > 1 && ORGANISATION.test(parts[1].text)))));
       if (!hasHeader) {
-        warn(`Some ${kind} text could not be separated into a reliable entry. It remains in a review section and unmapped text.`);
+        warn(`Some ${kind} text needs your help. Check the extra section and Text we couldn’t place, then move it into the right fields.`);
         custom(`${section.title} (review required)`, block.map(row => row.text).join('\n'), block, true); continue;
       }
       if (!item.title && parts.length) { const next = parts.shift(); item.title = next.text; inferred ||= !titleLike.test(next.text); }
@@ -317,8 +317,8 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       descriptions.unshift(...parts.map(({ row, text }) => ({ ...row, text })));
       for (const field of ['title', 'organisation', 'location', 'dates']) item[field] = bounded(item[field], 300, `${section.title} ${field}`, block);
       item.description = bounded(descriptions.map(row => unbullet(row.text)).join('\n'), 10_000, `${section.title} description`, descriptions);
-      if (!item.title && !item.organisation) { leave(block); warn(`An ${kind} entry had dates but no reliable title or organisation. Review its retained source.`); continue; }
-      if (inferred) warn(`Some ${kind} role or qualification labels were assigned from header order. Check them against the retained source.`);
+      if (!item.title && !item.organisation) { leave(block); warn(`An ${kind} entry has dates but no clear title or organisation. Check Original text and add the missing details.`); continue; }
+      if (inferred) warn(`Check the titles and organisations in ${kind}. Their order in the original wasn’t clear.`);
       document[kind].push(item); order(kind);
     }
   }
@@ -339,7 +339,7 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
         const values = text.split(/\s*[,;|·•]\s*|\t+| {3,}/).map(unbullet).filter(Boolean);
         for (const value of values) {
           if (document.skills.some(skill => skill.name === value)) continue;
-          if (document.skills.length >= MAX_ITEMS) { warn('Only the first 60 skills fit in this CV. Further skills remain in the retained source and unmapped text.'); leave([row]); continue; }
+          if (document.skills.length >= MAX_ITEMS) { warn('Only the first 60 skills fit in this CV. Check the rest in Original text and Text we couldn’t place.'); leave([row]); continue; }
           const name = bounded(value, 300, 'Skill name', [row]);
           if (name) document.skills.push({ id: `${idPrefix}-skill-${document.skills.length + 1}`, name });
         }
@@ -347,8 +347,8 @@ export function analyseCVText(text, { idPrefix = 'import' } = {}) {
       if (document.skills.length) order('skills');
     } else custom(section.title, section.rows.map(row => row.text).join('\n').trim(), section.rows);
   }
-  if (!document.profile.name) warn('No reliable name was found. Add or confirm the name before accepting this proposal.');
-  if (unmapped.size) warn('Some text was not confidently mapped. Review the unmapped text; the complete original text is also retained in hidden source sections.');
+  if (!document.profile.name) warn('We couldn’t find a clear name. Add or check it below.');
+  if (unmapped.size) warn('Some text needs your help. Check Text we couldn’t place. The full original text is also kept in hidden sections of the new CV.');
   for (const [index, content] of sourceChunks.entries()) {
     const id = `${idPrefix}-source-${index + 1}`;
     document.customSections.push({ id, title: sourceChunks.length === 1 ? 'Imported source (hidden)' : `Imported source (hidden ${index + 1}/${sourceChunks.length})`, content });

@@ -106,7 +106,7 @@ test('task dates and booleans are strict and snapshot timestamps must be canonic
   for (const value of ['2026-02-30', '1900-02-29', '2026-13-01', '2026-10-10T12:00:00.000Z', 7, null]) assert.throws(() => validateTrackerFields(application('bad', { tasks: [task('t', { dueDate: value })] })), /date/);
   assert.doesNotThrow(() => validateTrackerFields(application('leap', { tasks: [task('t', { dueDate: '2000-02-29', done: true })] })));
   assert.throws(() => validateTrackerFields(application('bad', { tasks: [task('t', { done: 'false' })] })), /true or false/);
-  for (const value of ['2026-10-10', '2026-10-10T12:00:00Z', '2026-10-10T13:00:00.000+01:00', '2026-02-30T12:00:00.000Z', '2026-10-10T24:00:00.000Z', null]) assert.throws(() => validateTrackerFields(application('bad', { submissions: [submission('s', { submittedAt: value })] })), /canonical ISO/);
+  for (const value of ['2026-10-10', '2026-10-10T12:00:00Z', '2026-10-10T13:00:00.000+01:00', '2026-02-30T12:00:00.000Z', '2026-10-10T24:00:00.000Z', null]) assert.throws(() => validateTrackerFields(application('bad', { submissions: [submission('s', { submittedAt: value })] })), /invalid saved date/);
 });
 
 test('submitted documents are validated and detached, including literal CV text', () => {

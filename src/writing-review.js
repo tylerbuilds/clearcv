@@ -27,7 +27,7 @@ export function joinWritingFields(fields) {
 }
 export function locateWritingIssue(ranges, issue) {
   const field = ranges.find(range => issue.start >= range.start && issue.end <= range.end);
-  if (!field) throw new Error('This spelling result does not belong to a supplied field.');
+  if (!field) throw new Error('This spelling result doesn’t match a CV field. Run the check again.');
   return { ...issue, path: [...field.path], label: field.label, start: issue.start - field.start, end: issue.end - field.start };
 }
 function target(document, path) {
@@ -41,7 +41,7 @@ function target(document, path) {
 export function applyWritingSuggestion(document, issue, replacement) {
   const next = validateDocument(document), { object, key } = target(next, issue.path);
   if (typeof replacement !== 'string' || replacement.length > 100 || /[\r\n\u0000-\u001f]/.test(replacement)) throw new Error('Use a short plain-text replacement.');
-  if (!Number.isInteger(issue.start) || !Number.isInteger(issue.end) || issue.start < 0 || issue.end <= issue.start || object[key].slice(issue.start, issue.end) !== issue.word) throw new Error('This field changed after the check. Run the check again before applying.');
+  if (!Number.isInteger(issue.start) || !Number.isInteger(issue.end) || issue.start < 0 || issue.end <= issue.start || object[key].slice(issue.start, issue.end) !== issue.word) throw new Error('You’ve changed this field since the check. Check it again before making a correction.');
   object[key] = object[key].slice(0, issue.start) + replacement + object[key].slice(issue.end);
   return validateDocument(next);
 }
@@ -53,8 +53,8 @@ export function cleanupSuggestions(document, kind = 'cv') {
 }
 export function applyCleanupSuggestion(document, suggestion) {
   const next = validateDocument(document), { object, key } = target(next, suggestion.path);
-  if (object[key] !== suggestion.before) throw new Error('This field changed after the review. Review cleanup again.');
-  if (typeof suggestion.replacement !== 'string' || suggestion.before.replace(/\s/g, '') !== suggestion.replacement.replace(/\s/g, '')) throw new Error('Cleanup may change whitespace only; supplied facts must remain identical.');
+  if (object[key] !== suggestion.before) throw new Error('You’ve changed this field since checking the spacing. Choose Tidy spacing again.');
+  if (typeof suggestion.replacement !== 'string' || suggestion.before.replace(/\s/g, '') !== suggestion.replacement.replace(/\s/g, '')) throw new Error('Spacing cleanup can only change spaces and blank lines. Your words, numbers and facts must stay the same.');
   object[key] = suggestion.replacement;
   return validateDocument(next);
 }

@@ -1,8 +1,8 @@
 # ClearCV 0.3.0: all-tier feature comparison
 
-Next-wave source comparison. Coordinator final source/QA freeze recorded.
+This is the recorded 0.3.0 comparison. The source was fixed before the final checks.
 
-This comparison maps 48 documented Enhancv workflows across free and premium tiers to an independent implementation. It records delivered behaviour and specific gaps; it does not claim full parity, original algorithms or a complete content catalogue.
+The table compares 48 documented Enhancv workflows across free and premium tiers with ClearCV's independently written features. It records what worked and what was missing at 0.3.0. ClearCV doesn't claim to reproduce every feature, algorithm or template.
 
 | Classification | Rows |
 |---|---:|
@@ -10,9 +10,9 @@ This comparison maps 48 documented Enhancv workflows across free and premium tie
 | partial | 18 |
 | missing | 7 |
 
-The recorded source snapshot is identified by file hashes in [the comparison JSON](feature-comparison.json). Retained next-wave core browser checks: 24; overall passed=True, source matches=True. Individual/component observations remain narrower than a final release gate. Optional provider/backend and native rendering proofs retain their own component qualifications in [proof metadata](proof-metadata.json). Platform CI, macOS browser behaviour and deployment are separate evidence.
+File hashes in [the comparison JSON](feature-comparison.json) identify the source that was checked. All 24 core browser checks passed, and the source matched the recorded snapshot: `passed=True`, `source matches=True`. Those checks alone don't establish release readiness. [Proof metadata](proof-metadata.json) records the separate AI-provider, sharing-server and native rendering checks. Platform CI, macOS browser behaviour and deployment also need their own evidence.
 
-All original authenticated workflows remain unexercised. Public documentation is the source for the workflow inventory, while REA observations cover only anonymous public pages and metadata.
+The comparison uses public documentation. REA observations cover anonymous public pages and metadata. Signed-in workflows in the original product haven't been checked.
 
 ## Feature mapping
 
@@ -69,7 +69,7 @@ All original authenticated workflows remain unexercised. Public documentation is
 
 ## Additional Business gaps
 
-- Business reusable custom templates: No team template library or imported-document template application workflow. [Official documentation](https://help.enhancv.com/en/articles/11588565-how-to-create-your-first-custom-template). This supplements the frozen 48-row inventory.
-- Business custom logo/background branding: Portrait upload is not a reusable logo/background with placement, opacity/saturation and team branding. [Official documentation](https://help.enhancv.com/en/articles/11588605-how-to-create-your-custom-branding). This supplements the frozen 48-row inventory.
+- **Reusable Business templates:** ClearCV doesn't have a team template library or a way to apply a template to an imported document. See the [official documentation](https://help.enhancv.com/en/articles/11588565-how-to-create-your-first-custom-template).
+- **Business branding:** Photo upload doesn't provide reusable logos or backgrounds with placement, opacity, saturation and team-branding controls. See the [official documentation](https://help.enhancv.com/en/articles/11588605-how-to-create-your-custom-branding).
 
-The [official inventory](official-feature-inventory.json) preserves the source dates, tier notes, independently designed acceptance criteria, prerequisites and blockers. A listed test definition is distinct from a passed runtime test.
+These Business gaps are additional to the fixed 48-row table. The [official inventory](official-feature-inventory.json) keeps source dates, plan details, test criteria, prerequisites and blockers. A listed test shows what needs checking; it doesn't mean the test has passed.

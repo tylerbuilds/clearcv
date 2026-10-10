@@ -116,16 +116,16 @@ test('DOCX never fetches external relationships; unsafe hyperlink targets stay a
     try { assert.equal(await extractDocx(zip({'word/document.xml':doc,'word/_rels/document.xml.rels':rels})),'Visible labelalex@example.com');assert.equal(calls,0); }
     finally {globalThis.fetch=originalFetch;}
   }
-  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="https://outside.invalid/header.xml" TargetMode="External"/>`)})),/External Word text parts/);
-  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="../../private.xml"/>`)})),/escapes/);
+  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="https://outside.invalid/header.xml" TargetMode="External"/>`)})),/links to external text/);
+  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="../../private.xml"/>`)})),/points outside the document/);
 });
 
 test('DOCX multipart bounds, corrupt additional text, unsafe XML and missing relationships fail atomically',async()=>{
   const damaged=multipartDocx(),header=entries(damaged).find(entry=>entry.name==='word/contact-area.xml');
   damaged[header.local+30+Buffer.byteLength(header.name)+5]^=1;await assert.rejects(extractDocx(damaged));
-  await assert.rejects(extractDocx(multipartDocx({'word/contact-area.xml':'<!DOCTYPE w:hdr [<!ENTITY x "huge">]>'+wordPart('hdr',paragraph('Alex'))})),/Unsupported/);
+  await assert.rejects(extractDocx(multipartDocx({'word/contact-area.xml':'<!DOCTYPE w:hdr [<!ENTITY x "huge">]>'+wordPart('hdr',paragraph('Alex'))})),/unsupported/);
   await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="missing.xml"/>`)})),/missing/);
-  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="contact-area.xml"/><Relationship Id="header" Type="${R}/header" Target="contact-area.xml"/>`)})),/duplicate relationships/);
+  await assert.rejects(extractDocx(multipartDocx({'word/_rels/document.xml.rels':relationships(`<Relationship Id="header" Type="${R}/header" Target="contact-area.xml"/><Relationship Id="header" Type="${R}/header" Target="contact-area.xml"/>`)})),/links between text parts.*repeated/);
   await assert.rejects(extractDocx(multipartDocx({'word/contact-area.xml':wordPart('hdr',paragraph('x'.repeat(30000))),'word/document.xml':wordPart('document','<w:body>'+paragraph('y'.repeat(30000))+'<w:sectPr><w:headerReference r:id="header"/></w:sectPr></w:body>')})),/50,000/);
   const tooMany={'word/document.xml':wordPart('document','<w:body>'+paragraph('Evidence')+'</w:body>')};
   let headerReferences='',headerRelationships='';
@@ -150,7 +150,7 @@ test('DOCX stale orphan headers and unreferenced note IDs cannot become current 
   const rels=relationships(`<Relationship Id="notes" Type="${R}/footnotes" Target="footnotes.xml"/>`);
   const notes=wordPart('footnotes','<w:footnote w:id="1">'+paragraph('Current evidence')+'</w:footnote><w:footnote w:id="2">'+paragraph('Previous Client previous@example.com')+'</w:footnote>');
   assert.equal(await extractDocx(zip({'word/document.xml':main,'word/_rels/document.xml.rels':rels,'word/footnotes.xml':notes})),'Current Candidate\nEvidence\nCurrent evidence');
-  await assert.rejects(extractDocx(zip({'word/document.xml':main,'word/_rels/document.xml.rels':rels,'word/footnotes.xml':wordPart('footnotes','<w:footnote w:id="2">'+paragraph('Other evidence')+'</w:footnote>')})),/referenced Word footnote.*missing/);
+  await assert.rejects(extractDocx(zip({'word/document.xml':main,'word/_rels/document.xml.rels':rels,'word/footnotes.xml':wordPart('footnotes','<w:footnote w:id="2">'+paragraph('Other evidence')+'</w:footnote>')})),/linked Word footnote.*missing/);
 });
 
 test('compressed and stored ODT preserve paragraphs, lists, inline Unicode and table cells',async()=>{
@@ -173,21 +173,21 @@ test('ODT namespace aliases and default office namespace work; metadata and draw
 test('ODT rejects malformed XML, unsafe entities and wrong media type without partial output',async()=>{
   const xml=odtXml('<text:p>Evidence</text:p>');
   for(const bad of [xml.replace('</text:p>','</text:h>'),xml.slice(0,-8),xml.replace('Evidence','&unknown;'),xml.replace('Evidence','&#0;'),'<!DOCTYPE office:document-content [<!ENTITY x "outside">]>'+xml,xml.replace('xmlns:text=','xmlns:bad='),xml.replace('<text:p>','<text:p text:id="1" text:id="2">'),xml.replace('<text:p>','<text:p text:id="a&b">')]) {
-    await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':bad}),{name:'cv.odt'}),/XML|entity|namespace|incomplete|malformed/);
+    await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':bad}),{name:'cv.odt'}),/formatting|character code|unknown format|text setting|document start|incomplete|damaged/);
   }
-  await assert.rejects(extractDocument(zip({mimetype:'application/vnd.oasis.opendocument.spreadsheet','content.xml':xml}),{name:'cv.odt'}),/OpenDocument text/);
-  await assert.rejects(extractDocument(zip({'content.xml':xml}),{name:'cv.odt'}),/media type/);
-  await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':xml.replace('<text:p>','<text:p xmlns:alias="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:id="one" alias:id="two">')}),{name:'cv.odt'}),/duplicate XML attributes/);
-  await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':xml.replace('<text:p>','<text:1>').replace('</text:p>','</text:1>')}),{name:'cv.odt'}),/namespace/);
+  await assert.rejects(extractDocument(zip({mimetype:'application/vnd.oasis.opendocument.spreadsheet','content.xml':xml}),{name:'cv.odt'}),/ODT text document/);
+  await assert.rejects(extractDocument(zip({'content.xml':xml}),{name:'cv.odt'}),/missing its file type/);
+  await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':xml.replace('<text:p>','<text:p xmlns:alias="urn:oasis:names:tc:opendocument:xmlns:text:1.0" text:id="one" alias:id="two">')}),{name:'cv.odt'}),/text setting is repeated/);
+  await assert.rejects(extractDocument(zip({mimetype:ODT,'content.xml':xml.replace('<text:p>','<text:1>').replace('</text:p>','</text:1>')}),{name:'cv.odt'}),/unknown format/);
 });
 
 test('ODT rejects package/manifest encryption and malformed manifests',async()=>{
   const encrypted=odt('<text:p>Evidence</text:p>',{files:{'META-INF/manifest.xml':manifest('<manifest:file-entry manifest:full-path="content.xml"><manifest:encryption-data/></manifest:file-entry>')}});
-  await assert.rejects(extractDocument(encrypted,{name:'cv.odt'}),/Encrypted OpenDocument/);
+  await assert.rejects(extractDocument(encrypted,{name:'cv.odt'}),/ODT file is encrypted/);
   const zipEncrypted=odt('<text:p>Evidence</text:p>'),entry=entries(zipEncrypted).find(entry=>entry.name==='content.xml');
   zipEncrypted.writeUInt16LE(0x801,entry.central+8);zipEncrypted.writeUInt16LE(0x801,entry.local+6);
-  await assert.rejects(extractDocument(zipEncrypted,{name:'cv.odt'}),/Encrypted/);
-  await assert.rejects(extractDocument(odt('<text:p>Evidence</text:p>',{files:{'META-INF/manifest.xml':'<bad/>'}}),{name:'cv.odt'}),/manifest/);
+  await assert.rejects(extractDocument(zipEncrypted,{name:'cv.odt'}),/encrypted/);
+  await assert.rejects(extractDocument(odt('<text:p>Evidence</text:p>',{files:{'META-INF/manifest.xml':'<bad/>'}}),{name:'cv.odt'}),/list of contents/);
 });
 
 test('archive corruption, conflicting entries, traversal and truncation fail closed',async()=>{
@@ -214,8 +214,8 @@ test('aggregate expansion, entry count, lying inflate size and ODT text/repetiti
   lie.writeUInt32LE(1,entry.central+24);lie.writeUInt32LE(1,entry.local+22);
   await assert.rejects(extractDocument(lie,{name:'cv.odt'}),/expands/);
   await assert.rejects(extractDocument(odt('<text:p>'+ 'x'.repeat(DOCUMENT_TEXT_LIMIT+1)+'</text:p>'),{name:'cv.odt'}),/50,000/);
-  await assert.rejects(extractDocument(odt('<text:p><text:s text:c="1000000000"/>Evidence</text:p>'),{name:'cv.odt'}),/space repetition/);
-  await assert.rejects(extractDocument(odt('<table:table><table:table-row table:number-rows-repeated="9999999"><table:table-cell><text:p>Evidence</text:p></table:table-cell></table:table-row></table:table>'),{name:'cv.odt'}),/table repetition/);
+  await assert.rejects(extractDocument(odt('<text:p><text:s text:c="1000000000"/>Evidence</text:p>'),{name:'cv.odt'}),/count of repeated spaces/);
+  await assert.rejects(extractDocument(odt('<table:table><table:table-row table:number-rows-repeated="9999999"><table:table-cell><text:p>Evidence</text:p></table:table-cell></table:table-row></table:table>'),{name:'cv.odt'}),/table.*repeat count/);
 });
 
 test('RTF text preserves scoped Unicode fallbacks, escapes, structure and code-page bytes',async()=>{
@@ -270,7 +270,7 @@ test('HTML keeps visible text, lists and tables without creating a DOM or fetchi
 
 test('HTML preserves unfamiliar entities literally with a warning and rejects truncated active markup',async()=>{
   const result=await extractDocument(encode('<p>Alex &eacute; &#233;</p>'),{mime:'text/html'});
-  assert.equal(result.text,'Alex &eacute; é');assert.ok(result.warnings.some(text=>text.includes('preserved literally')));
+  assert.equal(result.text,'Alex &eacute; é');assert.ok(result.warnings.some(text=>text.includes('character codes were left as written')));
   for(const html of ['<p>Evidence</p><script>truncated','<p>Evidence</p><img src="truncated','<p>Evidence</p><!ENTITY external "outside">','<p>Evidence</p><div>&#x110000;</div>']) await assert.rejects(extractDocument(encode(html),{name:'cv.html'}),/HTML/);
   await assert.rejects(extractDocument(encode('<p>'+ 'x'.repeat(DOCUMENT_TEXT_LIMIT+1)+'</p>'),{name:'cv.html'}),/50,000/);
 });
@@ -283,9 +283,9 @@ test('HTML useful anchor destinations survive as inert text and unsafe targets n
 test('binary and unsupported files cannot be silently imported as text',async()=>{
   for(const binary of [Buffer.from([0x00,0x01,0x02,0x03]),Buffer.from([0xff,0xff,0x80,0x80]),Buffer.from([0x41,0x00,0x42,0x01])]) await assert.rejects(extractDocument(binary,{name:'cv.txt'}),/binary|UTF-8 or UTF-16/);
   const ole=Buffer.from([0xd0,0xcf,0x11,0xe0,0xa1,0xb1,0x1a,0xe1]);
-  await assert.rejects(extractDocument(ole,{name:'cv.txt'}),/legacy Word.*malformed/i);
+  await assert.rejects(extractDocument(ole,{name:'cv.txt'}),/old Word file is damaged/i);
   await assert.rejects(extractDocument(encode('Plain-looking legacy file'),{name:'cv.doc'}),/Legacy Word/);
-  for(const [name,bytes] of [['cv.txt',Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])],['scan.jpg',encode('wrong bytes')]]) await assert.rejects(extractDocument(bytes,{name}),/image.*OCR/i);
+  for(const [name,bytes] of [['cv.txt',Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])],['scan.jpg',encode('wrong bytes')]]) await assert.rejects(extractDocument(bytes,{name}),/image.*(Import CV|damaged)/i);
   await assert.rejects(extractDocument(encode('Evidence'),{name:'cv.exe'}),/unsupported/);
   await assert.rejects(extractDocument(zip({'notes.txt':'Evidence'}),{name:'cv.zip'}),/not a supported DOCX or ODT/);
 });

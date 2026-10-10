@@ -2,7 +2,7 @@ import { serialiseWorkspace } from './workspace.js';
 
 export class WorkspaceConflictError extends Error {
   constructor() {
-    super('Another tab changed the saved library. Your open changes are kept but not saved. Export a workspace backup, then open Library to reload the newer saved copy.');
+    super('Another tab saved a newer library. Download a workspace backup of your edits here, then open Library to reload the saved version.');
     this.name = 'WorkspaceConflictError';
   }
 }

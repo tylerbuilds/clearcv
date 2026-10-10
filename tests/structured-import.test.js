@@ -143,7 +143,7 @@ Python`;
   assert.match(result.unmappedText, /Unclear dates and role order/);
   assert.ok(result.document.customSections.some(section => /review required/.test(section.title)));
   assert.ok(result.document.customSections.some(section => section.title === 'EXPERIMENTAL PRACTICE' && section.content === 'Some unrelated notes.'));
-  assert.ok(result.warnings.some(warning => /reliable entry/.test(warning)));
+  assert.ok(result.warnings.some(warning => /needs your help/.test(warning)));
   assert.equal(retainedSource(result), text);
   assert.doesNotMatch(plainTextDocument(result.document), /Acme|increased|reduced|20\d\d/i);
 });
@@ -294,7 +294,7 @@ test('identity is never inferred from an email and later name-like header facts 
   assert.equal(result.document.profile.headline, 'Product designer');
   assert.equal(result.document.profile.location, '');
   assert.ok(result.unmappedText.includes('Jamie Harper'));
-  assert.ok(result.warnings.some(warning => /name-like header/.test(warning)));
+  assert.ok(result.warnings.some(warning => /extra heading/.test(warning)));
   assert.equal(retainedSource(result), source);
 });
 

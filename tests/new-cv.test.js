@@ -105,7 +105,7 @@ test('new CV rejects the shared byte limit without altering old entries or their
   workspace = validateWorkspace(candidate);
   assert.equal(new TextEncoder().encode(serialiseWorkspace(workspace)).length, MAX_WORKSPACE_BYTES);
   const before = serialiseWorkspace(workspace);
-  assert.throws(() => addNewCV(workspace, 'another-blank'), /exceeds 4 MB/);
+  assert.throws(() => addNewCV(workspace, 'another-blank'), /over 4 MB/);
   assert.equal(serialiseWorkspace(workspace), before);
   assert.equal(workspace.activeId, candidate.activeId);
 });

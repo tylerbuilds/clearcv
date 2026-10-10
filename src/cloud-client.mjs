@@ -4,14 +4,14 @@ const TOKEN = /^[A-Za-z0-9_-]{43}$/;
 
 export class CloudError extends Error {
   constructor(status, payload) {
-    super(payload?.error?.message || 'The shared workspace request failed.');
+    super(payload?.error?.message || 'We couldn’t connect to the shared CV. Check your connection and try again.');
     this.name = 'CloudError'; this.status = status; this.code = payload?.error?.code || 'request_failed';
     this.revision = payload?.revision; this.current = payload?.workspace;
   }
 }
 
 function connection(id, token) {
-  if (!ID.test(id) || !TOKEN.test(token)) throw new TypeError('A valid shared workspace ID and token are required.');
+  if (!ID.test(id) || !TOKEN.test(token)) throw new TypeError('The share link is incomplete or invalid. Paste the full link.');
 }
 
 export function shareLink({ id, token, baseURL = globalThis.location?.href }) {
@@ -47,7 +47,7 @@ export function createCloudClient({ baseURL = '/api/workspaces', fetchImpl = glo
       cache: 'no-store', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer', signal });
     let payload;
     try { payload = await response.json(); }
-    catch { throw new CloudError(response.status, { error: { code: 'invalid_response', message: 'The workspace service returned an invalid response.' } }); }
+    catch { throw new CloudError(response.status, { error: { code: 'invalid_response', message: 'The sharing server returned an invalid response. Try again or check the server.' } }); }
     if (!response.ok) throw new CloudError(response.status, payload);
     return payload;
   };

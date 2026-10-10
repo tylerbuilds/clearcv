@@ -63,15 +63,15 @@ test('damaged, encrypted, oversized and conflicting archive entries fail before 
   await assert.rejects(extractDocx(conflicting),/conflicting/);
   const bomb=compressedFixture(word),bombCd=bomb.readUInt32LE(bomb.length-6);
   bomb.writeUInt32LE(1,bombCd+24);
-  await assert.rejects(extractDocx(bomb),/expands/);
+  await assert.rejects(extractDocx(bomb),/expand beyond their declared size/);
 });
 test('XML extraction rejects entity declarations, malformed nesting and excessive text',()=>{
-  assert.throws(()=>extractWordXml('<!DOCTYPE w:document [<!ENTITY x "huge">]>'+word),/Unsupported/);
-  assert.throws(()=>extractWordXml(word.replace('</w:r>','</w:t>')),/unbalanced/);
-  assert.throws(()=>extractWordXml(word.replace('Résumé &amp; café','&unknown;')),/entity/);
+  assert.throws(()=>extractWordXml('<!DOCTYPE w:document [<!ENTITY x "huge">]>'+word),/unsupported/);
+  assert.throws(()=>extractWordXml(word.replace('</w:r>','</w:t>')),/formatting.*incomplete/);
+  assert.throws(()=>extractWordXml(word.replace('Résumé &amp; café','&unknown;')),/character code/);
   assert.throws(()=>extractWordXml(word.replace('Résumé &amp; café','x'.repeat(50001))),/too complex/);
-  assert.throws(()=>extractWordXml(word.slice(0,-10)),/incomplete|malformed/);
-  assert.throws(()=>extractWordXml(word.replace('Résumé &amp; café','&#0;')),/entity/);
+  assert.throws(()=>extractWordXml(word.slice(0,-10)),/incomplete|damaged/);
+  assert.throws(()=>extractWordXml(word.replace('Résumé &amp; café','&#0;')),/character code/);
 });
 test('plain-text review normalises line endings and bounds input without inventing semantic fields',()=>{
   assert.equal(normalisePlainText('\uFEFFAlex\r\nEngineer\rEvidence\0'),'Alex\nEngineer\nEvidence');

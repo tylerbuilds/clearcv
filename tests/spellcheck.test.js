@@ -46,6 +46,6 @@ test('spelling client rejects corrupt offsets and terminates the worker', async 
   const OriginalWorker = globalThis.Worker; let instance;
   class InvalidWorker { constructor() { instance = this; } postMessage() { queueMicrotask(() => this.onmessage({ data: { checkedWords: 1, issues: [{ word: 'other', start: 0, end: 5, suggestions: [] }] } })); } terminate() { this.terminated = true; } }
   globalThis.Worker = InvalidWorker;
-  try { await assert.rejects(checkText('word'), /offsets/); assert.equal(instance.terminated, true); }
+  try { await assert.rejects(checkText('word'), /no longer matches the text/); assert.equal(instance.terminated, true); }
   finally { globalThis.Worker = OriginalWorker; }
 });

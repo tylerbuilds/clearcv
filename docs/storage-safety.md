@@ -1,9 +1,29 @@
-# Browser storage and competing tabs
+# Keep your browser library safe
 
-The library uses browser-local `localStorage`. On bootstrap the app records the exact saved workspace string, including a present empty or unreadable value. Each successful save updates that durable baseline. Before an ordinary save, the app serialises and validates its candidate, then compares the current saved bytes with the baseline. A mismatch refuses the whole-workspace write. Newly created CVs and edits remain in memory for a whole-workspace export; the other tab's saved library is retained.
+ClearCV saves your library in this browser's `localStorage`. Use one editing tab where possible and download workspace backups regularly. The library doesn't automatically sync to another browser or device.
 
-A storage notification marks a conflict without replacing open state. Library offers **Download open workspace** and **Reload newer saved library**. Reload first reads and validates the saved value, asks for confirmation after a backup reminder, and rereads the exact bytes before adopting it. Declining, malformed storage, or a change during confirmation leaves the open workspace intact. Reload itself does not write. An exported workspace can subsequently be imported as additional documents.
+## If another tab saves changes
 
-This comparison fixes an already-stale tab overwriting a completed newer save. **It is not an atomic compare-and-set or a mutex.** Browser `localStorage` offers individual reads and writes rather than a transaction covering both; the [HTML storage standard](https://html.spec.whatwg.org/multipage/webstorage.html) advises authors to assume no locking mechanism across processes. Two writers that save at almost exactly the same time can still interleave those operations. Use one editing tab and keep backups. Fully simultaneous editing needs a transactional persistence design; it is not advertised here. Optional shared-CV revision conflicts are a separate server-side contract and do not synchronise the whole browser library.
+ClearCV checks whether the saved library has changed before saving your open edits. If another tab has saved a newer version, it leaves that version in place and keeps your edits open.
 
-Storage read/quota failures retain open RAM and report the backup path. Unreadable saved values keep the existing recovery protection. The 25-CV and 4 MB workspace limits reject new candidates before replacing the current workspace. No lock credentials, provider calls or background synchronisation are introduced by this guard.
+1. Open **Library** and choose **Download open workspace** to keep this tab's CVs and edits.
+2. Choose **Reload newer saved library**.
+3. Confirm the reload after you've downloaded the backup.
+
+Reload checks that the saved library can be read and hasn't changed again, then opens it in this tab without writing to storage. Cancelling, unreadable saved data or another change during confirmation leaves your open edits in place.
+
+You can import the backup afterwards to add its CVs to the library. Check for duplicate versions before continuing.
+
+## If browser storage fails
+
+If ClearCV can't read or write storage, or the browser store is full, your open edits stay in the tab. Download a workspace backup before closing it.
+
+The workspace can hold 25 CVs within 4 MB. Changes that exceed these limits don't replace the saved library. Back up before removing CVs, snapshots or photos to free space.
+
+If saved data is unreadable, ClearCV keeps a recovery copy before replacing it. If the recovery copy can't be saved, autosave pauses. **Library** then offers the original data as a download and asks you to choose when to replace it.
+
+## Avoid editing in two tabs at once
+
+The check catches a tab that tries to overwrite a newer completed save. Two tabs saving at almost exactly the same moment can still overwrite each other: browser storage doesn't lock the whole check-and-save sequence. The [HTML storage standard](https://html.spec.whatwg.org/multipage/webstorage.html) explains this limit.
+
+Keep one editing tab and use backups when moving between devices. Optional shared CVs have separate server checks for conflicting revisions, but sharing doesn't synchronise your whole browser library.

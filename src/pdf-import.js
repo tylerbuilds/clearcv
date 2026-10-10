@@ -30,10 +30,10 @@ export async function extractPdf(input,{signal,password}={}) {
       if(lines.join('\n').length>50000) throw new Error('PDF text must contain at most 50,000 characters.');
       page.cleanup();
     }
-    if(!lines.join('').trim()) throw new Error('This PDF has no selectable text. Import text or a Word document; scanned-page OCR is not available.');
+    if(!lines.join('').trim()) throw new Error('This PDF has no selectable text. Use image text recognition in Import CV, or choose a Word or text file.');
     return normalisePlainText(lines.join('\n'));
   } catch(error) {
-    if(timedOut) throw new Error('PDF extraction exceeded 30 seconds. Choose a smaller document.');
+    if(timedOut) throw new Error('Reading the PDF took longer than 30 seconds. Choose a smaller document.');
     if(cancelled)throw new DOMException('Import cancelled.','AbortError');
     if(error.name==='PasswordException')throw new Error('This PDF needs a password. Export an unlocked copy before importing.');
     throw error;

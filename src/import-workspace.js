@@ -10,8 +10,8 @@ const comparable = item => JSON.stringify(Object.fromEntries(Object.keys(item).f
 export function mergeReviewedDocument(current, imported, { profileFields = [], sectionModes = {}, idPrefix = 'reviewed' } = {}) {
   const next = validateDocument(current);
   const incoming = validateDocument(imported);
-  if (!Array.isArray(profileFields) || new Set(profileFields).size !== profileFields.length || profileFields.some(key => !IMPORT_PROFILE_FIELDS.includes(key))) throw new Error('Choose supported profile fields once each.');
-  if (!sectionModes || typeof sectionModes !== 'object' || Array.isArray(sectionModes) || Object.keys(sectionModes).some(key => !COLLECTIONS.includes(key)) || Object.values(sectionModes).some(value => !MODES.includes(value))) throw new Error('Choose append, replace or keep for each career section.');
+  if (!Array.isArray(profileFields) || new Set(profileFields).size !== profileFields.length || profileFields.some(key => !IMPORT_PROFILE_FIELDS.includes(key))) throw new Error('Choose each supported profile field once.');
+  if (!sectionModes || typeof sectionModes !== 'object' || Array.isArray(sectionModes) || Object.keys(sectionModes).some(key => !COLLECTIONS.includes(key)) || Object.values(sectionModes).some(value => !MODES.includes(value))) throw new Error('Choose whether to add, replace or keep the entries in each section.');
   if (typeof idPrefix !== 'string' || !/^[a-zA-Z0-9_-]{1,55}$/.test(idPrefix)) throw new Error('Use a valid imported CV identifier.');
   for (const key of profileFields) next.profile[key] = incoming.profile[key];
   const used = new Set([...next.experience, ...next.education, ...next.skills, ...next.customSections].map(item => item.id));
@@ -42,11 +42,11 @@ export function mergeReviewedDocument(current, imported, { profileFields = [], s
 
 export function createReviewedImport(workspace, document, { id, name, mode = 'new', targetId, profileFields = [], sectionModes = {} } = {}) {
   const current = validateWorkspace(workspace);
-  if (!['new', 'merge'].includes(mode)) throw new Error('Choose a new CV or an upgraded copy.');
+  if (!['new', 'merge'].includes(mode)) throw new Error('Choose a new CV or an updated copy.');
   let reviewed = validateDocument(document);
   if (mode === 'merge') {
     const target = current.documents.find(entry => entry.id === targetId);
-    if (!target) throw new Error('The CV to upgrade is no longer in the library. Select another CV.');
+    if (!target) throw new Error('The CV you chose is no longer in Library. Choose another CV to update.');
     reviewed = mergeReviewedDocument(target.document, reviewed, { profileFields, sectionModes, idPrefix: `import-${id?.slice(0, 45) || 'copy'}` });
   }
   return addDocument(current, reviewed, id, name);

@@ -30,7 +30,7 @@ export function validateDocument(value) {
   keys(value, [...core, 'customSections', 'sectionOrder', 'hiddenSections', 'sectionTitles', 'layout', 'photo', 'coverLetter'], 'CV', core);
   value = { ...documentDefaults(), ...value };
 
-  if (value.schema !== SCHEMA || value.version !== VERSION) fail('This file is not a supported ClearCV version 1 document.');
+  if (value.schema !== SCHEMA || value.version !== VERSION) fail('This backup isn’t a supported ClearCV version 1 document. Choose a CV backup exported by ClearCV.');
   keys(value.profile, PROFILE_KEYS, 'Profile');
   for (const key of PROFILE_KEYS) string(value.profile[key], `Profile ${key}`, key === 'summary' ? 10000 : 300);
   const ids = new Set();
@@ -39,24 +39,24 @@ export function validateDocument(value) {
     for (const item of value[collection]) {
       keys(item, ITEM_KEYS[collection], `${collection} entry`);
       for (const key of ITEM_KEYS[collection]) string(item[key], `${collection} ${key}`, key === 'description' ? 10000 : 300);
-      if (!/^[a-zA-Z0-9_-]{1,80}$/.test(item.id) || ids.has(item.id)) fail('Every entry must have a unique valid ID.');
+      if (!/^[a-zA-Z0-9_-]{1,80}$/.test(item.id) || ids.has(item.id)) fail('This backup has a missing, invalid or repeated entry ID. Choose another ClearCV backup.');
       ids.add(item.id);
     }
   }
   keys(value.style, ['template', 'accent'], 'Style');
   if (!TEMPLATES.includes(value.style.template)) fail('Choose a supported template.');
-  if (!/^#[0-9a-fA-F]{6}$/.test(value.style.accent)) fail('The accent must be a six-digit hex colour.');
+  if (!/^#[0-9a-fA-F]{6}$/.test(value.style.accent)) fail('Enter a six-digit hex colour, such as #a94f2e.');
   string(value.jobAd, 'Job description', 50000);
   if (!Array.isArray(value.customSections) || value.customSections.length > 20) fail('Use at most 20 custom sections.');
   for (const section of value.customSections) {
     keys(section, ['id', 'title', 'content'], 'Custom section');
     string(section.title, 'Section title', 100); string(section.content, 'Section content', 30000);
-    if (!/^[a-zA-Z0-9_-]{1,80}$/.test(section.id) || ids.has(section.id) || ['profile', ...COLLECTIONS].includes(section.id)) fail('Every custom section must have a unique valid ID.');
+    if (!/^[a-zA-Z0-9_-]{1,80}$/.test(section.id) || ids.has(section.id) || ['profile', ...COLLECTIONS].includes(section.id)) fail('This backup has a missing, invalid or repeated section ID. Choose another ClearCV backup.');
     ids.add(section.id);
   }
   const sectionIds = ['profile', ...COLLECTIONS, ...value.customSections.map(section => section.id)];
   if (!Array.isArray(value.sectionOrder) || value.sectionOrder.length !== sectionIds.length || new Set(value.sectionOrder).size !== sectionIds.length || value.sectionOrder.some(id => !sectionIds.includes(id))) fail('Section order must contain every section exactly once.');
-  if (!Array.isArray(value.hiddenSections) || new Set(value.hiddenSections).size !== value.hiddenSections.length || value.hiddenSections.some(id => !sectionIds.includes(id))) fail('Hidden sections must refer to existing sections without duplicates.');
+  if (!Array.isArray(value.hiddenSections) || new Set(value.hiddenSections).size !== value.hiddenSections.length || value.hiddenSections.some(id => !sectionIds.includes(id))) fail('This backup has missing or repeated hidden sections. Choose another ClearCV backup.');
   keys(value.sectionTitles, ['profile', ...COLLECTIONS], 'Section titles');
   for (const title of Object.values(value.sectionTitles)) string(title, 'Section title', 100);
   keys(value.layout, ['font', 'fontSize', 'lineHeight', 'spacing', 'margin', 'pageSize'], 'Layout');
@@ -92,11 +92,11 @@ export function sampleDocument() {
     profile: {
       name: 'Alex Morgan', headline: 'Product designer', email: 'alex@example.com', phone: '+44 7700 900000',
       location: 'Bristol, UK', website: 'alexmorgan.example',
-      summary: 'I make complex things feel simple. Product designer with six years of experience turning research into thoughtful digital services. I bring clarity, curiosity and care to teams building for real people.'
+      summary: 'Product designer with six years of experience designing digital services. I work with researchers and engineers to turn customer needs into useful, accessible products.'
     },
     experience: [
-      { id: 'exp-1', title: 'Senior Product Designer', organisation: 'Northstar Studio', location: 'Bristol', dates: '2022 — Present', description: 'Led the redesign of a customer onboarding journey, reducing time to first value by 32%.\nBuilt a design system used by four product teams.\nPartnered with engineers and researchers to test, learn and ship.' },
-      { id: 'exp-2', title: 'Product Designer', organisation: 'Fieldwork', location: 'London', dates: '2019 — 2022', description: 'Translated customer research into accessible tools for independent businesses.\nDesigned and tested prototypes with 40 customers across three markets.' }
+      { id: 'exp-1', title: 'Senior Product Designer', organisation: 'Northstar Studio', location: 'Bristol', dates: '2022 — Present', description: 'Redesigned the customer sign-up process, reducing the time to complete setup by 32%.\nBuilt a design system used by four product teams.\nWorked with engineers and researchers to test prototypes and release new features.' },
+      { id: 'exp-2', title: 'Product Designer', organisation: 'Fieldwork', location: 'London', dates: '2019 — 2022', description: 'Designed accessible tools for independent businesses using findings from customer research.\nDesigned and tested prototypes with 40 customers across three markets.' }
     ],
     education: [{ id: 'edu-1', title: 'BA (Hons) Design', organisation: 'University of the West of England', location: 'Bristol', dates: '2016 — 2019', description: 'First-class honours. Focus on human-centred design and visual communication.' }],
     skills: ['Product design', 'User research', 'Prototyping', 'Design systems', 'Accessibility', 'Figma'].map((name, i) => ({ id: `skill-${i + 1}`, name }))
@@ -105,7 +105,7 @@ export function sampleDocument() {
 export function parseDocument(json) {
   if (typeof json !== 'string' || json.length > MAX_DOCUMENT_BYTES || new TextEncoder().encode(json).length > MAX_DOCUMENT_BYTES) fail('Choose a ClearCV JSON file smaller than 1 MB.');
   let value;
-  try { value = JSON.parse(json); } catch { fail('This file is not valid JSON.'); }
+  try { value = JSON.parse(json); } catch { fail('This file isn’t valid JSON. Choose a ClearCV JSON backup.'); }
   return validateDocument(value);
 }
 export function serialiseDocument(document) { return JSON.stringify(validateDocument(document), null, 2); }

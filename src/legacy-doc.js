@@ -14,7 +14,7 @@ export const LEGACY_DOC_BYTE_LIMIT = 2_000_000;
 const TEXT_LIMIT = 50_000;
 const MAGIC = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
 const FREE = 0xffffffff, END = 0xfffffffe, FAT_SECTOR = 0xfffffffd, DIF_SECTOR = 0xfffffffc;
-const invalid = detail => { throw new Error(`The legacy Word document is malformed or unsupported: ${detail}. Save a DOCX or Unicode text copy.`); };
+const invalid = detail => { throw new Error('This old Word file is damaged or uses an unsupported format. Save a fresh DOCX or Unicode text copy.', { cause: detail }); };
 const checkAbort = signal => { if (signal?.aborted) throw new DOMException('Import cancelled.', 'AbortError'); };
 const viewOf = bytes => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
 const utf16 = new TextDecoder('utf-16le', { fatal: true, ignoreBOM: true });

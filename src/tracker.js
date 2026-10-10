@@ -24,7 +24,7 @@ function date(value, name, required = false) {
 }
 function timestamp(value, name) {
   const time = typeof value === 'string' ? Date.parse(value) : NaN;
-  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) || !Number.isFinite(time) || new Date(time).toISOString() !== value) fail(`${name} must be a canonical ISO timestamp, for example 2026-10-10T12:00:00.000Z.`);
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value) || !Number.isFinite(time) || new Date(time).toISOString() !== value) fail(`${name} has an invalid saved date. Choose another workspace backup.`);
 }
 function array(value, name, limit) {
   if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype || value.length > limit) fail(`${name} must be a list with at most ${limit} entries.`);

@@ -53,7 +53,7 @@ try {
     const loaded = initialWorkspace(null, legacy);
     workspace = loaded.workspace;
     savedWorkspaceBaseline = persistWorkspace(localStorage, STORAGE_KEY, workspace, savedWorkspaceBaseline);
-    if (loaded.migrated) initialNotice = 'Your previous CV is now in your library. Its original saved copy has been kept.';
+    if (loaded.migrated) initialNotice = 'Your previous CV is in your library. We’ve also kept the original saved copy.';
   }
 } catch (error) {
   if (error instanceof WorkspaceConflictError) storageConflict = true;
@@ -70,8 +70,8 @@ try {
   }
   initialNoticeIsError = true;
   initialNotice = recoveryPresent
-    ? `The saved workspace could not be read or saved: ${error.message} The original unreadable workspace is ${recoveryBackedUp ? 'kept in a separate recovery copy' : 'protected from replacement; saving is locked'}. Open Library to export recovery data and a backup of the open library.`
-    : `This browser could not read or save your library: ${error.message} Your open CV is editable; export a workspace backup before closing.`;
+    ? `We couldn’t open or save your library: ${error.message} The original saved library is ${recoveryBackedUp ? 'kept as a recovery copy' : 'protected; saving is paused'}. Open Library to download the original and back up your open CVs.`
+    : `This browser couldn’t open or save your library: ${error.message} You can keep editing. Download a workspace backup before closing.`;
   document.querySelector('#save-status').textContent = 'Saved copy unavailable';
 }
 state = activeEntry(workspace).document;
@@ -101,8 +101,8 @@ function announce(message, error = false) {
 }
 function save() {
   if (recoveryPresent && !recoveryBackedUp) {
-    document.querySelector('#save-status').textContent = 'Recovery locked · export originals';
-    announce('The original saved workspace is unreadable and protected. Open Library to download recovery data before explicitly replacing it. Current edits remain open.', true);
+    document.querySelector('#save-status').textContent = 'Saving paused · keep a backup';
+    announce('We couldn’t read your saved library. Open Library to download the original before replacing it. You can still edit the open CVs.', true);
     return false;
   }
   try {
@@ -113,11 +113,11 @@ function save() {
   } catch (error) {
     if (error instanceof WorkspaceConflictError) {
       storageConflict = true;
-      document.querySelector('#save-status').textContent = 'Newer saved library · export open edits';
+      document.querySelector('#save-status').textContent = 'Another tab saved · back up your edits';
       announce(error.message, true);
     } else {
       document.querySelector('#save-status').textContent = 'Not saved · export a backup';
-      announce('Your changes are open, but this browser could not save them. Export a workspace backup before closing this page.', true);
+      announce('Your changes couldn’t be saved. Download a workspace backup before closing this page.', true);
     }
     return false;
   }
@@ -170,9 +170,9 @@ function cvNameField(id) {
 }
 function renderWelcome() {
   panel.append(element('section', { id: 'welcome-start', class: 'welcome-start', 'aria-labelledby': 'welcome-title' }, [
-    element('span', { class: 'eyebrow', text: 'YOUR STORY STARTS HERE' }),
+    element('span', { class: 'eyebrow', text: 'START YOUR CV' }),
     element('h2', { id: 'welcome-title', text: 'How would you like to begin?' }),
-    element('p', { text: 'Start with a blank page, bring in your existing CV, or explore a worked example. Your words stay in this browser.' }),
+    element('p', { text: 'Start a blank CV, import one you’ve written, or try the example. Your library stays in this browser.' }),
     element('div', { class: 'welcome-actions' }, [
       element('button', { id: 'welcome-start-blank', type: 'button', class: 'button button-primary', text: 'Create blank CV', onClick: () => safeAction(() => {
         if (!isFirstBlankWorkspace(workspace)) { createCV('blank'); return; }
@@ -188,8 +188,8 @@ function renderContent() {
   const welcome = !welcomeDismissed && isFirstBlankWorkspace(workspace);
   if (welcome) renderWelcome();
   else if (isBlankCV(state)) panel.append(element('section', { id: 'blank-cv-guide', class: 'blank-cv-guide' }, [
-    sectionTitle('A fresh page for your story'),
-    element('p', { class: 'panel-intro', text: 'Start with your name and title. Add your experience, education and skills when you are ready.' }),
+    sectionTitle('Write your CV'),
+    element('p', { class: 'panel-intro', text: 'Add your name and title, then your experience, education and skills.' }),
     element('button', { id: 'choose-cv-style', type: 'button', class: 'button button-quiet', text: 'Choose a style', onClick: () => switchTab('design', true) })
   ]));
   else panel.append(element('button', { id: 'improve-existing-cv', type: 'button', class: 'button button-quiet improve-existing', text: 'Improve an existing CV', onClick: () => switchTab('library') }));
@@ -207,7 +207,7 @@ function renderContent() {
     } else if (['phone', 'website'].includes(key)) panel.lastElementChild.append(input);
     else panel.append(input);
   }
-  panel.append(field('A little about you', state.profile.summary, 'profile-summary', { multiline: true, rows: '5', placeholder: 'Bring your experience, strengths and ambitions together.', data: { 'data-profile': 'summary' }, hint: 'A few clear sentences are all you need. Make them your own.' }));
+  panel.append(field('A little about you', state.profile.summary, 'profile-summary', { multiline: true, rows: '5', placeholder: 'What do you do, and what would you bring to this role?', data: { 'data-profile': 'summary' }, hint: 'Introduce yourself in a few sentences.' }));
   renderCollection('experience', 'Experience', '02 / WHAT YOU HAVE DONE');
   renderCollection('education', 'Education', '03 / WHAT YOU HAVE LEARNT');
   renderCollection('skills', 'Skills', '04 / YOUR STRENGTHS');
@@ -255,8 +255,8 @@ function renderCollection(collection, title, caption) {
   panel.append(section);
 }
 function renderDesign() {
-  panel.append(sectionTitle('Find your look', 'MADE TO FEEL LIKE YOU'));
-  panel.append(element('p', { class: 'panel-intro', text: 'Three thoughtful layouts. One clear story. Choose a starting point and make it yours.' }));
+  panel.append(sectionTitle('Choose a layout', 'STYLE YOUR CV'));
+  panel.append(element('p', { class: 'panel-intro', text: 'Choose a layout, then adjust the colour, type and spacing.' }));
   const grid = element('div', { class: 'template-grid' });
   for (const [template, name] of [['studio', 'Studio'], ['classic', 'Editorial'], ['compact', 'Concise']]) {
     const thumbnail = element('span', { class: `template-thumbnail mini-${template}`, 'aria-hidden': 'true' }, [element('span', { class: 'mini-title' }), element('span', { class: 'mini-accent' })]);
@@ -264,8 +264,8 @@ function renderDesign() {
     grid.append(element('button', { id: `template-${template}`, type: 'button', class: 'template-option', 'aria-pressed': String(state.style.template === template), 'aria-label': `${name} template`, onClick: () => change({ ...state, style: { ...state.style, template } }, true) }, [thumbnail, element('span', { text: name })]));
   }
   panel.append(grid);
-  panel.append(sectionTitle('A touch of colour'));
-  panel.append(element('p', { class: 'panel-intro', text: 'A quiet accent brings the details together.' }));
+  panel.append(sectionTitle('Accent colour'));
+  panel.append(element('p', { class: 'panel-intro', text: 'Choose a colour for headings and highlights.' }));
   const colours = ['Terracotta', 'Forest', 'Slate blue', 'Plum', 'Charcoal'];
   const swatches = element('div', { class: 'swatches', role: 'group', 'aria-label': 'Accent colour' });
   ACCENTS.forEach((accent, index) => {
@@ -276,10 +276,10 @@ function renderDesign() {
   panel.append(swatches);
   renderLayoutControls();
   renderSectionControls();
-  panel.append(element('p', { class: 'design-note', text: 'A4, with room to breathe. Save as PDF opens your browser’s print dialogue. Choose “Save as PDF”, use A4 paper and turn off browser headers and footers. Longer CVs flow onto another page.' }));
+  panel.append(element('p', { class: 'design-note', text: 'Save as PDF opens your browser’s print dialogue. Use the paper size selected above, turn off headers and footers, and check every page.' }));
 }
 function renderMatch() {
-  panel.append(sectionTitle('Make the connection', 'A SECOND PAIR OF EYES'));
+  panel.append(sectionTitle('Match your CV to a job', 'JOB KEYWORDS'));
   panel.append(element('p', { class: 'panel-intro', text: 'Paste a job description to see which words already appear in your CV. Bring out relevant experience using your own words.' }));
   const input = field('Job description', state.jobAd, 'job-ad', { multiline: true, rows: '10', placeholder: 'Paste the role description here…', data: { 'data-job-ad': 'true' } });
   input.querySelector('textarea').maxLength = 50000;
@@ -293,22 +293,22 @@ function renderMatchResults() {
   container.replaceChildren();
   const feedback = keywordFeedback(state);
   if (feedback.percentage === null) {
-    container.append(element('p', { class: 'match-empty', text: 'Add a job description to compare keywords. This is a simple word comparison, not an ATS score or a hiring prediction.' }));
+    container.append(element('p', { class: 'match-empty', text: 'Paste a job description to compare its keywords with your CV. The percentage shows shared words, not an ATS score.' }));
     return;
   }
   const card = element('div', { class: 'match-card' }, [
     element('span', { id: 'match-percentage', class: 'match-count', text: `${feedback.percentage}%` }),
     element('span', { class: 'match-card-title', text: 'keyword overlap' }),
-    element('p', { class: 'match-caption', text: `${feedback.found.length} of ${feedback.keywords.length} selected words appear in your CV. We compare up to 24 frequent words, ignore common words, and match whole words without guessing meaning. This is not an ATS score.` })
+    element('p', { class: 'match-caption', text: `${feedback.found.length} of ${feedback.keywords.length} job keywords appear in your CV. This compares words, not their meaning or your chances of getting the job.` })
   ]);
-  for (const [words, heading, missing] of [[feedback.found, 'Already in your CV', false], [feedback.missing, 'Worth considering — if accurate', true]]) {
+  for (const [words, heading, missing] of [[feedback.found, 'Already in your CV', false], [feedback.missing, 'Add only if relevant', true]]) {
     card.append(element('h3', { class: 'keyword-heading', text: heading }));
     const chips = element('div', { class: 'keyword-chips', 'data-keyword-group': missing ? 'missing' : 'found' });
     for (const word of words) chips.append(element('span', { class: `keyword-chip${missing ? ' missing' : ''}`, text: word }));
     if (!words.length) chips.append(element('span', { class: 'match-empty', text: missing ? 'All selected words are present.' : 'No selected words appear yet.' }));
     card.append(chips);
   }
-  card.append(element('p', { class: 'match-caption', text: 'Only include skills and experience you really have. A missing word may be irrelevant; a matching word does not prove suitability.' }));
+  card.append(element('p', { class: 'match-caption', text: 'Use a missing keyword only when it describes your experience. You don’t need to include every word.' }));
   container.append(card);
   renderTailoring(container);
 }
@@ -381,7 +381,7 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
     if (state.hiddenSections.includes(id)) section.remove();
     else preview.append(section);
   }
-  if (isBlankCV(state)) preview.append(element('div', { class: 'cv-empty-guide' }, [element('p', { text: 'A blank page, ready for your story.' }), element('span', { text: 'Add your name and experience in Content. Choose a layout in Design; your preview updates as you write.' })]));
+  if (isBlankCV(state)) preview.append(element('div', { class: 'cv-empty-guide' }, [element('p', { text: 'Your CV starts here.' }), element('span', { text: 'Add your name and experience in Content. Choose a layout in Design. The preview updates as you write.' })]));
 }
 function switchTab(tab, focus = false) {
   const workspace = document.querySelector('.workspace');
@@ -452,12 +452,12 @@ document.querySelector('#export-json').addEventListener('click', () => safeActio
   const link = element('a', { href: url, download: `${state.profile.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'clearcv'}-cv.json` });
   document.body.append(link); link.click(); link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-  announce('JSON backup downloaded. It contains your CV and job description; keep it somewhere you trust.');
+  announce('CV backup downloaded. It includes the pasted job description. Keep the file private.');
 }));
 function exportWorkspaceBackup() {
   return safeAction(() => {
     download(serialiseWorkspace(workspace), 'application/json', 'json', 'clearcv-workspace');
-    announce('Workspace backup downloaded. It contains your whole library; keep this file private.');
+    announce('Workspace backup downloaded. It includes your whole library. Keep the file private.');
   });
 }
 document.querySelector('#header-export-workspace').addEventListener('click', exportWorkspaceBackup);
@@ -466,14 +466,14 @@ function reloadNewerWorkspace() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw === null) throw new Error('The saved library was removed. Keep a workspace backup of your open edits before reopening the app.');
     const next = parseWorkspace(raw);
-    if (!window.confirm('Have you exported the open workspace? Reloading the saved library replaces this tab’s open unsaved edits. Your downloaded backup can be imported later.')) return;
-    if (localStorage.getItem(STORAGE_KEY) !== raw) throw new Error('The saved library changed while you were deciding. Your open edits are kept. Try Reload again after keeping a backup.');
+    if (!window.confirm('Have you downloaded a backup? Reloading replaces the edits open in this tab. You can import your backup afterwards.')) return;
+    if (localStorage.getItem(STORAGE_KEY) !== raw) throw new Error('Another tab saved again. Your open edits are still here. Keep a backup, then try Reload again.');
     cancelPendingLocalWork(); document.querySelector('#submitted-dialog[open]')?.close();
     savedWorkspaceBaseline = raw; storageConflict = false;
     workspace = next; state = activeEntry(workspace).document;
     renderDocumentSwitcher(); renderPreview(); renderPanel();
     document.querySelector('#save-status').textContent = 'Saved on this device';
-    announce('The newer saved library is open. Import your exported workspace if you want to recover the other tab’s open changes.');
+    announce('The newer saved library is open. Import your backup to bring back the edits from this tab.');
   });
 }
 function openCVIntake() { switchTab('library'); document.querySelector('#import-file').click(); }
@@ -501,10 +501,10 @@ function createCV(kind) {
     document.querySelector('#submitted-dialog[open]')?.close();
     const saved = changeWorkspace(next);
     welcomeDismissed = true; openNewCVEditor();
-    const message = kind === 'blank' ? 'A blank CV is open. Your other CVs and history are kept.' : 'An example CV is open to explore. Your other CVs and history are kept.';
+    const message = kind === 'blank' ? 'Your new blank CV is ready.' : 'The example CV is open. Edit it to try the tools.';
     announce(saved ? message : storageConflict
-      ? `${message} Another tab has a newer saved library. This CV is not saved: export a workspace backup, then open Library to reload the newer copy.`
-      : `${message} It is not saved; export a workspace backup before closing.`, !saved);
+      ? `${message} Another tab saved a newer library. Back up this unsaved CV, then open Library to reload the saved version.`
+      : `${message} It hasn’t saved. Download a workspace backup before closing.`, !saved);
   });
 }
 document.querySelector('#new-cv').addEventListener('click', () => createCV('blank'));
@@ -524,11 +524,11 @@ function selectField(label, value, id, choices, data = {}) {
   return element('div', { class: 'field' }, [element('label', { class: 'field-label', for: id, text: label }), select]);
 }
 function renderCustomSections() {
-  const section = element('section', { class: 'form-section' }, [sectionTitle('Make room for more', 'PROJECTS, LANGUAGES, AWARDS…')]);
+  const section = element('section', { class: 'form-section' }, [sectionTitle('Add another section', 'PROJECTS, LANGUAGES, AWARDS…')]);
   for (const custom of state.customSections) {
     const card = element('div', { class: 'entry', 'data-custom-section': custom.id }, [
       field('Section heading', custom.title, `custom-${custom.id}-title`, { data: { 'data-custom-field': 'title', 'data-section': custom.id } }),
-      field('Content', custom.content, `custom-${custom.id}-content`, { multiline: true, rows: '5', data: { 'data-custom-field': 'content', 'data-section': custom.id }, hint: 'Write paragraphs, links as text or a list of achievements.' }),
+      field('Content', custom.content, `custom-${custom.id}-content`, { multiline: true, rows: '5', data: { 'data-custom-field': 'content', 'data-section': custom.id }, hint: 'Add your projects, languages, awards or other relevant details.' }),
       element('button', { type: 'button', class: 'text-button', text: 'Remove section', 'data-remove-section': custom.id, onClick: () => safeAction(() => change(removeCustomSection(state, custom.id), true)) })
     ]);
     card.querySelector('textarea').maxLength = 30000;
@@ -539,7 +539,7 @@ function renderCustomSections() {
   panel.append(section);
 }
 function renderLayoutControls() {
-  const section = element('section', { class: 'form-section' }, [sectionTitle('Type & space')]);
+  const section = element('section', { class: 'form-section' }, [sectionTitle('Type and spacing')]);
   section.append(selectField('Typeface', state.layout.font, 'layout-font', [['sans', 'Modern sans'], ['serif', 'Editorial serif'], ['mono', 'Monospace']], { 'data-layout': 'font' }));
   section.append(selectField('Paper size', state.layout.pageSize, 'layout-page-size', [['A4', 'A4'], ['Letter', 'US Letter']], { 'data-layout': 'pageSize' }));
   for (const [key, label, min, max, step] of [['fontSize', 'Text size', 9, 15, .5], ['lineHeight', 'Line spacing', 1.2, 2.2, .1], ['spacing', 'Section spacing', 8, 28, 1], ['margin', 'Page margins', 20, 60, 1]]) {
@@ -548,7 +548,7 @@ function renderLayoutControls() {
     wrapper.querySelector('input').addEventListener('input', event => { output.textContent = event.target.value; });
     wrapper.append(output); section.append(wrapper);
   }
-  section.append(sectionTitle('A personal touch'));
+  section.append(sectionTitle('Add a photo'));
   const upload = element('input', { id: 'photo-upload', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload a portrait photo' });
   upload.addEventListener('change', async event => {
     const file = event.target.files?.[0]; if (!file) return;
@@ -559,17 +559,17 @@ function renderLayoutControls() {
       if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 5_000_000) throw new Error('Choose a PNG, JPEG or WebP photo smaller than 5 MB.');
       bitmap = await createImageBitmap(file);
       if (request !== portraitGeneration) return;
-      if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('The CV changed while the portrait was being read. No photo was applied; choose it again for the current CV.', true); return; }
+      if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('Your CV changed while the photo was loading. Choose the photo again to add it here.', true); return; }
       const canvas = document.createElement('canvas');
       canvas.width = 240; canvas.height = 240;
       const side = Math.min(bitmap.width, bitmap.height);
       canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
       const saved = change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
-      announce(saved ? 'Portrait cropped to a square and stored locally. You can remove it at any time.' : 'Portrait is open but not saved. Export a workspace backup before closing; Library explains any competing-tab conflict.', !saved);
+      announce(saved ? 'Photo added and cropped to a square. You can remove it below.' : 'The photo hasn’t saved. Download a workspace backup before closing. Check Library if another tab is open.', !saved);
     } catch (error) { if (request === portraitGeneration) announce(error.message, true); }
     finally { bitmap?.close(); }
   });
-  section.append(upload, element('p', { class: 'field-hint', text: 'Optional. Consider whether a photo is appropriate for the role and country. Images are resized locally.' }));
+  section.append(upload, element('p', { class: 'field-hint', text: 'Optional. Check whether CV photos are expected where you’re applying. Your photo is resized in this browser.' }));
   if (state.photo) section.append(element('button', { id: 'remove-photo', class: 'text-button', type: 'button', text: 'Remove portrait', onClick: () => { portraitGeneration++; change({ ...state, photo: '' }, true); } }));
   panel.append(section);
 }
@@ -593,25 +593,25 @@ function renderSectionControls() {
 function storageConflictCard() {
   return element('section', { id: 'storage-conflict-card', class: 'recovery-card' }, [
     sectionTitle('Keep both versions of your library'),
-    element('p', { class: 'panel-intro', text: 'Another tab changed the saved library. This tab keeps its open edits, including newly created CVs, but cannot replace that newer copy. Export this whole workspace before choosing Reload. You can import that backup to merge its documents later.' }),
+    element('p', { class: 'panel-intro', text: 'Another tab saved a newer library. Download a backup of your edits here, then reload the saved version. You can import your backup afterwards to keep both.' }),
     element('div', { class: 'action-row' }, [element('button', { id: 'export-conflict-workspace', type: 'button', class: 'button button-primary', text: 'Download open workspace', onClick: exportWorkspaceBackup }), element('button', { id: 'reload-newer-workspace', type: 'button', class: 'button button-quiet', text: 'Reload newer saved library', onClick: reloadNewerWorkspace })])
   ]);
 }
 function renderLibrary() {
   panel.append(element('section', { class: 'library-start', 'aria-label': 'Create a CV' }, [
-    sectionTitle('Start another chapter'),
-    element('p', { class: 'panel-intro', text: 'Create a separate blank CV or explore an example. Your saved CVs, letters and history are kept.' }),
+    sectionTitle('Start another CV'),
+    element('p', { class: 'panel-intro', text: 'Start a blank CV or try the example. Both add a new CV to your library.' }),
     element('div', { class: 'action-row' }, [
       element('button', { id: 'library-new-cv', type: 'button', class: 'button button-primary', text: '+ New blank CV', onClick: () => createCV('blank') }),
       element('button', { id: 'library-explore-example', type: 'button', class: 'button button-quiet', text: 'Explore example', onClick: () => createCV('example') })
     ])
   ]));
   if (storageConflict) panel.append(storageConflictCard());
-  panel.append(sectionTitle('A CV for every chapter', `${workspace.documents.length} / 25 LOCAL CVS`));
+  panel.append(sectionTitle('Your CV library', `${workspace.documents.length} / 25 CVS`));
   if (recoveryPresent) {
-    panel.append(element('section', { class: 'recovery-card' }, [sectionTitle('Keep your original saved data'), element('p', { class: 'panel-intro', text: recoveryBackedUp ? `An unreadable workspace was retained at ${recoveryStorageKey}. Download its original bytes for recovery; current editing can save safely.` : 'The unreadable saved workspace is protected from replacement. Download its original bytes first; your open edits are not yet saved.' }),
-      element('button', { id: 'export-recovery', type: 'button', class: 'button button-primary', text: 'Download original recovery JSON', onClick: () => { download(recoveryRaw, 'application/json', 'json', 'clearcv-unreadable-original'); recoveryDownloaded = true; renderPanel(); } }),
-      !recoveryBackedUp ? element('button', { id: 'resume-recovery-save', type: 'button', class: 'button button-quiet', text: 'Replace saved data with open library', disabled: !recoveryDownloaded, onClick: () => { if (window.confirm('Have you kept the downloaded original? This explicitly replaces the unreadable saved workspace with the open library.')) { recoveryBackedUp = true; const saved = save(); if (!saved) recoveryBackedUp = false; else { recoveryRaw = ''; recoveryStorageKey = ''; recoveryPresent = false; } renderPanel(); } } }) : null
+    panel.append(element('section', { class: 'recovery-card' }, [sectionTitle('Recover your saved library'), element('p', { class: 'panel-intro', text: recoveryBackedUp ? `We couldn’t read your saved library, so we kept a recovery copy. Download it below. Your open edits can still save.` : 'We couldn’t read your saved library. Download the original below before replacing it. Your open edits haven’t saved yet.' }),
+      element('button', { id: 'export-recovery', type: 'button', class: 'button button-primary', text: 'Download original saved library', onClick: () => { download(recoveryRaw, 'application/json', 'json', 'clearcv-unreadable-original'); recoveryDownloaded = true; renderPanel(); } }),
+      !recoveryBackedUp ? element('button', { id: 'resume-recovery-save', type: 'button', class: 'button button-quiet', text: 'Replace saved data with open library', disabled: !recoveryDownloaded, onClick: () => { if (window.confirm('Have you kept the downloaded original? This replaces the unreadable saved library with your open CVs.')) { recoveryBackedUp = true; const saved = save(); if (!saved) recoveryBackedUp = false; else { recoveryRaw = ''; recoveryStorageKey = ''; recoveryPresent = false; } renderPanel(); } } }) : null
     ]));
   }
   panel.append(cvNameField('document-name'));
@@ -626,37 +626,37 @@ function renderLibrary() {
     element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Delete CV ${entry.name}`, disabled: workspace.documents.length === 1, 'data-delete-document': entry.id, onClick: () => { if (window.confirm(`Delete “${entry.name}” and its snapshots? Linked job records will be kept without this CV link.`)) safeAction(() => changeWorkspace(deleteDocument(workspace, entry.id))); } })
   ]));
   panel.append(list);
-  const master = element('section', { class: 'form-section' }, [sectionTitle('Your master profile'), element('p', { class: 'panel-intro', text: 'Keep a complete career CV: profile, experience, education, skills and custom sections. Choose New from master to copy this history without its job description or letter. New blank CV starts empty; existing tailored CVs stay independent.' }), element('p', { class: 'master-preview', text: `${workspace.masterProfile.name || 'No name yet'} · ${workspace.masterProfile.headline || 'No title yet'}` })]);
+  const master = element('section', { class: 'form-section' }, [sectionTitle('Your master profile'), element('p', { class: 'panel-intro', text: 'Keep your full career history as a master CV. New from master copies its content into a new CV without the job description or cover letter.' }), element('p', { class: 'master-preview', text: `${workspace.masterProfile.name || 'No name yet'} · ${workspace.masterProfile.headline || 'No title yet'}` })]);
   master.append(element('div', { class: 'action-row' }, [
-    element('button', { id: 'save-master', type: 'button', class: 'button button-quiet', text: 'Use current CV as master', onClick: () => safeAction(() => { const saved = changeWorkspace({ ...workspace, masterProfile: structuredClone(state.profile), masterDocument: structuredClone(state) }); announce(saved ? 'Master CV updated. Your other CVs have been kept.' : 'Master profile is open but not saved; export a workspace backup.', !saved); }) }),
+    element('button', { id: 'save-master', type: 'button', class: 'button button-quiet', text: 'Use current CV as master', onClick: () => safeAction(() => { const saved = changeWorkspace({ ...workspace, masterProfile: structuredClone(state.profile), masterDocument: structuredClone(state) }); announce(saved ? 'Master CV updated.' : 'Master profile is open but not saved; export a workspace backup.', !saved); }) }),
     element('button', { id: 'apply-master', type: 'button', class: 'button button-quiet', text: 'Apply master to this CV', onClick: () => { if (window.confirm('Replace the profile fields in this CV with your master profile? Experience, sections and letter will be kept.')) safeAction(() => change({ ...state, profile: structuredClone(workspace.masterProfile) }, true)); } })
   ])); panel.append(master);
-  const snapshots = element('section', { class: 'form-section' }, [sectionTitle('Named snapshots', `${activeEntry(workspace).versions.length} / 10`), element('p', { class: 'panel-intro', text: 'Freeze this CV and its cover letter before a change or application. Restoring also keeps a recovery snapshot of the current version.' }), field('Snapshot name', '', 'snapshot-name', { placeholder: 'Before applying to Northstar' })]);
+  const snapshots = element('section', { class: 'form-section' }, [sectionTitle('Named snapshots', `${activeEntry(workspace).versions.length} / 10`), element('p', { class: 'panel-intro', text: 'Save this CV and letter before making changes. If you restore a snapshot, we also keep a copy of the version you’re replacing.' }), field('Snapshot name', '', 'snapshot-name', { placeholder: 'Before applying to Northstar' })]);
   snapshots.append(element('button', { id: 'save-snapshot', type: 'button', class: 'button button-quiet', text: 'Save snapshot', onClick: () => safeAction(() => changeWorkspace(saveSnapshot(workspace, crypto.randomUUID(), document.querySelector('#snapshot-name').value.trim()))) }));
   for (const version of activeEntry(workspace).versions) snapshots.append(element('div', { class: 'snapshot-row', 'data-snapshot-id': version.id }, [
     element('div', {}, [element('strong', { text: version.name }), element('span', { class: 'section-caption', text: new Date(version.createdAt).toLocaleString('en-GB') })]),
     element('button', { type: 'button', class: 'text-button', text: 'Restore', 'data-restore-snapshot': version.id, onClick: () => safeAction(() => changeWorkspace(restoreSnapshot(workspace, version.id, crypto.randomUUID()))) }),
     element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Remove snapshot ${version.name}`, onClick: () => safeAction(() => changeWorkspace({ ...workspace, documents: workspace.documents.map(entry => entry.id === workspace.activeId ? { ...entry, versions: entry.versions.filter(snapshot => snapshot.id !== version.id) } : entry) })) })
   ])); panel.append(snapshots);
-  panel.append(element('section', { class: 'form-section' }, [sectionTitle('Keep your whole workspace'), element('p', { class: 'panel-intro', text: 'A workspace backup includes every CV, snapshot, cover letter, master profile and tracked application. Importing merges it into the current library without overwriting existing CVs.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: exportWorkspaceBackup })]));
+  panel.append(element('section', { class: 'form-section' }, [sectionTitle('Back up your library'), element('p', { class: 'panel-intro', text: 'Download every CV, snapshot, letter and application in one file. Import a backup to add its CVs to your library.' }), element('button', { id: 'export-workspace', type: 'button', class: 'button button-primary', text: 'Export workspace JSON', onClick: exportWorkspaceBackup })]));
   getDocumentImportUI().render(panel);
   const conflict = panel.querySelector('#storage-conflict-card'); if (conflict) panel.prepend(conflict);
   const start = panel.querySelector('.library-start'); if (start) panel.prepend(start);
 }
 function renderLetter() {
-  panel.append(sectionTitle('A letter with intention'), element('p', { class: 'panel-intro', text: 'A cover letter belongs to this CV. Write a focused introduction, explain your relevant experience and make a clear connection to the role.' }));
+  panel.append(sectionTitle('Write your cover letter'), element('p', { class: 'panel-intro', text: 'This letter is saved with your current CV. Explain why you want the role and what you would bring to it.' }));
   for (const [key, label, multiline] of [['company', 'Company'], ['role', 'Role'], ['recipient', 'Recipient & address'], ['date', 'Date'], ['subject', 'Subject'], ['salutation', 'Salutation'], ['body', 'Your letter', true], ['closing', 'Closing']]) {
     const wrapper = field(label, state.coverLetter[key], `letter-${key}`, { multiline, rows: '16', data: { 'data-letter': key } });
     if (multiline) wrapper.querySelector('textarea').maxLength = 30000;
     panel.append(wrapper);
   }
-  panel.append(element('button', { id: 'draft-letter', type: 'button', class: 'button button-quiet', text: 'Draft from my existing facts', onClick: () => {
-    if (state.coverLetter.body.trim() && !window.confirm('Replace this letter body with a rule-based draft from the current CV facts? Save a snapshot first to retain it.')) return;
+  panel.append(element('button', { id: 'draft-letter', type: 'button', class: 'button button-quiet', text: 'Start from my CV', onClick: () => {
+    if (state.coverLetter.body.trim() && !window.confirm('Replace your letter with a draft using your current CV? Save a snapshot first if you want to keep this version.')) return;
     const draft = coverLetterDraft(state, state.coverLetter.company, state.coverLetter.role);
     safeAction(() => change({ ...state, coverLetter: { ...state.coverLetter, body: draft.body, salutation: draft.salutation, closing: draft.closing } }, true));
-    announce(`Rule-based draft ready to edit. ${draft.warnings.join(' ')}`);
+    announce(`Your draft is ready to edit. ${draft.warnings.join(' ')}`);
   } }));
-  panel.append(element('p', { class: 'design-note', text: 'This draft is assembled from your stored facts by explicit rules, not an AI model. Check each sentence and personalise it. Save as PDF, TXT and DOCX export the cover letter while this view is open.' }));
+  panel.append(element('p', { class: 'design-note', text: 'This starter uses the summary, experience and skills you’ve already written. It doesn’t use AI. Edit it for this role, then save as PDF, TXT or DOCX while the Letter tab is open.' }));
 }
 function renderLetterPreview(state, preview) {
   const p = state.profile; const letter = state.coverLetter;
@@ -670,8 +670,8 @@ function renderLetterPreview(state, preview) {
 function showImportPreview(candidate) {
   const doc = validateDocument(candidate);
   const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog' });
-  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { text: 'Your reviewed CV' }), element('p', { class: 'field-hint', text: 'Preview of the editable import draft. The library has not changed. These exports use this reviewed draft; JSON also retains the hidden extracted source.' })]);
-  controls.append(element('div', { class: 'action-row' }, [element('button', { id: 'import-preview-pdf', type: 'button', class: 'button button-primary', text: 'Save reviewed PDF', onClick: () => { setPrintLayout(doc); window.print(); } }), element('button', { id: 'import-preview-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(doc), 'text/plain', 'txt', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(doc), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-close', type: 'button', class: 'button button-quiet', text: 'Close preview', onClick: () => dialog.close() })]));
+  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { text: 'Preview your imported CV' }), element('p', { class: 'field-hint', text: 'Check the layout before adding this CV to your library. You can also download the draft here. JSON includes the original extracted text.' })]);
+  controls.append(element('div', { class: 'action-row' }, [element('button', { id: 'import-preview-pdf', type: 'button', class: 'button button-primary', text: 'Save draft as PDF', onClick: () => { setPrintLayout(doc); window.print(); } }), element('button', { id: 'import-preview-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(doc), 'text/plain', 'txt', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(doc), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-close', type: 'button', class: 'button button-quiet', text: 'Close preview', onClick: () => dialog.close() })]));
   const paper = element('div', { class: 'paper' }); dialog.append(controls, paper); document.body.append(dialog);
   renderPreview(doc, 'cv', paper); setPrintLayout(doc);
   dialog.addEventListener('close', () => { dialog.remove(); renderPreview(); }); dialog.showModal(); document.querySelector('#import-preview-close').focus();
@@ -681,7 +681,7 @@ function showSubmittedCopy(applicationId, submissionId) {
   const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog', 'aria-labelledby': 'submitted-title' });
   const paper = element('article', { id: 'submitted-preview', class: 'paper' });
   let kind = 'cv';
-  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { id: 'submitted-title', text: copy.name }), element('p', { class: 'panel-intro', text: `Read-only copy of ${copy.cvName}, captured ${new Date(copy.submittedAt).toLocaleString('en-GB')}. Editing or deleting its source CV cannot change this copy.` })]);
+  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { id: 'submitted-title', text: copy.name }), element('p', { class: 'panel-intro', text: `Saved copy of ${copy.cvName} from ${new Date(copy.submittedAt).toLocaleString('en-GB')}. It stays as it was, even if you change the CV in your library.` })]);
   const views = element('div', { class: 'action-row' });
   function display(selected) {
     kind = selected;
@@ -694,39 +694,50 @@ function showSubmittedCopy(applicationId, submissionId) {
     element('button', { id: 'submitted-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(copy.document, kind), 'text/plain;charset=utf-8', 'txt', `${copy.name}-${kind}`) }),
     element('button', { id: 'submitted-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(copy.document, { kind }), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', `${copy.name}-${kind}`) }),
     element('button', { id: 'submitted-json', type: 'button', class: 'button button-quiet', text: 'CV + letter JSON', onClick: () => download(serialiseDocument(copy.document), 'application/json', 'json', `${copy.name}-submitted`) }),
-    element('button', { id: 'submitted-copy-to-library', type: 'button', class: 'text-button', text: 'Create an editable library copy', onClick: () => safeAction(() => { const saved = changeWorkspace(copySubmissionToLibrary(workspace, applicationId, submissionId, crypto.randomUUID())); dialog.close(); switchTab('content'); announce(saved ? 'A separate editable CV is now in your library. The submitted copy is unchanged.' : 'An editable copy is open but could not be saved. Export a workspace JSON backup before closing; the submitted copy is unchanged.', !saved); }) }),
-    element('button', { id: 'submitted-close', type: 'button', class: 'text-button', text: 'Close review', onClick: () => dialog.close() })
+    element('button', { id: 'submitted-copy-to-library', type: 'button', class: 'text-button', text: 'Create an editable library copy', onClick: () => safeAction(() => { const saved = changeWorkspace(copySubmissionToLibrary(workspace, applicationId, submissionId, crypto.randomUUID())); dialog.close(); switchTab('content'); announce(saved ? 'An editable copy is in your library. Your submitted copy is still kept.' : 'The editable copy hasn’t saved. Download a workspace backup before closing. Your submitted copy is still kept.', !saved); }) }),
+    element('button', { id: 'submitted-close', type: 'button', class: 'text-button', text: 'Close preview', onClick: () => dialog.close() })
   ]);
-  controls.append(views, actions, element('p', { class: 'field-hint', text: 'JSON retains the full editable CV and letter, including hidden sections and the pasted job description. PDF, TXT and DOCX use the selected visible CV or letter. Keep these files private.' }));
+  controls.append(views, actions, element('p', { class: 'field-hint', text: 'PDF, TXT and DOCX contain the CV or letter shown here. JSON also includes hidden sections and the pasted job description. Keep these files private.' }));
   dialog.append(controls, paper); document.body.append(dialog);
   dialog.addEventListener('close', () => { dialog.remove(); renderPreview(); });
   display('cv'); dialog.showModal(); document.querySelector('#submitted-close').focus();
 }
+function reviewLocation(path) {
+  const entry = /^(experience|education|skills|customSections)\[(\d+)\]/.exec(path);
+  if (entry) {
+    const [, collection, number] = entry;
+    const item = state[collection][Number(number)];
+    const kind = { experience: 'Experience', education: 'Education', skills: 'Skill', customSections: 'Section' }[collection];
+    const name = collection === 'skills' ? item?.name : item?.title;
+    return `${kind} · ${name || `entry ${Number(number) + 1}`}${item?.organisation ? ` at ${item.organisation}` : ''}`;
+  }
+  return { 'profile.name': 'Your name', 'profile.email': 'Contact details', 'profile.phone': 'Phone number', 'profile.headline': 'Professional title', 'profile.summary': 'Summary', experience: 'Experience', education: 'Education', document: 'Your CV' }[path] || 'Your CV';
+}
 function renderReview() {
   const review = reviewCV(state);
-  panel.append(sectionTitle('Clarity, one detail at a time'), element('p', { class: 'panel-intro', text: review.method }));
-  panel.append(element('div', { class: 'review-metrics', text: `${review.metrics.words} words · ${review.metrics.experienceBullets} experience bullets · ${review.issues.length} review prompts` }));
-  for (const issue of review.issues) panel.append(element('article', { class: `review-issue ${issue.severity}`, 'data-rule': issue.ruleId }, [element('h3', { text: issue.message }), element('p', { text: issue.suggestion }), element('span', { class: 'section-caption', text: `${issue.path} · ${issue.ruleId}` })]));
-  if (!review.issues.length) panel.append(element('p', { class: 'match-empty', text: 'These rules found no issues. This is not a guarantee of accuracy, suitability or successful ATS parsing.' }));
-  const rules = element('details', { class: 'review-rules' }, [element('summary', { text: 'See every rule used' })]);
-  for (const rule of review.rules) rules.append(element('p', { text: `${rule.id}: ${rule.description}` }));
+  panel.append(sectionTitle('Check your CV'), element('p', { class: 'panel-intro', text: review.method }));
+  panel.append(element('div', { class: 'review-metrics', text: `${review.metrics.words} words · ${review.metrics.experienceBullets} experience bullets · ${review.issues.length} suggestions` }));
+  for (const issue of review.issues) panel.append(element('article', { class: `review-issue ${issue.severity}`, 'data-rule': issue.ruleId }, [element('h3', { text: issue.message }), element('p', { text: issue.suggestion }), element('span', { class: 'section-caption', text: `${reviewLocation(issue.path)}${issue.evidence ? ` · ${issue.evidence}` : ''}` })]));
+  if (!review.issues.length) panel.append(element('p', { class: 'match-empty', text: 'Nothing came up in these checks. Read through your CV once more to check the details.' }));
+  const rules = element('details', { class: 'review-rules' }, [element('summary', { text: 'What these checks look for' })]);
+  for (const rule of review.rules) rules.append(element('p', { text: rule.description }));
   panel.append(rules);
   if (!writingUI) writingUI = createWritingUI({ element, selectField, sectionTitle, getWorkspace: () => workspace, change, safeAction, announce, isActive: () => activeTab === 'review' });
   writingUI.render(panel);
 }
 function renderTailoring(container) {
   const suggestions = tailoringSuggestions(state);
-  const box = element('section', { class: 'form-section' }, [sectionTitle('Bring relevant facts forward'), element('p', { class: 'panel-intro', text: suggestions.method })]);
+  const box = element('section', { class: 'form-section' }, [sectionTitle('Put relevant experience first'), element('p', { class: 'panel-intro', text: suggestions.method })]);
   for (const suggestion of suggestions.suggestions) box.append(element('p', { class: 'tailoring-prompt', text: suggestion.message }));
   const orderChanged = suggestions.experienceOrder.join(',') !== state.experience.map(item => item.id).join(',') || suggestions.skillOrder.join(',') !== state.skills.map(item => item.id).join(',');
-  if (orderChanged) box.append(element('button', { id: 'apply-tailoring', type: 'button', class: 'button button-primary', text: 'Create a tailored copy with this order', onClick: () => safeAction(() => {
+  if (orderChanged) box.append(element('button', { id: 'apply-tailoring', type: 'button', class: 'button button-primary', text: 'Create a reordered copy', onClick: () => safeAction(() => {
     const tailored = validateDocument(state);
     tailored.experience = suggestions.experienceOrder.map(id => tailored.experience.find(item => item.id === id));
     tailored.skills = suggestions.skillOrder.map(id => tailored.skills.find(item => item.id === id));
     changeWorkspace(addDocument(workspace, tailored, crypto.randomUUID(), `${activeEntry(workspace).name} tailored`.slice(0, 100)));
-    announce('A tailored copy is open. Your original CV is kept; no facts or claims have been added.');
+    announce('Your reordered copy is ready. The original CV is still in your library.');
   }) }));
-  else box.append(element('p', { class: 'match-empty', text: 'The existing entry order already matches this rule. Review the words above and edit only where accurate.' }));
+  else box.append(element('p', { class: 'match-empty', text: 'Your entries are already in the suggested order. Check the keywords above for anything relevant you want to add.' }));
   container.append(box);
 }
 
@@ -748,24 +759,24 @@ function documentWithAiText(document, target, text) {
   return updateItem(document, 'experience', target, 'description', text);
 }
 function renderAi() {
-  panel.append(sectionTitle('Writing, with a second voice'), element('p', { class: 'panel-intro', text: 'Generate a candidate, read every claim and apply only the wording you want. The current CV stays unchanged until you apply a result.' }));
-  panel.append(element('p', { id: 'ai-status', class: 'design-note', text: aiStatus.enabled ? `Connected to configured model ${aiStatus.model || 'provider'}. Clicking Generate sends only the source text and context below to that configured service.` : 'AI generation is unavailable on the static demo. Run the local server with an operator-configured model to enable it. The rule-based Review and Job match tools work without AI.' }));
+  panel.append(sectionTitle('Get help with your wording'), element('p', { class: 'panel-intro', text: 'Choose what you’d like help with. Read and edit the suggestion before adding it to your CV.' }));
+  panel.append(element('p', { id: 'ai-status', class: 'design-note', text: aiStatus.enabled ? `Connected to ${aiStatus.model || 'your AI service'}. Generate sends the source text and context below to this service.` : 'AI isn’t connected here. To use it, run ClearCV with your own model service. Review and Job match still work without AI.' }));
   const task = selectField('Writing task', aiTask, 'ai-task', [['summary', 'Improve summary'], ['headline', 'Write a professional headline'], ['objective', 'Write a career objective'], ['bullets', 'Improve experience bullets'], ['tailor', 'Tailor summary to the job'], ['letter', 'Draft a cover letter'], ['translate', 'Translate a selected field'], ['interview', 'Generate interview questions'], ['interview-feedback', 'Review a practice answer']]);
   task.querySelector('select').addEventListener('change', event => {
     aiTask = event.target.value;
     aiTarget = aiTask.startsWith('interview') ? 'practice' : aiTask === 'headline' ? 'headline' : aiTask === 'letter' ? 'letter' : aiTask === 'bullets' ? (state.experience[0]?.id || 'summary') : aiTask === 'translate' ? aiTarget : 'summary';
     renderPanel();
   }); panel.append(task);
-  const targets = aiTask.startsWith('interview') ? [['practice', 'Interview practice — CV stays unchanged']] : [['summary', 'CV summary / objective'], ['headline', 'Professional headline'], ['letter', 'Cover letter body'], ...state.experience.map((item, index) => [item.id, `Experience: ${item.title || index + 1}`])];
+  const targets = aiTask.startsWith('interview') ? [['practice', 'Interview practice']] : [['summary', 'CV summary / objective'], ['headline', 'Professional headline'], ['letter', 'Cover letter body'], ...state.experience.map((item, index) => [item.id, `Experience: ${item.title || index + 1}`])];
   const target = selectField('Apply result to', aiTarget, 'ai-target', targets);
   target.querySelector('select').addEventListener('change', event => { aiTarget = event.target.value; renderPanel(); }); panel.append(target);
-  const source = field('Source text — only this text is sent', aiSource(), 'ai-source', { multiline: true, rows: '9' });
+  const source = field('Text to send', aiSource(), 'ai-source', { multiline: true, rows: '9' });
   source.querySelector('textarea').maxLength = 30000; panel.append(source);
   const contextText = aiTask === 'interview-feedback' ? `Question(s):\n${practiceRecords.get(workspace.activeId)?.questions || ''}\n\nJob context:\n${state.jobAd}` : state.jobAd;
-  const context = field('Job / company context — also sent', contextText, 'ai-context', { multiline: true, rows: '6', hint: 'Check this text for private material. The model may make mistakes; supplied facts still need your review.' });
+  const context = field('Job or company details to send', contextText, 'ai-context', { multiline: true, rows: '6', hint: 'Remove anything private before sending. Check the result for mistakes.' });
   context.querySelector('textarea').maxLength = 20000; panel.append(context);
   if (aiTask === 'translate') panel.append(field('Target language', 'French', 'ai-language', { placeholder: 'e.g. French' }));
-  const generate = element('button', { id: 'ai-generate', type: 'button', class: 'button button-primary', text: aiBusy ? 'Generating…' : 'Generate candidate', disabled: !aiStatus.enabled || aiBusy });
+  const generate = element('button', { id: 'ai-generate', type: 'button', class: 'button button-primary', text: aiBusy ? 'Generating…' : 'Generate suggestion', disabled: !aiStatus.enabled || aiBusy });
   generate.addEventListener('click', async () => {
     const content = document.querySelector('#ai-source').value;
     const context = document.querySelector('#ai-context').value;
@@ -781,20 +792,20 @@ function renderAi() {
       if (controller.signal.aborted) throw new Error('Generation cancelled.');
       aiCandidate = { docId, target, task, text: result.text, model: result.model };
       if (activeTab === 'ai') renderPanel();
-      announce('Candidate generated. Review the text before applying it; no CV content has been changed.');
-    } catch (error) { announce(controller.signal.aborted ? 'Generation cancelled. Your CV has been kept.' : error.message, !controller.signal.aborted); }
+      announce('Your suggestion is ready. Read and edit it before applying.');
+    } catch (error) { announce(controller.signal.aborted ? 'Cancelled. Your CV hasn’t changed.' : error.message, !controller.signal.aborted); }
     finally { aiController = null; aiBusy = false; if (activeTab === 'ai') renderPanel(); }
   }); panel.append(generate);
   if (aiBusy) panel.append(element('button', { id: 'ai-cancel', type: 'button', class: 'button button-quiet', text: 'Cancel request', onClick: () => aiController?.abort() }));
   if (aiCandidate) {
-    panel.append(element('section', { class: 'form-section' }, [sectionTitle('Review the candidate', aiCandidate.model || 'CONFIGURED MODEL'), field('Candidate text — edit before applying', aiCandidate.text, 'ai-result', { multiline: true, rows: '12' })]));
+    panel.append(element('section', { class: 'form-section' }, [sectionTitle('Read the suggestion', aiCandidate.model || 'AI SUGGESTION'), field('Suggestion to edit', aiCandidate.text, 'ai-result', { multiline: true, rows: '12' })]));
     panel.querySelector('#ai-result').maxLength = 30000;
     panel.querySelector('#ai-result').addEventListener('input', event => { aiCandidate.text = event.target.value; });
-    panel.append(element('button', { id: 'ai-apply', type: 'button', class: 'button button-primary', text: aiCandidate.target === 'practice' ? 'Keep reviewed practice text' : aiCandidate.task === 'tailor' ? 'Apply to a new tailored CV' : 'Apply reviewed text', disabled: aiCandidate.docId !== workspace.activeId, onClick: () => safeAction(() => {
+    panel.append(element('button', { id: 'ai-apply', type: 'button', class: 'button button-primary', text: aiCandidate.target === 'practice' ? 'Keep practice notes' : aiCandidate.task === 'tailor' ? 'Apply to a new tailored CV' : 'Use this text', disabled: aiCandidate.docId !== workspace.activeId, onClick: () => safeAction(() => {
       if (aiCandidate.target === 'practice') {
         const key = aiCandidate.task === 'interview-feedback' ? 'feedback' : 'questions';
         practiceRecords.set(workspace.activeId, { ...practiceRecords.get(workspace.activeId), [key]: aiCandidate.text });
-        aiCandidate = null; renderPanel(); announce('Practice text kept in this tab. Export notes to keep them after closing; your CV is unchanged.'); return;
+        aiCandidate = null; renderPanel(); announce('Practice notes kept in this tab. Download them before closing.'); return;
       }
       const oldValue = aiSource(aiCandidate.target);
       const nextDoc = documentWithAiText(state, aiCandidate.target, aiCandidate.text);
@@ -802,20 +813,20 @@ function renderAi() {
       else change(nextDoc, true);
       aiUndo = { docId: workspace.activeId, target: aiCandidate.target, oldValue, newValue: aiCandidate.text };
       aiCandidate = null; renderPanel();
-      announce('Reviewed text applied. Undo can restore the previous field while this page stays open.');
+      announce('Text added. You can undo this change while the page is open.');
     }) }));
-    if (aiCandidate.docId !== workspace.activeId) panel.append(element('p', { class: 'match-empty', text: 'This candidate belongs to another CV. Open that CV to apply it.' }));
+    if (aiCandidate.docId !== workspace.activeId) panel.append(element('p', { class: 'match-empty', text: 'This suggestion is for another CV. Open that CV to use it.' }));
   }
   const practice = practiceRecords.get(workspace.activeId);
   if (practice && (practice.questions || practice.feedback)) {
-    const notes = element('section', { class: 'form-section' }, [sectionTitle('Your practice notebook'), element('p', { class: 'panel-intro', text: 'These notes remain in this tab while it is open. Export them before closing. Feedback is model-generated guidance, not a hiring prediction.' })]);
+    const notes = element('section', { class: 'form-section' }, [sectionTitle('Your practice notebook'), element('p', { class: 'panel-intro', text: 'Download these notes before closing the tab. Treat the AI feedback as suggestions for your practice.' })]);
     if (practice.questions) notes.append(element('p', { class: 'practice-text', text: practice.questions }));
     if (practice.feedback) notes.append(element('p', { class: 'practice-text', text: practice.feedback }));
     notes.append(element('button', { id: 'export-practice', type: 'button', class: 'button button-quiet', text: 'Export practice TXT', onClick: () => download([practice.questions, practice.answer, practice.feedback].filter(Boolean).join('\n\n'), 'text/plain;charset=utf-8', 'txt', `${activeEntry(workspace).name}-interview`) }));
     panel.append(notes);
   }
-  if (aiUndo?.docId === workspace.activeId) panel.append(element('button', { id: 'ai-undo', type: 'button', class: 'button button-quiet', text: 'Undo last AI apply', onClick: () => safeAction(() => {
-    if (aiSource(aiUndo.target) !== aiUndo.newValue && !window.confirm('This field has been edited since the AI apply. Restore its previous text? Other fields will be kept.')) return;
+  if (aiUndo?.docId === workspace.activeId) panel.append(element('button', { id: 'ai-undo', type: 'button', class: 'button button-quiet', text: 'Undo last AI change', onClick: () => safeAction(() => {
+    if (aiSource(aiUndo.target) !== aiUndo.newValue && !window.confirm('You’ve edited this field since using the AI text. Restore the earlier wording?')) return;
     change(documentWithAiText(state, aiUndo.target, aiUndo.oldValue), true);
     aiUndo = null; renderPanel(); announce('Previous field text restored.');
   }) }));
@@ -825,7 +836,7 @@ if (!location.hostname.endsWith('.github.io')) getAiStatus().then(status => { ai
 
 function renderCloud() {
   if (cloudUI) cloudUI.render(panel);
-  else panel.append(sectionTitle('Shared CVs'), element('p', { class: 'design-note', text: 'The optional self-hosted sharing service is unavailable here. Local workspace backups remain available in Library.' }));
+  else panel.append(sectionTitle('Shared CVs'), element('p', { class: 'design-note', text: 'Sharing isn’t connected here. You can download a workspace backup in Library.' }));
 }
 
 cloudUI = createCloudUI({
@@ -940,11 +951,11 @@ window.addEventListener('storage', event => {
   try {
     if (localStorage.getItem(STORAGE_KEY) === savedWorkspaceBaseline) return;
     storageConflict = true;
-    document.querySelector('#save-status').textContent = 'Newer saved library · export open edits';
-    announce('Another tab changed the saved library. Your open edits are kept. Export a workspace backup, then open Library to reload the newer copy.', true);
+    document.querySelector('#save-status').textContent = 'Another tab saved · back up your edits';
+    announce('Another tab saved a newer library. Back up your edits here, then open Library to reload the saved version.', true);
     if (activeTab === 'library' && !panel.querySelector('#storage-conflict-card')) panel.prepend(storageConflictCard());
   } catch {
     document.querySelector('#save-status').textContent = 'Not saved · export a backup';
-    announce('This browser could not check the saved library. Keep a workspace backup of your open edits before closing.', true);
+    announce('This browser couldn’t check your saved library. Download a workspace backup before closing.', true);
   }
 });

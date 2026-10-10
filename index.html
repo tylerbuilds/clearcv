@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#a94f2e">
-  <meta name="description" content="A calm, local-first CV workspace. Write your story, make it yours and export it without an account.">
-  <title>ClearCV — your story, clearly</title>
+  <meta name="description" content="Write, style and download your CV. Your library stays in your browser, with no account needed.">
+  <title>ClearCV | Write your next CV</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a94f2e'/%3E%3Cpath d='M42 20a17 17 0 1 0 0 24M42 20v9h-9' stroke='%23fff' stroke-width='5' fill='none'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="src/app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <a class="brand" href="./" aria-label="ClearCV home"><span class="brand-mark">c<span>↗</span></span>ClearCV<span class="brand-tag">WORKSPACE</span></a>
+    <a class="brand" href="./" aria-label="ClearCV home"><span class="brand-mark">c<span>↗</span></span>ClearCV<span class="brand-tag">CV BUILDER</span></a>
     <div class="header-actions">
       <span id="save-status" class="save-status" role="status">Saved on this device</span>
       <button id="new-cv" class="button button-new" type="button">+ New CV</button>
@@ -37,11 +37,11 @@
     <button class="rail-button" type="button" data-tab="review" aria-label="CV review" title="CV review"><span class="rail-glyph" aria-hidden="true">✓</span><span>Review</span></button>
     <button class="rail-button" type="button" data-tab="ai" aria-label="AI writing" title="AI writing"><span class="rail-glyph" aria-hidden="true">✧</span><span>AI writing</span></button>
     <button class="rail-button" type="button" data-tab="cloud" aria-label="Shared CVs" title="Shared CVs"><span class="rail-glyph" aria-hidden="true">⇄</span><span>Share</span></button>
-    <div class="rail-bottom"><span class="local-symbol" aria-hidden="true">⌁</span><span>Local<br>by design</span></div>
+    <div class="rail-bottom"><span class="local-symbol" aria-hidden="true">⌁</span><span>Saved in<br>your browser</span></div>
   </aside>
   <main class="workspace">
     <section class="editor" aria-label="CV editor">
-      <div class="editor-heading"><span class="eyebrow">A LITTLE CLARITY GOES A LONG WAY</span><h1>Your next chapter<br>starts here<span>.</span></h1><p>Your experience. Your words. A CV that feels like you.</p></div>
+      <div class="editor-heading"><span class="eyebrow">YOUR NEXT CV</span><h1>Put your experience<br>on paper<span>.</span></h1><p>Start a CV, bring in an old one, and make it your own.</p></div>
       <div class="document-switcher"><label for="active-document">CURRENT CV</label><select id="active-document" aria-label="Current CV"></select></div>
       <div class="editor-tabs" role="tablist" aria-label="Editor views">
         <button id="tab-content" type="button" role="tab" data-tab="content" aria-selected="true" aria-controls="editor-panel">Content</button>
@@ -60,10 +60,10 @@
     <section class="preview-area" aria-label="Live CV preview">
       <div class="preview-toolbar"><span><span class="live-dot"></span> LIVE PREVIEW</span><span id="preview-kind" class="page-size">A4 · CV preview</span></div>
       <div id="cv-preview" class="paper template-studio" aria-label="Your CV"></div>
-      <div class="preview-footer"><span>Made with your words, not a formula.</span><span>CLEARCV / 01</span></div>
+      <div class="preview-footer"><span>Check your preview before saving.</span><span>CLEARCV / 01</span></div>
     </section>
   </main>
   <div id="notification" class="notification" role="status" aria-live="polite" hidden></div>
-  <noscript>ClearCV needs JavaScript to edit and save your CV. All processing happens in your browser.</noscript>
+  <noscript>Turn on JavaScript to write and save your CV. Imports and spelling checks run in your browser.</noscript>
 </body>
 </html>

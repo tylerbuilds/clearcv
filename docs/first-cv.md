@@ -1,17 +1,36 @@
 # Your first CV
 
-ClearCV opens a genuinely blank CV when this browser has no saved library. The master profile is blank too. The welcome offers **Create blank CV**, **Import CV** and **Explore example**. Sample career details are only loaded when you choose an example.
+Choose **Create blank CV** to start writing, **Import CV** to use an existing document, or **Explore example** to try a sample. On your first visit, ClearCV starts with an empty CV and master profile. Sample career details appear only when you choose the example.
 
-Choose **Create blank CV** to start on the initial page. Give it a **CV name in your library** so you can recognise this version, then fill your full name and professional title. Add your own experience, education and skills. Empty-field hints are guidance; they are not saved career facts. Open **Design** to choose a template, accent, font, spacing and page size. On a phone, **Preview** takes you straight to the paper; **Edit** returns to the form.
+## Add your details
 
-The header's **New CV** action creates another independent blank immediately and opens Content with the name field focused. Library also puts **New blank CV** at the top. Existing documents, letters, master history, snapshots and job records stay intact. Choosing **Explore example** adds a separate editable example. **New from master** makes a separate copy of your reusable history. Neither action replaces an existing CV.
+1. Give the CV a **CV name in your library** so you can recognise it later.
+2. Add your full name, professional title and contact details, then your experience, education and skills.
+3. Open **Design** to choose a template, colour, font, spacing and page size.
+4. Check the paper preview. On a phone, choose **Preview** to see it and **Edit** to return to the form.
 
-To upgrade an existing document, choose **Import CV**, or drop or paste it in Library's intake area. Review the extracted source and mapped fields before applying them. See [document upgrades](document-upgrades.md) for formats, English OCR and preservation limits.
+Field hints help you get started; they aren't saved as career details.
 
-Use **Save as PDF** for the browser's print destination. The labelled **Export** menu also offers plain text, editable Word, the current CV's JSON and a **Workspace backup**. Current-CV JSON includes that CV and letter; workspace JSON includes every CV, snapshot, submitted copy, master and application. Keep backups private.
+To bring in an existing CV, choose **Import CV** or use the drop and paste area in **Library**. Check the extracted text and suggested fields before saving. The [document-upgrade guide](document-upgrades.md) covers formats, English OCR and what to check.
 
-Changes normally save in this browser automatically. The status and error message tell you when storage is unavailable or full. Unsaved edits remain open, including a newly created CV: export **Workspace backup · JSON** before closing. A rejected creation at the 25-CV or 4 MB workspace bound keeps the current library and selection. Remove unneeded documents, snapshots or photos only after keeping a backup. An unreadable original saved value is retained as recovery data; Library explains the protected recovery path.
+## Keep different versions
 
-If another tab changes the saved library, this tab refuses to replace it and keeps its own edits open. Download a workspace backup, then use **Library → Reload newer saved library**. Reload asks before replacing open edits; you can import the backup later to merge its CVs. Keep one editing tab where practical.
+Choose **New CV** in the header or **New blank CV** in **Library** for another blank document. It opens **Content** ready for a name. Your existing CVs, letters, master profile, snapshots and job records stay in place.
 
-Importing, creating and exporting do not require an account or model service. Browser-local storage does not synchronise the whole library across devices. Keep the original uploaded document as well as an exported workspace; imports retain extracted source text, rather than the original file's binary bytes.
+**Explore example** adds a separate editable sample. **New from master** copies the career history you've saved for reuse. Both create another CV in your library.
+
+## Export and back up
+
+Choose **Save as PDF** and select your browser's PDF destination. Open **Export** for plain text, editable Word, current-CV JSON or a **Workspace backup**.
+
+Current-CV JSON includes that CV and its letter. A workspace backup includes your whole library, including snapshots, submitted copies, master profile and applications. Keep backups somewhere private. If you imported a document, keep the original file too: ClearCV retains the extracted text, not the original file.
+
+## Check that changes are saved
+
+Changes normally save automatically in this browser. Check the save status before closing the page. If storage is unavailable or full, your edits stay open and ClearCV asks you to export **Workspace backup · JSON**.
+
+The library holds up to 25 CVs within a 4 MB workspace. If adding a CV would exceed either limit, your current library and selection stay in place. Back up before removing documents, snapshots or photos to make room. If saved data can't be read, **Library** offers a recovery download before you replace it.
+
+If another tab saves changes, download a workspace backup from this tab, then choose **Library → Reload newer saved library**. Reload asks before replacing your open edits. You can import the backup later to add its CVs back into the library. Use one editing tab where possible; see [browser storage and recovery](storage-safety.md).
+
+You don't need an account or AI service to create, import or export a CV. Your browser library doesn't automatically sync across devices, so take a workspace backup when you move to another browser or computer.

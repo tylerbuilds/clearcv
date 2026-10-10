@@ -49,7 +49,7 @@ test('malformed options, unavailable merge targets and capacity reject atomicall
   assert.throws(() => createReviewedImport(ws, imported(), { id: 'new', name: 'New', mode: 'merge', targetId: 'gone' }), /no longer/);
   assert.throws(() => mergeReviewedDocument(sampleDocument(), imported(), { profileFields: ['password'] }), /supported/);
   assert.throws(() => mergeReviewedDocument(sampleDocument(), imported(), { profileFields: ['name', 'name'] }), /once/);
-  assert.throws(() => mergeReviewedDocument(sampleDocument(), imported(), { sectionModes: { experience: 'invent' } }), /append/);
+  assert.throws(() => mergeReviewedDocument(sampleDocument(), imported(), { sectionModes: { experience: 'invent' } }), /add, replace or keep/);
   const full = imported(); full.skills = Array.from({ length: 60 }, (_, i) => ({ id: `s-${i}`, name: `Skill ${i}` }));
   assert.throws(() => mergeReviewedDocument(full, imported()), /at most 60/);
   assert.equal(JSON.stringify(ws), before);

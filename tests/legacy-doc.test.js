@@ -107,11 +107,11 @@ test('CFB version4 uses4096-byte sectors and exact directory counts instead of51
   for (let index = 0; index < 1024; index++) h.setUint32(4 * 4096 + index * 4, index < 3 ? 0xfffffffe : index === 3 ? 0xfffffffd : 0xffffffff, true);
   assert.equal(extractLegacyDoc(bytes), 'Version four container');
   const padding = new Uint8Array(bytes); padding[512] = 1;
-  assert.throws(() => extractLegacyDoc(padding), /sectors/);
+  assert.throws(() => extractLegacyDoc(padding), error => error instanceof Error && /sectors/.test(error.cause));
   const size = new Uint8Array(bytes); view(size).setUint32(3 * 4096 + 128 + 124, 1, true);
-  assert.throws(() => extractLegacyDoc(size), /oversized stream/);
+  assert.throws(() => extractLegacyDoc(size), error => error instanceof Error && /oversized stream/.test(error.cause));
   const count = new Uint8Array(bytes); view(count).setUint32(40, 2, true);
-  assert.throws(() => extractLegacyDoc(count), /chain/);
+  assert.throws(() => extractLegacyDoc(count), error => error instanceof Error && /chain/.test(error.cause));
 });
 
 test('mixed compressed ANSI and Unicode pieces follow CP order and ignore bytes outside main-story pieces', () => {
@@ -127,14 +127,14 @@ test('compressed byte mapping uses the exact MS-DOC overrides instead of guessin
 
 test('surrogate pairs split across UTF16 descriptors remain exact; invalid Unicode is rejected', () => {
   assert.equal(extractLegacyDoc(compound([{ units: [0xd83c], compressed: false }, { units: [0xdf31, 13], compressed: false }])), '🌱');
-  assert.throws(() => extractLegacyDoc(compound([{ units: [0xd83c, 13], compressed: false }])), /Unicode/);
+  assert.throws(() => extractLegacyDoc(compound([{ units: [0xd83c, 13], compressed: false }])), error => error instanceof Error && /Unicode/.test(error.cause));
 });
 
 test('field instructions are discarded, nested displayed results remain literal and nothing is executed', () => {
   const raw = 'Before \x13HYPERLINK "https://example.test/secret"\x14shown <script>literal</script>\x15 after\r';
   assert.equal(extractLegacyDoc(compound([unicode(raw)])), 'Before shown <script>literal</script> after');
   assert.equal(extractLegacyDoc(compound([unicode('\x13OUTER\x14a\x13INNER\x14b\x15c\x15\r')])), 'abc');
-  for (const raw of ['\x13instruction', '\x14orphan', '\x15orphan', '\x13a\x14b\x14c\x15', '\x13'.repeat(129) + 'a' + '\x15'.repeat(129)]) assert.throws(() => extractLegacyDoc(compound([unicode(raw)])), /field/i);
+  for (const raw of ['\x13instruction', '\x14orphan', '\x15orphan', '\x13a\x14b\x14c\x15', '\x13'.repeat(129) + 'a' + '\x15'.repeat(129)]) assert.throws(() => extractLegacyDoc(compound([unicode(raw)])), error => error instanceof Error && /field/i.test(error.cause));
 });
 
 test('main-story markers become readable paragraph/tab/break text without invented content', () => {
@@ -152,7 +152,7 @@ test('encryption/XOR and pre97 formats fail honestly; read-only and write-reserv
   for (const flags of [0x1100, 0x9100]) { const bytes = compound([ansi('Secret\r')], { flags }); assert.throws(() => extractLegacyDoc(bytes), /Encrypted|password/i); assert.equal(isLegacyDoc(bytes), false); }
   for (const flags of [0x1400, 0x1800, 0x9000]) assert.equal(extractLegacyDoc(compound([ansi('Readable\r')], { flags })), 'Readable');
   assert.throws(() => extractLegacyDoc(compound([ansi('Old format\r')], { version: 0xbf })), /older than Word 97/);
-  assert.throws(() => extractLegacyDoc(compound([ansi('Unknown\r')], { version: 0x200 })), /version/);
+  assert.throws(() => extractLegacyDoc(compound([ansi('Unknown\r')], { version: 0x200 })), error => error instanceof Error && /version/.test(error.cause));
 });
 
 test('OLE magic, headers and directory identity reject foreign/nonWord and truncated files without heuristics', () => {
@@ -162,7 +162,7 @@ test('OLE magic, headers and directory identity reject foreign/nonWord and trunc
     const bytes = new Uint8Array(base), v = view(bytes); size === 2 ? v.setUint16(offset, value, true) : v.setUint32(offset, value, true);
     assert.throws(() => extractLegacyDoc(bytes)); assert.equal(isLegacyDoc(bytes), false);
   }
-  assert.throws(() => extractLegacyDoc(base.subarray(0, base.length - 1)), /sectors/);
+  assert.throws(() => extractLegacyDoc(base.subarray(0, base.length - 1)), error => error instanceof Error && /sectors/.test(error.cause));
   const foreign = new Uint8Array(base); foreign[wordAt(0)] = 0;
   assert.equal(isLegacyDoc(foreign), false);
 });
@@ -174,7 +174,7 @@ test('sector/directory cycles, root aliases, overlaps and false stream lengths a
     assert.throws(() => extractLegacyDoc(bytes)); assert.equal(isLegacyDoc(bytes), false);
   }
   const orphan = new Uint8Array(base); view(orphan).setUint32(dir + 128 + 72, 0xffffffff, true);
-  assert.throws(() => extractLegacyDoc(orphan), /unreachable/);
+  assert.throws(() => extractLegacyDoc(orphan), error => error instanceof Error && /unreachable/.test(error.cause));
 });
 
 test('piece counts, CP order, stream offsets and formatting lengths are checked before decoding', () => {
@@ -183,9 +183,9 @@ test('piece counts, CP order, stream offsets and formatting lengths are checked 
     const bytes = new Uint8Array(base); view(bytes).setUint32(offset, value, true); assert.throws(() => extractLegacyDoc(bytes));
   }
   const formatted = compound([ansi('Body\r')], { formatting: [[1]] }); view(formatted).setInt16(tableAt(1), -1, true);
-  assert.throws(() => extractLegacyDoc(formatted), /formatting length/);
+  assert.throws(() => extractLegacyDoc(formatted), error => error instanceof Error && /formatting length/.test(error.cause));
   const brokenTable = new Uint8Array(base); view(brokenTable).setUint16(wordAt(10), 0x1200, true);
-  assert.throws(() => extractLegacyDoc(brokenTable), /piece table/);
+  assert.throws(() => extractLegacyDoc(brokenTable), error => error instanceof Error && /piece table/.test(error.cause));
 });
 
 test('cbMac meaningful stream boundary excludes padding from text pieces even when the OLE stream is larger', () => {
@@ -195,7 +195,7 @@ test('cbMac meaningful stream boundary excludes padding from text pieces even wh
   assert.equal(extractLegacyDoc(base), 'Meaningful body');
   for (const value of [0, 154, 2048, end - 1, 4097]) {
     const bytes = new Uint8Array(base); view(bytes).setUint32(wordAt(64), value, true);
-    assert.throws(() => extractLegacyDoc(bytes), /meaningful WordDocument/);
+    assert.throws(() => extractLegacyDoc(bytes), error => error instanceof Error && /meaningful WordDocument/.test(error.cause));
     assert.equal(isLegacyDoc(bytes), false);
   }
 });
@@ -204,7 +204,7 @@ test('conservative supported-input policy rejects text aliased into the counted 
   for (const compressed of [true, false]) {
     const bytes = compound([compressed ? ansi('Body\r') : unicode('Body\r')]);
     view(bytes).setUint32(tableAt(15), compressed ? 0x40000000 : 0, true);
-    assert.throws(() => extractLegacyDoc(bytes), /overlaps counted FIB/);
+    assert.throws(() => extractLegacyDoc(bytes), error => error instanceof Error && /overlaps counted FIB/.test(error.cause));
     assert.equal(isLegacyDoc(bytes), false);
   }
 });

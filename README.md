@@ -1,14 +1,78 @@
 # ClearCV
 
-![Start a genuinely blank CV in ClearCV](docs/screenshots/blank-start-0.5.png)
+Write your CV, keep versions for different jobs and export them as PDF or editable Word documents. ClearCV runs in your browser, with no account or subscription. Your CVs save on your device.
 
-[Try the live demo](https://tylerbuilds.github.io/clearcv/) · [Linux/macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
+[Try ClearCV](https://tylerbuilds.github.io/clearcv/) · [Linux and macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
 
-A calm, local-first CV workspace. Write your story, choose an original layout, build application-specific CVs and letters, track your search and export editable documents — without an account or subscription. Optional AI writing uses an explicitly configured model service.
+![Start a blank CV in ClearCV](docs/screenshots/blank-start-0.5.1.png)
 
-ClearCV is an independently written open-source implementation of publicly observable CV-building behaviours. It is not affiliated with Enhancv and does not contain its code, branding, templates or private data. The functional expansion covers local free and premium workflow families. The source-linked parity ledger records remaining and unknown capabilities; complete commercial parity is not claimed.
+[On a phone](docs/screenshots/blank-start-mobile-0.5.1.png)
 
-## Run on Linux or macOS
+## Start your CV
+
+Choose **Create blank CV**, **Import CV** or **Explore example**. Give your CV a name in **Content**, then add your contact details, experience, education and skills. Open **Design** to choose a layout, font, colour and page size. On a phone, use **Edit** and **Preview** to switch between the form and the paper.
+
+**New CV** adds another blank CV. You can also create one from **Library**. **Explore example** adds a separate example to edit; **New from master** copies your saved career history. Your existing CVs and job records stay in the library.
+
+Choose **Save as PDF**, or open **Export** for TXT, DOCX and JSON. Download a **Workspace backup** to keep a copy of your whole library. The [first-CV guide](docs/first-cv.md) explains saving and backups.
+
+## What you can do
+
+- **Keep a CV for each role.** Create, name, duplicate and switch between CVs. Save reusable career history in a master CV and keep named snapshots to return to later.
+- **Choose how it looks.** Three original templates, editable sections, fonts, colours, spacing, margins, A4 or Letter paper and an optional photo. The preview updates as you write.
+- **Bring in an existing CV.** Import PDF, DOCX, supported older Word files, ODT, RTF, text, Markdown or HTML. Local English OCR can read scans and images. Check the extracted text and suggested fields before creating a CV. See [supported formats and limits](docs/document-upgrades.md).
+- **Write a cover letter.** Keep a letter with each CV and export it as PDF, TXT or DOCX. A rule-based draft can give you a starting point using the facts you've entered.
+- **Check your writing.** Review British English spelling suggestions, tidy spaces and compare your CV with a job description. Suggested section ordering creates a separate tailored copy. These checks don't provide an ATS score or predict whether you'll get the job.
+- **Track applications.** Record jobs, stages, notes, dates, tasks and extra fields. Link a CV and letter, save the version you submitted, and export your records as CSV.
+- **Use AI when a server is configured.** Request headline, profile, bullet and cover-letter suggestions, translate selected fields, or practise interview answers. Review suggestions before applying them. AI is unavailable on the static demo.
+- **Share a CV from your own server.** Create separate owner, editor and viewer links, with comments and history. Sharing requires the Node server. It shares the selected CV and letter; your other CVs and job records stay local.
+
+For PDF export, select the browser's PDF destination, match the A4 or Letter page size and turn off browser headers and footers. Check each page before saving, as pagination can vary between browsers. Valid email and HTTP(S) website addresses become clickable links. Word exports keep editable text and layout settings but don't include your photo or exactly match the browser template.
+
+## Keep your data safe
+
+CVs, photos, letters, job descriptions and application records save in this browser's `localStorage`. There are no analytics, telemetry or required accounts. Anyone with access to the same browser profile may be able to read them. The library doesn't automatically follow you to another device.
+
+Download workspace backups regularly and keep them private. They include every CV, letter, image, snapshot, submitted copy, master profile, job description, application, task and custom field. Current-CV JSON contains one CV and its letter. Importing a workspace adds its CVs with new IDs and keeps your existing library and master profile.
+
+Private browsing, restricted storage or a full browser store can prevent saves. ClearCV warns you and keeps the edits open so you can export them before closing. If another tab has saved changes, this tab asks you to download its open workspace and reload the newer library. Use one editing tab where possible; see [browser storage and recovery](docs/storage-safety.md).
+
+If an older saved workspace can't be read, ClearCV keeps a recovery copy before replacing it. If it can't save that copy, autosave pauses and **Library** offers a recovery download and an explicit replacement option. Original version 1 CV exports can be imported, and the old `clearcv.document.v1` browser value is retained when the `clearcv.workspace.v1` library is first created.
+
+Storage limits apply to keep the library within browser capacity:
+
+| Item | Limit |
+| --- | --- |
+| Document JSON | 1 MB |
+| Workspace JSON | 4 MB |
+| CVs | 25 |
+| Named snapshots per CV | 10 |
+| Custom sections per CV | 20 |
+| Entries per standard section | 60 |
+| Applications | 150 |
+| Tasks, custom fields and submitted copies per application | 30 tasks, 20 fields, 8 copies |
+
+These are storage limits, with no paid tiers. Imports are checked before they change the library. Unknown fields, invalid layouts, duplicate IDs and malformed values are rejected. Snapshots keep the CV and cover letter together. AI Undo lasts while the page is open; save a named snapshot if you need to keep a version.
+
+### Know what leaves your browser
+
+Document imports, OCR and spelling checks run locally. Optional AI sends the source text and context shown in the writing panel when you choose **Generate suggestion**. The server operator configures the provider and keeps its credentials outside the browser and repository. The provider's own data handling applies. The static demo makes no AI calls.
+
+Optional sharing sends the full editable selected CV when you create or save a shared document. That includes hidden sections, retained import-source text, the cover letter and the pasted job description. Other CVs, application records and submitted copies aren't shared. Anyone holding an owner, editor or viewer link can use the access it grants. Keep the owner link private; the access tokens are held in the open tab and URL fragment and aren't included in backups. Server files also contain private CV data. See [self-hosting](docs/self-hosting.md) before enabling either service.
+
+## Track a job application
+
+Open **Jobs**, add a role and choose its CV. The link opens the current editable version. Use **Save submitted CV + letter copy** to keep the version you sent. Later edits, renaming or deletion of the linked CV won't change that saved copy. You can open it, export it or make a new editable library copy. This records your submission; it doesn't send the application or confirm that an employer received it.
+
+Saved copies include the CV name and capture time, shown in your local timezone. Hidden sections and the pasted job description remain in the private saved document and JSON backups. PDF, TXT and DOCX exports show the content selected for the captured layout.
+
+Add tasks with due dates and mark them complete. The single follow-up date also stays available until you clear it. Tasks due today or earlier count as due; those before today count as overdue. There are no background reminders. Search covers job details, notes, task titles and custom fields. It doesn't search the text inside submitted copies.
+
+Archive a job to remove it from the active list and statistics while keeping its tasks and submitted copies. Restore it to bring it back. **Your search at a glance** shows current stages, open and completed tasks, due dates and the applied dates you've entered over the last seven local calendar days. Future and missing dates are listed separately. The figures describe your records as they stand, rather than historical conversion rates.
+
+CSV export can include the shown jobs or all jobs, including archived records. It includes task and submission details but leaves out the saved CV and letter contents. Custom fields become columns; values with the same label share a cell. Formula-like text gets a protective leading apostrophe, which may appear in a spreadsheet. Spreadsheet software can change quoting when it saves the file, so use workspace JSON for a complete backup. CSV and spreadsheet import aren't available.
+
+## Run ClearCV on Linux or macOS
 
 Install Node.js **22.19 or newer** (Node 24.11+ is also supported), then run:
 
@@ -19,92 +83,37 @@ npm ci
 npm start
 ```
 
-Open **http://localhost:4201** in a recent browser. The development server binds to localhost by default. Pinned PDF extraction, English OCR and British English spelling assets are prepared locally by test/build/start, without a CDN. See [third-party assets](docs/third-party-assets.md) for licences and provenance.
+Open **http://localhost:4201** in a recent browser. The server listens on localhost by default. PDF, English OCR and British English spelling assets are prepared locally by the test, build and start commands, with no CDN. See [third-party assets](docs/third-party-assets.md) for licences and sources.
 
 ```sh
-npm test            # Model and import validation checks
-npm run build       # Produces the static site in dist/
+npm test            # Checks CV data and imports
+npm run build       # Creates the static site in dist/
 npm run preview     # Serves the production build on port 4201
 ```
 
-This is a browser application for Linux and macOS, not a native desktop package. Windows should work with the same commands but is not part of the initial qualification target.
+ClearCV is a browser app. There isn't a native desktop installer. Windows should work with the same commands, but the automated checks cover Linux and macOS. The static build supports local CV editing; follow the [self-hosting guide](docs/self-hosting.md) to configure AI or shared CVs.
 
-## Start your own CV
+## Research and development
 
-A fresh browser opens an empty CV, with **Create blank CV**, **Import CV** and **Explore example** as separate choices. Choose Create blank CV to use that first page, name the version in Content, then add your name and experience. Design lets you choose the layout and typography. The preview contains your supplied facts.
+ClearCV is an independently written, MIT-licensed open-source app. It isn't affiliated with Enhancv and doesn't contain its code, branding, templates or private data. Research into publicly observable features is recorded separately:
 
-**New CV** stays in the header and is also available at the top of Library. It adds an independent blank immediately, keeping your current documents, master, snapshots, letters and applications. **Explore example** adds a separate worked example; **New from master** copies your reusable history. Neither is the blank-start action.
+- [Free and premium feature ledger](docs/research/parity-ledger.md)
+- [All-tier source comparison](docs/research/feature-comparison.md)
+- [Feature map](docs/research/feature-map.md)
+- [REA investigation and sources](docs/research/rea-provenance.md)
+- [Development checks](docs/verification.md)
 
-Use **Save as PDF**, or open **Export** for TXT, DOCX, current-CV JSON and whole-workspace JSON. On a phone, Edit and Preview switch between the form and paper. [The first-CV guide](docs/first-cv.md) describes naming, saving and backup limits.
+The comparison retains the dated 0.3 audit. The [document-upgrade guide](docs/document-upgrades.md) describes the later import, OCR and spelling features. These records include gaps and unknowns; ClearCV doesn't claim to reproduce every feature of another product.
 
-## What works
-
-- Blank first use with a visible New CV action, import and an explicitly chosen example. Named CV library: create, duplicate, rename, switch and delete independent documents.
-- A complete master CV for reusable career history; named snapshots with recovery when restoring.
-- Editable profile, experience, education, skills and custom sections, with live preview and accessible ordering.
-- Section headings, visibility and order; three original templates, accent colours, fonts, size, spacing, margins, A4/Letter paper and optional locally resized portraits.
-- Cover letters stored with each CV, editable preview and PDF/TXT/DOCX exports. A clearly labelled rule-based draft reuses supplied facts.
-- Manual job tracking with stages, search, archive/restore, notes, application/follow-up dates and linked CVs/letters.
-- Independent read-only submitted CV and letter copies, reviewed/downloaded as PDF, TXT, DOCX or document JSON. Later edits, renaming and deletion of the linked CV cannot change those copies.
-- Multiple follow-up tasks with due dates and completion, editable custom text fields, CSV export and transparent current-stage/date-based analytics.
-- Automatic browser-local saves; current-CV JSON export and whole-workspace backups. Importing adds or merges documents, preserving the existing library.
-- Reviewed document-to-CV upgrades from PDF, DOCX, supported Word97–2003 DOC, ODT, RTF, TXT, Markdown and inert HTML. Local English OCR reads scans and common images. Editable profile, career, education and skill proposals retain the complete extracted source; apply as a new CV or an explicitly merged independent copy. Originals and history are kept. See [formats and limits](docs/document-upgrades.md).
-- Real local British English Hunspell spelling checks for visible headings/prose or cover letters, review/apply/accept-word controls, whitespace-only cleanup and guarded Undo. Native browser spelling hints are also enabled.
-- Browser PDF printing, plain text and editable DOCX exports.
-- A transparent writing checklist and job-description keyword comparison. Reviewed ordering suggestions create a tailored copy using existing facts. **These rules are not AI, an ATS score or a hiring prediction.**
-- Optional real AI headline, objective, summary, bullet, cover-letter and selected-field translation candidates through a configured local server. Source/context are visible before Generate; candidates must be reviewed before Apply and support field-level Undo. Summary tailoring creates an independent CV copy. AI is unavailable on the static demo. Interview questions and practice-answer feedback produce reviewed in-tab notes with TXT export.
-
-To export a PDF, choose **Save as PDF**, select the browser’s PDF destination, use the selected A4 or Letter paper size and disable browser headers and footers. Check the preview before saving; pagination varies between browsers. Valid supplied email and HTTP(S) website values become clickable links; other contact values remain text.
-
-- Optional self-hosted sharing for the active CV: separate owner/edit/view links, explicit save and refresh, revision-conflict protection, comments, history and permission revocation. Cloud refresh keeps a named local recovery snapshot; unrelated local CVs and job records are never shared.
-
-## Your data
-
-The library, job descriptions, photos, letters and applications stay in this browser's `localStorage`. There are no analytics, telemetry or required accounts. Optional sharing sends the full editable active CV, including hidden sections, its cover letter and pasted job description, to the configured same-origin self-hosted service when you create/save a shared document. Links use bearer tokens in URL fragments; anyone holding a link can use its permission. Tokens remain in the open tab/fragment and are excluded from workspace backups. Keep the owner link privately to regain access; server files also contain private document data.
-
-Optional AI sends only the selected source text and context when you click Generate; the operator supplies the provider configuration outside the browser and repository. A configured provider has its own data handling. The static demo makes no model calls.
-
-Anyone with access to the same browser profile may be able to read your library. Private browsing, restricted storage and quota limits can prevent saves; the app reports this and keeps edits open for export. If another tab changed the saved library, saving refuses to overwrite that copy. Export the open workspace, then explicitly reload the newer saved library in Library. This is a stale-tab guard, not simultaneous collaborative editing.
-
-To improve an existing document, open **Improve an existing CV** in Content or Library. Upload, drop or paste; review the mapped fields and original extracted text; preview the paper and exports; then create the reviewed CV or an upgraded copy. Review offers spelling and whitespace cleanup, and Design controls the template, typography, spacing and accent. [The upgrade guide](docs/document-upgrades.md) describes exact format support, OCR, preservation and limits.
-
-A workspace JSON backup includes **every CV, snapshot, submitted copy, letter, image, job description, master CV, application, task and custom field**. Keep it somewhere you trust. Document JSON is limited to 1 MB and workspace JSON to 4 MB. Unknown fields, invalid layouts, duplicate IDs and malformed values are rejected before changing the library. Workspace imports merge with new IDs and preserve the current master.
-
-Original release version 1 CV exports are migrated with additive defaults. The original `clearcv.document.v1` browser value is retained when the new `clearcv.workspace.v1` library is created. If a saved workspace cannot be read, its raw bytes are copied to a recovery key before replacement. If that copy cannot save, ordinary autosaves are locked: Library offers original recovery download and an explicit replacement action. No ordinary edit discards an unbacked original.
-
-Practical local bounds are 25 CVs, 10 named snapshots per CV, 20 custom sections, 60 items per basic section and 150 application records. Each application supports 30 tasks, 20 custom fields and 8 submitted copies, within the shared 4 MB workspace limit. These keep browser storage bounded; they are not subscription tiers. Snapshots contain complete CV and cover-letter state. AI Undo lasts while the page remains open; save a named snapshot for persistent history.
-
-## Keep an application record
-
-Open **Jobs**, add a role and choose its linked CV. The link opens the current editable CV. **Save submitted CV + letter copy** captures an independent document bundle with its original CV name and a UTC capture timestamp; the interface displays that time in your browser's local timezone. It does not send an application or certify the employer's receipt. Hidden sections and the pasted job description stay in the private captured document and JSON backups; visible CV/letter exports use the captured layout and content. Reviewing a copy never overwrites the current CV. Creating an editable library copy leaves the submitted copy intact.
-
-Tasks have separate due dates and completion controls. The older single follow-up date remains available and is pending until cleared; it has no completion flag. Due means today or earlier, and overdue means before today. Search includes application metadata, notes, task titles and custom fields, rather than private submitted document text. Archive removes a record from the active view and analytics while retaining its tasks and submitted copies; restoring brings it back.
-
-**Your search at a glance** derives counts from unarchived records. It shows current stages, open/done tasks, overdue/today tasks and the applied dates you supplied for the last seven local calendar days, including today. Future and missing applied dates are identified separately. These are current-state counts, not a historical funnel, conversion rates or a hiring prediction. No background reminders are delivered.
-
-CSV exports either the shown records or all records, including archived ones. It quotes commas, quotes, line breaks and Unicode; formula-like prefixes receive a protective leading apostrophe that may remain visible in a spreadsheet. Custom columns use a case-sensitive label union, prefixed `Custom: `; repeated same-label values are joined with a line break. Task and submission metadata are included, but captured CV/letter contents are excluded. Use workspace JSON for a complete portable backup. Spreadsheet software can alter escaping on re-save, so CSV is not a full-fidelity workspace import format. CSV/spreadsheet import remains unavailable.
-
-## Research and scope
-
-[Free and premium parity ledger](docs/research/parity-ledger.md), [all-tier source comparison](docs/research/feature-comparison.md) and [feature map](docs/research/feature-map.md) distinguish source observations, implementation decisions and gaps. [REA provenance](docs/research/rea-provenance.md) records the pinned reverse-engineering tool used for public discovery. Sanitised proof metadata and [verification](docs/verification.md) document the actual checks.
-
-The all-tier source comparison retains the dated 0.3 audit. Current document intake, reviewed upgrades and spelling are described in the [0.4 workflow guide](docs/document-upgrades.md); that guide does not relabel the full inventory as parity.
-
-Remaining limits include LinkedIn extraction, semantic ATS validation, full-document AI translation, the full target template/section catalogue, automatic multi-user merging and full-workspace cloud synchronisation, job-provider feeds and alerts, a browser extension, company research and voice interview services, team branding and native installers. Custom pipeline stages, board dragging/sorting, tracker spreadsheet import, structured interview/offer models and automatic reminders are not shipped. DOCX export contains editable text and layout settings, but does not embed the portrait. Optional sharing sends the full active editable CV, including hidden retained import-source text; application records and submitted copies are not cloud-shared.
-
-See the ledger for each official source, known tier and delivered/remaining/unknown boundary. Optional AI depends on a configured provider; rules remain available without it. No generated claim is automatically accepted as true.
+Current gaps include LinkedIn extraction, semantic ATS checks, whole-document AI translation, automatic merging of shared edits, whole-workspace cloud sync, job feeds and alerts, a browser extension, company research, voice interviews and team branding. Custom job stages, board dragging and sorting, spreadsheet import, interview and offer records, automatic reminders and native installers are also unavailable. AI needs a configured provider, and you need to check its suggestions before using them.
 
 ## Contribute
 
-The editor uses standard browser modules. Its pinned PDF.js, Tesseract.js and British English spellchecking assets are served locally; imported document content is not uploaded by these workflows. Keep pure document and workspace operations in `src/model.js` and `src/workspace.js` and user interface code in `src/app.js`. Render user content as text, validate imported data before storing it, and retain local-first defaults and the explicit, reviewed optional AI boundary. Use British English and original layouts, copy and assets.
+The editor uses standard browser modules. PDF.js, Tesseract.js and the British English spelling assets are served locally. Keep document operations in `src/model.js`, workspace operations in `src/workspace.js` and interface code in `src/app.js`. Render imported content as text, validate it before saving and keep network calls limited to explicit AI or sharing actions. Use British English and original layouts, copy and assets.
 
-Run `npm test` and `npm run build` before submitting a pull request. See [AGENTS.md](AGENTS.md) for repository-specific constraints.
+Run `npm test` and `npm run build` before submitting a pull request. See [AGENTS.md](AGENTS.md) for repository instructions and [LICENSE](LICENSE) for the MIT licence.
 
-MIT licensed. See [LICENSE](LICENSE).
-
-## Browser verification
-
-To run development browser checks, install the pinned dependencies and Chromium:
+To run browser checks, install the pinned dependencies and Chromium:
 
 ```sh
 npm ci
@@ -113,6 +122,6 @@ npm run build
 npm run test:browser
 ```
 
-Linux runners may need `npx playwright install --with-deps chromium` for browser system libraries. `BROWSER_EXECUTABLE=/path/to/chrome npm run test:browser` uses an existing browser. The GitHub workflow runs model tests, a static build and real browser edit/persistence/export checks on both Ubuntu and macOS, then publishes the static demo only after both pass.
+Linux runners may need `npx playwright install --with-deps chromium` for browser system libraries. To use an existing browser, run `BROWSER_EXECUTABLE=/path/to/chrome npm run test:browser`.
 
-[REA investigation provenance](docs/research/rea-provenance.md) records public observations, receipt digests and explicit research limits.
+The GitHub workflow checks the data model, static build, browser editing, persistence and exports on Ubuntu and macOS. It publishes the static demo after both platforms pass.

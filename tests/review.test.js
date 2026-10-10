@@ -85,7 +85,7 @@ test('date consistency prompts do not assume missing months or enforce chronolog
   doc.experience[1].dates = '2020 — 2022';
   const result = reviewCV(doc);
   assert.equal(issue(result, 'dates-consistency').length, 1);
-  assert.match(issue(result, 'dates-consistency')[0].suggestion, /Do not guess/);
+  assert.match(issue(result, 'dates-consistency')[0].suggestion, /Don’t guess/);
   assert.equal(issue(result, 'dates-order').length, 0);
 });
 
@@ -94,7 +94,7 @@ test('quantitative prompt accepts any supplied numeral but never treats it as ve
   doc.experience = [{ ...doc.experience[0], description: 'Designed a useful service for local teams.' }];
   let result = reviewCV(doc);
   assert.equal(issue(result, 'numeric-evidence').length, 1);
-  assert.match(issue(result, 'numeric-evidence')[0].suggestion, /Qualitative evidence is also valid; never invent/);
+  assert.match(issue(result, 'numeric-evidence')[0].suggestion, /A clear description works too\. Don’t invent/);
   doc.experience[0].description = 'Designed a useful service for 4 local teams.';
   result = reviewCV(doc);
   assert.equal(issue(result, 'numeric-evidence').length, 0);
@@ -229,7 +229,7 @@ test('cover letter omits missing facts, warns about gaps and can draw from educa
   let result = coverLetterDraft(doc);
   assert.match(result.text, /^Dear hiring team,/);
   assert.match(result.text, /Please consider my application\./);
-  assert.ok(result.warnings.some(value => value.includes('no supporting CV detail')));
+  assert.ok(result.warnings.some(value => value.includes('Add some experience, study or skills')));
   assert.equal(result.usedPaths.length, 0);
   assert.equal(/undefined|null|\[.*\]/.test(result.text), false);
   doc.education = [{ id: 'study', title: 'BA Design', organisation: 'College', description: 'Built an accessible community project.' }];

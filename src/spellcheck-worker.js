@@ -2,11 +2,11 @@
 self.onmessage = async event => {
   try {
     const { text, ignored } = event.data;
-    if (typeof text !== 'string' || text.length > 50000 || !Array.isArray(ignored)) throw new Error('The dictionary request is too large.');
+    if (typeof text !== 'string' || text.length > 50000 || !Array.isArray(ignored)) throw new Error('There’s too much text for one spelling check. Choose a shorter section.');
     const base = new URL('../public/vendor/spellcheck/', self.location.href);
     importScripts(new URL('typo.js', base).href);
     const responses = await Promise.all([fetch(new URL('en_GB.aff', base)), fetch(new URL('en_GB.dic', base))]);
-    if (responses.some(response => !response.ok)) throw new Error('The local British English dictionary is unavailable.');
+    if (responses.some(response => !response.ok)) throw new Error('The British English dictionary couldn’t load. Reload the page and try again.');
     const [aff, dic] = await Promise.all(responses.map(response => response.text()));
     const dictionary = new Typo('en_GB', aff, dic, { platform: 'any' });
     const exceptions = new Set(ignored.map(word => word.toLocaleLowerCase('en-GB'))), seen = new Set();
