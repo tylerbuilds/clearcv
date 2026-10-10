@@ -1,6 +1,6 @@
-import { createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument } from './model.js';
+import { createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument, resolveRichTextField, reconcileRichText } from './model.js';
 
-import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES } from './workspace.js';
+import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES, MAX_CVS, saveReusableLetter, useReusableLetter, removeReusableLetter } from './workspace.js';
 import { reviewCV, tailoringSuggestions, coverLetterDraft } from './review.js';
 import { exportDocx } from './formats.js';
 import { createDocumentImportUI } from './import-ui.js';
@@ -12,6 +12,11 @@ import { createJobsUI } from './jobs-ui.js';
 import { applicationSubmission, copySubmissionToLibrary } from './workspace.js';
 import { initialWorkspace, addNewCV, isBlankCV, isFirstBlankWorkspace } from './new-cv.js';
 import { persistWorkspace, WorkspaceConflictError } from './storage.js';
+import { FONT_FAMILIES, TEMPLATE_CHOICES, sectionPlacement } from './layout.js';
+import { renderRichText } from './rich-text.js';
+import { installRichTextToolbar } from './rich-text-ui.js';
+import { prepareTailoredCopy, reviewTailoredCopy, jobRequirementChecks } from './tailoring.js';
+import { buildPagePreview } from './page-preview.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
 let workspace;
@@ -43,6 +48,8 @@ let noticeTimer;
 let initialNotice = '';
 let initialNoticeIsError = false;
 let state;
+let richTextToolbars = [];
+let tailoringDraft = null;
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
   rawWorkspace = saved;
@@ -132,7 +139,11 @@ function changeWorkspace(next, rerender = true) {
   else if (activeTab === 'match') renderMatchResults();
   return saved;
 }
-function change(next, rerender = false) { return changeWorkspace(updateActiveDocument(workspace, next), rerender); }
+function change(next, rerender = false) {
+  const saved = changeWorkspace(updateActiveDocument(workspace, reconcileRichText(state, next)), rerender);
+  for (const toolbar of richTextToolbars) toolbar.refresh();
+  return saved;
+}
 function renderDocumentSwitcher() {
   const select = document.querySelector('#active-document');
   select.replaceChildren(...workspace.documents.map(entry => element('option', { value: entry.id, text: entry.name })));
@@ -258,10 +269,10 @@ function renderDesign() {
   panel.append(sectionTitle('Choose a layout', 'STYLE YOUR CV'));
   panel.append(element('p', { class: 'panel-intro', text: 'Choose a layout, then adjust the colour, type and spacing.' }));
   const grid = element('div', { class: 'template-grid' });
-  for (const [template, name] of [['studio', 'Studio'], ['classic', 'Editorial'], ['compact', 'Concise']]) {
+  for (const [template, name, columns] of TEMPLATE_CHOICES) {
     const thumbnail = element('span', { class: `template-thumbnail mini-${template}`, 'aria-hidden': 'true' }, [element('span', { class: 'mini-title' }), element('span', { class: 'mini-accent' })]);
     for (let i = 0; i < 10; i++) thumbnail.append(element('span', { class: `mini-line${i % 4 === 3 ? ' short' : ''}` }));
-    grid.append(element('button', { id: `template-${template}`, type: 'button', class: 'template-option', 'aria-pressed': String(state.style.template === template), 'aria-label': `${name} template`, onClick: () => change({ ...state, style: { ...state.style, template } }, true) }, [thumbnail, element('span', { text: name })]));
+    grid.append(element('button', { id: `template-${template}`, type: 'button', class: 'template-option', 'aria-pressed': String(state.style.template === template), 'aria-label': `${name} template`, onClick: () => change({ ...state, style: { ...state.style, template }, layout: { ...state.layout, columns } }, true) }, [thumbnail, element('span', { text: name })]));
   }
   panel.append(grid);
   panel.append(sectionTitle('Accent colour'));
@@ -274,8 +285,20 @@ function renderDesign() {
     swatches.append(button);
   });
   panel.append(swatches);
+  const customColour = element('div', { class: 'custom-colour' }, [field('Custom colour', state.style.accent, 'custom-accent', { type: 'color' }), field('Hex colour', state.style.accent, 'accent-hex', { hint: 'For example, #2b6b5b' })]);
+  customColour.querySelector('#accent-hex').maxLength = 7;
+  customColour.querySelector('#custom-accent').addEventListener('input', event => safeAction(() => {
+    change({ ...state, style: { ...state.style, accent: event.target.value } });
+    document.querySelector('#accent-hex').value = state.style.accent;
+  }));
+  customColour.querySelector('#accent-hex').addEventListener('change', event => {
+    if (!safeAction(() => change({ ...state, style: { ...state.style, accent: event.target.value.trim() } }))) event.target.value = state.style.accent;
+    document.querySelector('#custom-accent').value = state.style.accent;
+  });
+  panel.append(customColour);
   renderLayoutControls();
   renderSectionControls();
+  panel.append(element('button', { id: 'design-preview-pages', type: 'button', class: 'button button-quiet', text: 'Preview pages', onClick: showPagePreview }));
   panel.append(element('p', { class: 'design-note', text: 'Save as PDF opens your browser’s print dialogue. Use the paper size selected above, turn off headers and footers, and check every page.' }));
 }
 function renderMatch() {
@@ -310,9 +333,41 @@ function renderMatchResults() {
   }
   card.append(element('p', { class: 'match-caption', text: 'Use a missing keyword only when it describes your experience. You don’t need to include every word.' }));
   container.append(card);
+  renderRequirementChecks(container);
   renderTailoring(container);
 }
+function richFieldKey(input) {
+  if (input.dataset.profile === 'summary') return 'profile.summary';
+  if (['experience', 'education'].includes(input.dataset.collection) && input.dataset.field === 'description') return `${input.dataset.collection}.${input.dataset.id}.description`;
+  if (input.dataset.customField === 'content') return `customSections.${input.dataset.section}.content`;
+  if (input.dataset.letter === 'body') return 'coverLetter.body';
+  return null;
+}
+function installFormatting() {
+  const docId = workspace.activeId;
+  for (const textarea of panel.querySelectorAll('textarea')) {
+    const key = richFieldKey(textarea);
+    if (!key) continue;
+    textarea.dataset.richField = key;
+    const toolbar = installRichTextToolbar(textarea, {
+      getText: () => resolveRichTextField(state, key), getRuns: () => state.richText[key] || [], transformOnInput: false,
+      setRuns: runs => {
+        if (workspace.activeId !== docId) { announce('The open CV changed. Select your text again.', true); return false; }
+        let saved = false;
+        if (!safeAction(() => {
+          const richText = { ...state.richText };
+          if (runs.length) richText[key] = runs; else delete richText[key];
+          saved = change({ ...state, richText });
+        })) return false;
+        return saved;
+      }, announce, onError: error => announce(error.message, true)
+    });
+    richTextToolbars.push(toolbar);
+  }
+}
 function renderPanel() {
+  for (const toolbar of richTextToolbars) toolbar.dispose();
+  richTextToolbars = [];
   panel.replaceChildren();
   panel.setAttribute('aria-labelledby', `tab-${activeTab}`);
   if (activeTab === 'content') renderContent();
@@ -321,12 +376,13 @@ function renderPanel() {
   else if (activeTab === 'library') renderLibrary();
   else if (activeTab === 'letter') renderLetter();
   else if (activeTab === 'jobs') {
-    if (!jobsUI) jobsUI = createJobsUI({ element, field, selectField, sectionTitle, getWorkspace: () => workspace, changeWorkspace, safeAction, announce, switchTab, download, openSubmission: showSubmittedCopy });
+    if (!jobsUI) jobsUI = createJobsUI({ element, field, selectField, sectionTitle, getWorkspace: () => workspace, changeWorkspace, safeAction, announce, switchTab, download, openSubmission: showSubmittedCopy, openJobMatch });
     jobsUI.render(panel);
   }
   else if (activeTab === 'review') renderReview();
   else if (activeTab === 'ai') renderAi();
   else renderCloud();
+  installFormatting();
 }
 function setPrintLayout(doc) {
   let printStyle = document.querySelector('#document-print-style');
@@ -339,7 +395,7 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
   preview.replaceChildren();
   preview.className = `paper template-${state.style.template}`;
   preview.style.setProperty('--paper-accent', state.style.accent);
-  for (const [key, value] of Object.entries({ 'font-size': `${state.layout.fontSize}px`, 'line-height': state.layout.lineHeight, 'spacing': `${state.layout.spacing}px`, 'margin': `${state.layout.margin}px`, 'font': {sans:'ui-sans-serif, system-ui, sans-serif',serif:'Georgia, serif',mono:'ui-monospace, monospace'}[state.layout.font] })) preview.style.setProperty(`--cv-${key}`, value);
+  for (const [key, value] of Object.entries({ 'font-size': `${state.layout.fontSize}px`, 'line-height': state.layout.lineHeight, 'spacing': `${state.layout.spacing}px`, 'margin': `${state.layout.margin}px`, 'font': FONT_FAMILIES[state.layout.font].css })) preview.style.setProperty(`--cv-${key}`, value);
   if (target.id === 'cv-preview') {
     if (!document.querySelector('#submitted-dialog[open]')) setPrintLayout(state);
     document.querySelector('#preview-kind').textContent = `${state.layout.pageSize} · ${kind === 'letter' ? 'cover letter' : 'CV preview'}`;
@@ -355,7 +411,7 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
   header.append(contacts);
   if (state.photo) header.append(element('img', { class: 'cv-photo', src: state.photo, alt: `Portrait of ${profile.name || 'CV author'}` }));
   preview.append(header);
-  if (profile.summary.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': 'profile' }, [element('h2', { text: state.sectionTitles.profile }), element('p', { class: 'cv-summary', text: profile.summary })]));
+  if (profile.summary.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': 'profile' }, [element('h2', { text: state.sectionTitles.profile }), richElement('p', 'cv-summary', profile.summary, state.richText['profile.summary'])]));
   for (const [collection, title] of [['experience', 'Experience'], ['education', 'Education']]) {
     if (!state[collection].length) continue;
     const section = element('section', { class: 'cv-section', 'data-preview-section': collection }, [element('h2', { text: state.sectionTitles[collection] })]);
@@ -365,23 +421,44 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
         item.dates ? element('span', { class: 'cv-dates', text: item.dates }) : null
       ])]);
       if (item.organisation || item.location) entry.append(element('div', { class: 'cv-organisation', text: item.organisation }, [item.location ? element('span', { text: item.location }) : null]));
-      const lines = item.description.split('\n').map(line => line.trim().replace(/^[-*•]\s+/, '')).filter(Boolean);
-      if (lines.length) entry.append(element('ul', { class: 'cv-bullets' }, lines.map(line => element('li', { text: line }))));
+      const bullets = element('ul', { class: 'cv-bullets' });
+      let offset = 0;
+      for (const raw of item.description.split('\n')) {
+        const line = raw.trim().replace(/^[-*•]\s+/, '');
+        if (line) {
+          const start = offset + raw.indexOf(line);
+          const itemNode = element('li');
+          itemNode.append(renderRichText(item.description, state.richText[`${collection}.${item.id}.description`] || [], { document: window.document, start, end: start + line.length }));
+          bullets.append(itemNode);
+        }
+        offset += raw.length + 1;
+      }
+      if (bullets.children.length) entry.append(bullets);
       section.append(entry);
     }
     preview.append(section);
   }
   const skills = state.skills.filter(item => item.name.trim());
   if (skills.length) preview.append(element('section', { class: 'cv-section', 'data-preview-section': 'skills' }, [element('h2', { text: state.sectionTitles.skills }), element('div', { class: 'cv-skills' }, skills.map(item => element('span', { class: 'cv-skill', text: item.name })))]));
-  for (const section of state.customSections) if (section.content.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': section.id }, [element('h2', { text: section.title }), element('p', { class: 'cv-summary', text: section.content })]));
+  for (const section of state.customSections) if (section.content.trim()) preview.append(element('section', { class: 'cv-section', 'data-preview-section': section.id }, [element('h2', { text: section.title }), richElement('p', 'cv-summary', section.content, state.richText[`customSections.${section.id}.content`])]));
   const rendered = new Map([...preview.querySelectorAll('[data-preview-section]')].map(section => [section.dataset.previewSection, section]));
+  const columns = element('div', { class: `cv-columns columns-${state.layout.columns} ratio-${state.layout.columnRatio}` });
+  const main = element('div', { class: 'cv-column cv-column-main', 'data-cv-column': 'main' });
+  const side = element('div', { class: 'cv-column cv-column-side', 'data-cv-column': 'side' });
+  columns.append(main); if (state.layout.columns === 2) columns.append(side);
   for (const id of state.sectionOrder) {
     const section = rendered.get(id);
     if (!section) continue;
     if (state.hiddenSections.includes(id)) section.remove();
-    else preview.append(section);
+    else (state.layout.columns === 2 && sectionPlacement(state, id) === 'side' ? side : main).append(section);
   }
+  preview.append(columns);
   if (isBlankCV(state)) preview.append(element('div', { class: 'cv-empty-guide' }, [element('p', { text: 'Your CV starts here.' }), element('span', { text: 'Add your name and experience in Content. Choose a layout in Design. The preview updates as you write.' })]));
+}
+function richElement(tag, className, text, runs) {
+  const node = element(tag, { class: className });
+  node.append(renderRichText(text, runs || [], { document: window.document }));
+  return node;
 }
 function scrollMobileWorkspace(restoredPosition = 0) {
   if (!matchMedia('(max-width: 700px)').matches) return;
@@ -403,6 +480,7 @@ function switchTab(tab, focus = false) {
     scrollMobileWorkspace();
   }
   activeTab = tab;
+  workspace.dataset.editorView = tab;
   for (const button of document.querySelectorAll('[data-tab]')) {
     const selected = button.dataset.tab === tab;
     if (button.getAttribute('role') === 'tab') {
@@ -551,7 +629,11 @@ function renderCustomSections() {
 }
 function renderLayoutControls() {
   const section = element('section', { class: 'form-section' }, [sectionTitle('Type and spacing')]);
-  section.append(selectField('Typeface', state.layout.font, 'layout-font', [['sans', 'Modern sans'], ['serif', 'Editorial serif'], ['mono', 'Monospace']], { 'data-layout': 'font' }));
+  section.append(selectField('Typeface', state.layout.font, 'layout-font', Object.entries(FONT_FAMILIES).map(([key, value]) => [key, value.label]), { 'data-layout': 'font' }));
+  const columns = selectField('Columns', state.layout.columns, 'layout-columns', [['1', 'One column'], ['2', 'Two columns']]);
+  columns.querySelector('select').addEventListener('change', event => change({ ...state, layout: { ...state.layout, columns: Number(event.target.value) } }, true));
+  section.append(columns);
+  if (state.layout.columns === 2) section.append(selectField('Column widths', state.layout.columnRatio, 'layout-column-ratio', [['wide-main', 'Wide main column'], ['balanced', 'Equal columns']], { 'data-layout': 'columnRatio' }));
   section.append(selectField('Paper size', state.layout.pageSize, 'layout-page-size', [['A4', 'A4'], ['Letter', 'US Letter']], { 'data-layout': 'pageSize' }));
   for (const [key, label, min, max, step] of [['fontSize', 'Text size', 9, 15, .5], ['lineHeight', 'Line spacing', 1.2, 2.2, .1], ['spacing', 'Section spacing', 8, 28, 1], ['margin', 'Page margins', 20, 60, 1]]) {
     const wrapper = field(label, state.layout[key], `layout-${key}`, { type: 'range', data: { 'data-layout': key, min, max, step } });
@@ -598,6 +680,12 @@ function renderSectionControls() {
       element('button', { type: 'button', class: 'icon-button', text: '↑', 'aria-label': `Move section ${title} up`, disabled: index === 0, 'data-section-up': id, onClick: () => change(moveSection(state, id, -1), true) }),
       element('button', { type: 'button', class: 'icon-button', text: '↓', 'aria-label': `Move section ${title} down`, disabled: index === state.sectionOrder.length - 1, 'data-section-down': id, onClick: () => change(moveSection(state, id, 1), true) }));
     section.append(row);
+    if (state.layout.columns === 2) {
+      const placement = selectField(`Column for ${title || 'section'}`, sectionPlacement(state, id), `section-column-${id}`, [['main', 'Main'], ['side', 'Side']]);
+      placement.classList.add('section-placement');
+      placement.querySelector('select').addEventListener('change', event => change({ ...state, sectionColumns: { ...state.sectionColumns, [id]: event.target.value } }));
+      section.append(placement);
+    }
   });
   panel.append(section);
 }
@@ -618,7 +706,7 @@ function renderLibrary() {
     ])
   ]));
   if (storageConflict) panel.append(storageConflictCard());
-  panel.append(sectionTitle('Your CV library', `${workspace.documents.length} / 25 CVS`));
+  panel.append(sectionTitle('Your CV library', `${workspace.documents.length} / ${MAX_CVS} CVS`));
   if (recoveryPresent) {
     panel.append(element('section', { class: 'recovery-card' }, [sectionTitle('Recover your saved library'), element('p', { class: 'panel-intro', text: recoveryBackedUp ? `We couldn’t read your saved library, so we kept a recovery copy. Download it below. Your open edits can still save.` : 'We couldn’t read your saved library. Download the original below before replacing it. Your open edits haven’t saved yet.' }),
       element('button', { id: 'export-recovery', type: 'button', class: 'button button-primary', text: 'Download original saved library', onClick: () => { download(recoveryRaw, 'application/json', 'json', 'clearcv-unreadable-original'); recoveryDownloaded = true; renderPanel(); } }),
@@ -628,7 +716,7 @@ function renderLibrary() {
   panel.append(cvNameField('document-name'));
   panel.append(element('div', { class: 'action-row' }, [
     element('button', { id: 'duplicate-cv', type: 'button', class: 'button button-primary', text: 'Duplicate current CV', onClick: () => safeAction(() => changeWorkspace(duplicateDocument(workspace, crypto.randomUUID(), `${activeEntry(workspace).name} copy`.slice(0, 100)))) }),
-    element('button', { id: 'blank-cv', type: 'button', class: 'button button-quiet', text: 'New from master', onClick: () => safeAction(() => changeWorkspace(addDocument(workspace, { ...structuredClone(workspace.masterDocument), jobAd: '', coverLetter: createDocument().coverLetter }, crypto.randomUUID(), 'Untitled CV'))) })
+    element('button', { id: 'blank-cv', type: 'button', class: 'button button-quiet', text: 'New from master', onClick: () => safeAction(() => changeWorkspace(addDocument(workspace, reconcileRichText(workspace.masterDocument, { ...structuredClone(workspace.masterDocument), jobAd: '', coverLetter: createDocument().coverLetter }), crypto.randomUUID(), 'Untitled CV'))) })
   ]));
   const list = element('div', { class: 'document-list' });
   for (const entry of workspace.documents) list.append(element('div', { class: `library-card${entry.id === workspace.activeId ? ' current' : ''}`, 'data-library-id': entry.id }, [
@@ -668,6 +756,7 @@ function renderLetter() {
     announce(`Your draft is ready to edit. ${draft.warnings.join(' ')}`);
   } }));
   panel.append(element('p', { class: 'design-note', text: 'This starter uses the summary, experience and skills you’ve already written. It doesn’t use AI. Edit it for this role, then save as PDF, TXT or DOCX while the Letter tab is open.' }));
+  renderSavedLetters();
 }
 function renderLetterPreview(state, preview) {
   const p = state.profile; const letter = state.coverLetter;
@@ -676,12 +765,50 @@ function renderLetterPreview(state, preview) {
   if (letter.date) preview.append(element('p', { class: 'letter-date', text: letter.date }));
   if (letter.recipient || letter.company) preview.append(element('p', { class: 'letter-recipient', text: [letter.recipient, letter.company].filter(Boolean).join('\n') }));
   if (letter.subject || letter.role) preview.append(element('h2', { class: 'letter-subject', text: letter.subject || `Application: ${letter.role}` }));
-  preview.append(element('p', { text: letter.salutation }), element('div', { class: 'letter-body', text: letter.body }), element('p', { class: 'letter-closing', text: `${letter.closing}\n${p.name}` }));
+  preview.append(element('p', { text: letter.salutation }), richElement('div', 'letter-body', letter.body, state.richText['coverLetter.body']), element('p', { class: 'letter-closing', text: `${letter.closing}\n${p.name}` }));
 }
-function showImportPreview(candidate) {
+function showPagePreview() {
+  safeAction(() => {
+    const doc = validateDocument(state), kind = activeTab === 'letter' ? 'letter' : 'cv';
+    const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog page-preview-dialog', 'aria-labelledby': 'page-preview-title' });
+    const count = element('p', { id: 'page-preview-count', class: 'field-hint', role: 'status', text: 'Arranging pages…' });
+    const print = element('button', { id: 'page-preview-print', type: 'button', class: 'button button-primary', text: 'Print / Save as PDF', disabled: true, onClick: () => {
+      const previous = document.title; document.title = `${doc.profile.name || 'ClearCV'} — ${kind === 'letter' ? 'Cover letter' : 'CV'}`;
+      window.print(); document.title = previous;
+    } });
+    const controls = element('div', { class: 'submitted-controls' }, [element('h2', { id: 'page-preview-title', text: 'Check your pages' }), count,
+      element('p', { class: 'field-hint', text: 'This view uses the selected paper size and keeps entries together where they fit. Turn off browser headers and footers, and check the final print preview.' }),
+      element('div', { class: 'action-row' }, [print, element('button', { id: 'page-preview-close', type: 'button', class: 'button button-quiet', text: 'Back to editing', onClick: () => dialog.close() })])
+    ]);
+    const pages = element('div', { class: 'page-preview-pages', id: 'page-preview-pages' });
+    const measure = element('div', { class: 'page-measure', 'aria-hidden': 'true' });
+    const source = element('article', { class: 'paper' }); measure.append(source);
+    dialog.append(controls, pages, measure); document.body.append(dialog); dialog.showModal();
+    renderPreview(doc, kind, source);
+    let previewPages = [];
+    const fitPages = () => {
+      const available = Math.max(180, pages.clientWidth - 32);
+      for (const page of previewPages) page.style.zoom = String(Math.min(1, available / Number.parseFloat(page.style.width)));
+    };
+    dialog.addEventListener('close', () => { window.removeEventListener('resize', fitPages); dialog.remove(); renderPreview(); document.querySelector('#preview-pages')?.focus({ preventScroll: true }); });
+    try {
+      const result = buildPagePreview(source, pages, doc.layout); previewPages = result.pages;
+      count.textContent = `${result.pages.length} ${result.pages.length === 1 ? 'page' : 'pages'} · ${doc.layout.pageSize}${result.warnings.length ? ' · long text continues across pages' : ''}`;
+      measure.remove(); fitPages(); window.addEventListener('resize', fitPages);
+      document.querySelector('#document-print-style').textContent = `@media print{@page{size:${doc.layout.pageSize};margin:0}}`;
+      print.disabled = false;
+    } catch (error) {
+      pages.replaceChildren(); measure.remove(); count.textContent = error.message;
+      controls.append(element('p', { class: 'field-hint', text: 'Go back to editing to shorten the content or use Save as PDF from the header.' }));
+    }
+    document.querySelector('#page-preview-close').focus();
+  });
+}
+document.querySelector('#preview-pages').addEventListener('click', showPagePreview);
+function showImportPreview(candidate, title = 'Preview your imported CV') {
   const doc = validateDocument(candidate);
   const dialog = element('dialog', { id: 'submitted-dialog', class: 'submitted-dialog' });
-  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { text: 'Preview your imported CV' }), element('p', { class: 'field-hint', text: 'Check the layout before adding this CV to your library. You can also download the draft here. JSON includes the original extracted text.' })]);
+  const controls = element('div', { class: 'submitted-controls' }, [element('h2', { text: title }), element('p', { class: 'field-hint', text: 'Check the layout before adding this CV to your library. You can also download the draft here. JSON includes hidden content and the pasted job description.' })]);
   controls.append(element('div', { class: 'action-row' }, [element('button', { id: 'import-preview-pdf', type: 'button', class: 'button button-primary', text: 'Save draft as PDF', onClick: () => { setPrintLayout(doc); window.print(); } }), element('button', { id: 'import-preview-txt', type: 'button', class: 'button button-quiet', text: 'TXT', onClick: () => download(plainTextDocument(doc), 'text/plain', 'txt', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-docx', type: 'button', class: 'button button-quiet', text: 'DOCX', onClick: () => download(exportDocx(doc), 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', doc.profile.name || 'reviewed-cv') }), element('button', { id: 'import-preview-close', type: 'button', class: 'button button-quiet', text: 'Close preview', onClick: () => dialog.close() })]));
   const paper = element('div', { class: 'paper' }); dialog.append(controls, paper); document.body.append(dialog);
   renderPreview(doc, 'cv', paper); setPrintLayout(doc);
@@ -750,6 +877,139 @@ function renderTailoring(container) {
   }) }));
   else box.append(element('p', { class: 'match-empty', text: 'Your entries are already in the suggested order. Check the keywords above for anything relevant you want to add.' }));
   container.append(box);
+  renderFullTailoring(container);
+}
+function renderRequirementChecks(container) {
+  const checks = jobRequirementChecks(state);
+  const section = element('details', { class: 'requirement-checks', id: 'job-requirement-checks' }, [element('summary', { text: `Check the advert line by line · ${checks.requirements.length} lines` }), element('p', { class: 'field-hint', text: checks.method })]);
+  for (const requirement of checks.requirements) {
+    const card = element('article', { class: 'requirement-row', 'data-requirement-coverage': requirement.coverage }, [
+      element('span', { class: 'section-caption', text: { required: 'REQUIRED', preferred: 'PREFERRED', role: 'ROLE DETAILS' }[requirement.type] }),
+      element('h3', { text: requirement.text }),
+      element('p', { text: requirement.found.length ? `Words in your CV: ${requirement.found.join(', ')}` : 'No shared words found in this line.' })
+    ]);
+    if (requirement.missing.length) card.append(element('p', { class: 'field-hint', text: `Not mentioned: ${requirement.missing.join(', ')}` }));
+    if (requirement.evidence.length) card.append(element('details', {}, [element('summary', { text: 'See the CV wording' }), ...requirement.evidence.map(text => element('blockquote', { text }))]));
+    section.append(card);
+  }
+  if (checks.yearsPrompts.length) section.append(element('p', { class: 'design-note', text: `Check these experience requirements against your dates: ${checks.yearsPrompts.join('; ')}. ClearCV does not infer how many years you qualify for.` }));
+  container.append(section);
+}
+function draftIsCurrent(draft) {
+  return draft?.docId === workspace.activeId && draft.currentFingerprint === JSON.stringify(state)
+    && draft.masterFingerprint === JSON.stringify(workspace.masterDocument);
+}
+function renderFullTailoring(container) {
+  const section = element('section', { class: 'form-section full-tailoring', id: 'full-tailoring' }, [
+    sectionTitle('Make a CV for this job'), element('p', { class: 'panel-intro', text: 'Bring in your career history, put relevant facts first, and review a new CV and letter. Your original stays in your library.' }),
+    selectField('Career history to use', 'current', 'tailor-source', [['current', 'Current CV'], ['master', 'Master CV from Library']]),
+    field('Company', '', 'tailor-company', { placeholder: 'Where you are applying' }),
+    field('Role', '', 'tailor-role', { placeholder: 'The advertised role' })
+  ]);
+  section.append(element('button', { id: 'prepare-tailored-cv', type: 'button', class: 'button button-primary', text: 'Prepare a draft', onClick: () => safeAction(() => {
+    const sourceChoice = document.querySelector('#tailor-source').value;
+    const source = sourceChoice === 'master' ? workspace.masterDocument : state;
+    const prepared = prepareTailoredCopy(source, state.jobAd, { styleFrom: state, company: document.querySelector('#tailor-company').value, role: document.querySelector('#tailor-role').value });
+    tailoringDraft = {
+      prepared, docId: workspace.activeId, sourceChoice, currentFingerprint: JSON.stringify(state), masterFingerprint: JSON.stringify(workspace.masterDocument),
+      name: `${activeEntry(workspace).name} tailored`.slice(0, 100),
+      edits: { summary: prepared.document.profile.summary, headline: prepared.document.profile.headline, company: prepared.document.coverLetter.company, role: prepared.document.coverLetter.role, letter: prepared.document.coverLetter.body },
+      entries: new Map(['experience', 'education'].flatMap(collection => prepared.document[collection].map(item => [`${collection}.${item.id}`, { included: !prepared.document.hiddenSections.includes(collection), description: item.description }]))),
+      skills: new Set(prepared.document.hiddenSections.includes('skills') ? [] : prepared.document.skills.map(item => item.id))
+    };
+    renderMatchResults();
+    document.querySelector('#tailored-name')?.focus();
+    announce('Your draft is ready to review. Nothing has changed in the library yet.');
+  }) }));
+  container.append(section);
+  if (tailoringDraft) renderTailoringReview(container);
+}
+function reviewedTailoringDocument() {
+  const draft = tailoringDraft;
+  if (!draftIsCurrent(draft)) throw new Error('Your CV or master changed. Prepare a fresh draft before saving.');
+  const edits = { ...draft.edits, skillIds: draft.prepared.document.skills.filter(item => draft.skills.has(item.id)).map(item => item.id) };
+  for (const collection of ['experience', 'education']) edits[collection] = draft.prepared.document[collection].filter(item => draft.entries.get(`${collection}.${item.id}`).included)
+    .map(item => ({ id: item.id, description: draft.entries.get(`${collection}.${item.id}`).description }));
+  return reviewTailoredCopy(draft.prepared.document, edits);
+}
+function renderTailoringReview(container) {
+  const draft = tailoringDraft, doc = draft.prepared.document, current = draftIsCurrent(draft);
+  const section = element('section', { id: 'tailored-review', class: 'tailored-review' }, [
+    sectionTitle('Review your draft'), element('p', { class: 'panel-intro', text: `From ${draft.sourceChoice === 'master' ? 'your master CV' : 'your current CV'}. Entries and bullet lines are ordered by shared job words. No qualifications or achievements have been invented.` })
+  ]);
+  if (!current) section.append(element('p', { class: 'recovery-card', text: 'Your CV or master has changed. Prepare a fresh draft to use the latest facts.' }));
+  const name = field('Name the new CV', draft.name, 'tailored-name'); name.querySelector('input').maxLength = 100;
+  name.querySelector('input').addEventListener('input', event => { event.stopPropagation(); draft.name = event.target.value; }); section.append(name);
+  const draftField = (label, key, id, multiline = false) => {
+    const wrapper = field(label, draft.edits[key], id, { multiline, rows: multiline ? '6' : undefined });
+    const input = wrapper.querySelector('input,textarea');
+    if (key === 'letter') input.maxLength = 30000;
+    input.addEventListener('input', event => { event.stopPropagation(); draft.edits[key] = event.target.value; });
+    return wrapper;
+  };
+  section.append(draftField('Professional title', 'headline', 'tailored-headline'), draftField('Summary', 'summary', 'tailored-summary', true));
+  for (const collection of ['experience', 'education']) {
+    const group = element('details', { class: 'tailoring-collection' }, [element('summary', { text: `${collection === 'experience' ? 'Experience' : 'Education'} · choose and edit ${doc[collection].length} entries` })]);
+    for (const item of doc[collection]) {
+      const record = draft.entries.get(`${collection}.${item.id}`);
+      const checkbox = element('input', { id: `tailor-include-${collection}-${item.id}`, type: 'checkbox', 'data-tailor-entry': item.id, 'data-tailor-collection': collection }); checkbox.checked = record.included;
+      checkbox.addEventListener('change', () => { record.included = checkbox.checked; });
+      const row = element('div', { class: 'tailoring-entry' }, [element('label', { for: checkbox.id, class: 'tailoring-choice' }, [checkbox, element('span', { text: [item.title || 'Untitled entry', item.organisation, item.dates].filter(Boolean).join(' · ') })])]);
+      const description = field('Details to include', record.description, `tailored-${collection}-${item.id}`, { multiline: true, rows: '5' });
+      description.querySelector('textarea').addEventListener('input', event => { event.stopPropagation(); record.description = event.target.value; });
+      row.append(description); group.append(row);
+    }
+    section.append(group);
+  }
+  const skills = element('details', { class: 'tailoring-collection' }, [element('summary', { text: `Skills · choose from ${doc.skills.length}` })]);
+  for (const item of doc.skills) {
+    const checkbox = element('input', { id: `tailor-skill-${item.id}`, type: 'checkbox', 'data-tailor-skill': item.id }); checkbox.checked = draft.skills.has(item.id);
+    checkbox.addEventListener('change', () => checkbox.checked ? draft.skills.add(item.id) : draft.skills.delete(item.id));
+    skills.append(element('label', { for: checkbox.id, class: 'tailoring-choice' }, [checkbox, element('span', { text: item.name || 'Untitled skill' })]));
+  }
+  section.append(skills);
+  const letter = element('details', { class: 'tailoring-collection' }, [element('summary', { text: 'Cover letter · review the starter' }), draftField('Company', 'company', 'tailored-company'), draftField('Role', 'role', 'tailored-role'), draftField('Letter body', 'letter', 'tailored-letter', true)]);
+  section.append(letter, element('p', { class: 'field-hint', text: 'Other sections retain their visibility. Read the preview and letter before sending. This draft uses local rules, without AI.' }));
+  section.append(element('div', { class: 'action-row' }, [
+    element('button', { id: 'tailored-preview', type: 'button', class: 'button button-quiet', text: 'Preview draft', disabled: !current, onClick: () => safeAction(() => showImportPreview(reviewedTailoringDocument(), 'Preview your tailored CV')) }),
+    element('button', { id: 'create-tailored-copy', type: 'button', class: 'button button-primary', text: 'Create reviewed copy', disabled: !current, onClick: () => safeAction(() => {
+      const reviewed = reviewedTailoringDocument();
+      const next = addDocument(workspace, reviewed, crypto.randomUUID(), draft.name.trim());
+      tailoringDraft = null; const saved = changeWorkspace(next); switchTab('content');
+      announce(saved ? 'Your new CV and letter are ready. The original is still in Library.' : 'The new copy is open but not saved. Download a workspace backup before closing.', !saved);
+    }) }),
+    element('button', { id: 'discard-tailored-draft', type: 'button', class: 'text-button', text: 'Discard draft', onClick: () => { tailoringDraft = null; renderMatchResults(); } })
+  ]));
+  container.append(section);
+}
+function openJobMatch(application) {
+  safeAction(() => {
+    const linked = workspace.documents.find(entry => entry.id === application.cvId);
+    if (!linked || !application.description.trim()) throw new Error('Link a CV and add the job description first.');
+    const linkedDocument = { ...linked.document, jobAd: application.description };
+    const next = { ...workspace, activeId: linked.id, documents: workspace.documents.map(entry => entry.id === linked.id ? { ...entry, document: linkedDocument } : entry) };
+    tailoringDraft = null; changeWorkspace(next); switchTab('match');
+    document.querySelector('#tailor-company').value = application.company;
+    document.querySelector('#tailor-role').value = application.role;
+    announce('The saved job description is open with its linked CV. Prepare a draft to make a separate copy.');
+  });
+}
+function renderSavedLetters() {
+  const section = element('section', { class: 'form-section saved-letters' }, [sectionTitle('Keep a letter to reuse'), element('p', { class: 'panel-intro', text: 'Save the wording separately, then use it with any CV. Check the company and role each time.' }), field('Saved letter name', '', 'saved-letter-name')]);
+  section.querySelector('input').maxLength = 100;
+  section.append(element('button', { id: 'save-reusable-letter', type: 'button', class: 'button button-quiet', text: 'Save this letter', onClick: () => safeAction(() => {
+    const saved = changeWorkspace(saveReusableLetter(workspace, crypto.randomUUID(), document.querySelector('#saved-letter-name').value));
+    announce(saved ? 'Letter saved for reuse.' : 'The letter hasn’t saved. Keep a workspace backup before closing.', !saved);
+  }) }));
+  for (const saved of workspace.letters) section.append(element('div', { class: 'saved-letter-row', 'data-saved-letter': saved.id }, [
+    element('strong', { text: saved.name }),
+    element('button', { type: 'button', class: 'text-button', text: 'Use letter', 'data-use-letter': saved.id, onClick: () => {
+      if (state.coverLetter.body.trim() && !window.confirm('Replace the current letter with this saved wording? The saved letter stays in your collection.')) return;
+      safeAction(() => { const written = changeWorkspace(useReusableLetter(workspace, saved.id)); announce(written ? 'Letter added. Check the company and role before sending.' : 'The letter is open but not saved. Keep a workspace backup.', !written); });
+    } }),
+    element('button', { type: 'button', class: 'icon-button', text: '×', 'aria-label': `Remove saved letter ${saved.name}`, 'data-remove-letter': saved.id, onClick: () => { if (window.confirm(`Remove “${saved.name}” from saved letters? The letter open with your CV is kept.`)) safeAction(() => changeWorkspace(removeReusableLetter(workspace, saved.id))); } })
+  ]));
+  panel.append(section);
 }
 
 document.querySelector('#active-document').addEventListener('change', event => safeAction(() => changeWorkspace({ ...workspace, activeId: event.target.value })));
@@ -764,9 +1024,9 @@ function aiSource(target = aiTarget) {
   return state.experience.find(item => item.id === target)?.description || '';
 }
 function documentWithAiText(document, target, text) {
-  if (target === 'summary') return validateDocument({ ...document, profile: { ...document.profile, summary: text } });
-  if (target === 'headline') return validateDocument({ ...document, profile: { ...document.profile, headline: text } });
-  if (target === 'letter') return validateDocument({ ...document, coverLetter: { ...document.coverLetter, body: text } });
+  if (target === 'summary') return validateDocument(reconcileRichText(document, { ...document, profile: { ...document.profile, summary: text } }));
+  if (target === 'headline') return validateDocument(reconcileRichText(document, { ...document, profile: { ...document.profile, headline: text } }));
+  if (target === 'letter') return validateDocument(reconcileRichText(document, { ...document, coverLetter: { ...document.coverLetter, body: text } }));
   return updateItem(document, 'experience', target, 'description', text);
 }
 function renderAi() {

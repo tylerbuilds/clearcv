@@ -29,7 +29,9 @@ Current-CV JSON includes that CV and its letter. A workspace backup includes you
 
 Changes normally save automatically in this browser. Check the save status before closing the page. If storage is unavailable or full, your edits stay open and ClearCV asks you to export **Workspace backup · JSON**.
 
-The library holds up to 25 CVs within a 4 MB workspace. If adding a CV would exceed either limit, your current library and selection stay in place. Back up before removing documents, snapshots or photos to make room. If saved data can't be read, **Library** offers a recovery download before you replace it.
+The library holds up to 100 CVs within a 4 MB workspace. If adding a CV would exceed either limit, your current library and selection stay in place. Back up before removing documents, snapshots or photos to make room. If saved data can't be read, **Library** offers a recovery download before you replace it.
+
+See [consumer workflows](consumer-workflows.md) for selected text formatting, two-column layouts, page previews, reviewed job drafts and the application board.
 
 If another tab saves changes, download a workspace backup from this tab, then choose **Library → Reload newer saved library**. Reload asks before replacing your open edits. You can import the backup later to add its CVs back into the library. Use one editing tab where possible; see [browser storage and recovery](storage-safety.md).
 

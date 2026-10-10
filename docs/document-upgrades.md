@@ -37,7 +37,7 @@ If the CV or library is too large, the review draft stays open so you can make c
 
 Convert spreadsheets, presentations, Pages, EPUB, TIFF and encrypted Office files to a supported format first. Imports don't recreate photos, exact typography, complex tables, columns, diagrams or embedded objects. Check the result against the original before using it.
 
-Extracted text can contain up to 50,000 characters. Hidden source sections hold up to 30,000 characters each. A CV can have 60 entries per career list and 20 custom sections, within its 1 MB limit. The library can hold 25 CVs within 4 MB.
+Extracted text can contain up to 50,000 characters. Hidden source sections hold up to 30,000 characters each. A CV can have 60 entries per career list and 20 custom sections, within its 1 MB limit. The library can hold 100 CVs within 4 MB. See [consumer workflows](consumer-workflows.md) for formatting, job drafts and the current library limits; older research comparisons retain their dated counts.
 
 OCR stops after two minutes, and you can choose **Cancel import** while it runs. Choosing another file or editing the source cancels the older result. PDF passwords are used only while the file is open; they aren't saved in CVs, backups or browser storage. Imported links are kept as text where useful. Macros, external resources and embedded objects aren't opened.
 

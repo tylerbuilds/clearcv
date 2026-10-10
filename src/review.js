@@ -243,11 +243,12 @@ export function coverLetterDraft(doc, company = '', role = '') {
   const salutation = 'Dear hiring team,';
   const closing = 'Kind regards,';
   const paragraphs = [opening];
-  if (text(profile.summary)) {
+  const hidden = new Set(doc?.hiddenSections || []);
+  if (!hidden.has('profile') && text(profile.summary)) {
     paragraphs.push(text(profile.summary));
     usedPaths.push('profile.summary');
   }
-  const experienceIndex = list(doc?.experience).findIndex(item => text(item.title) || text(item.organisation) || text(item.description));
+  const experienceIndex = hidden.has('experience') ? -1 : list(doc?.experience).findIndex(item => text(item.title) || text(item.organisation) || text(item.description));
   if (experienceIndex >= 0) {
     const item = doc.experience[experienceIndex];
     const title = text(item.title);
@@ -259,7 +260,7 @@ export function coverLetterDraft(doc, company = '', role = '') {
     if (organisation) usedPaths.push(`experience[${experienceIndex}].organisation`);
     if (detail) usedPaths.push(`experience[${experienceIndex}].description`);
   } else {
-    const educationIndex = list(doc?.education).findIndex(item => text(item.title) || text(item.organisation) || text(item.description));
+    const educationIndex = hidden.has('education') ? -1 : list(doc?.education).findIndex(item => text(item.title) || text(item.organisation) || text(item.description));
     if (educationIndex >= 0) {
       const item = doc.education[educationIndex];
       const title = text(item.title);
@@ -272,7 +273,7 @@ export function coverLetterDraft(doc, company = '', role = '') {
       if (detail) usedPaths.push(`education[${educationIndex}].description`);
     }
   }
-  const suppliedSkills = list(doc?.skills).map((item, index) => ({ name: text(item.name), index })).filter(item => item.name).slice(0, 6);
+  const suppliedSkills = (hidden.has('skills') ? [] : list(doc?.skills)).map((item, index) => ({ name: text(item.name), index })).filter(item => item.name).slice(0, 6);
   if (suppliedSkills.length) {
     paragraphs.push(`My skills include ${suppliedSkills.map(item => item.name).join(', ')}.`);
     usedPaths.push(...suppliedSkills.map(item => `skills[${item.index}].name`));

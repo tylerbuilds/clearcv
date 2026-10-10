@@ -1,7 +1,9 @@
+import { FONT_FAMILIES, TEMPLATE_CHOICES } from './layout.js';
+import { validateRichText, transformRuns } from './rich-text.js';
 export const SCHEMA = 'clearcv';
 export const VERSION = 1;
 export const MAX_DOCUMENT_BYTES = 1_000_000;
-export const TEMPLATES = ['studio', 'classic', 'compact'];
+export const TEMPLATES = TEMPLATE_CHOICES.map(([id]) => id);
 export const ACCENTS = ['#a94f2e', '#2b6b5b', '#385b8f', '#6d4b85', '#272b36'];
 export const COLLECTIONS = ['experience', 'education', 'skills'];
 const PROFILE_KEYS = ['name', 'headline', 'email', 'phone', 'location', 'website', 'summary'];
@@ -40,7 +42,7 @@ function string(value, label, limit = 10000) {
 }
 export function validateDocument(value) {
   const core = ['schema', 'version', 'profile', 'experience', 'education', 'skills', 'style', 'jobAd'];
-  keys(value, [...core, 'customSections', 'sectionOrder', 'hiddenSections', 'sectionTitles', 'layout', 'photo', 'coverLetter'], 'CV', core);
+  keys(value, [...core, 'customSections', 'sectionOrder', 'hiddenSections', 'sectionTitles', 'layout', 'photo', 'coverLetter', 'richText', 'sectionColumns'], 'CV', core);
   value = { ...documentDefaults(), ...value };
 
   if (value.schema !== SCHEMA || value.version !== VERSION) fail('This backup isn’t a supported ClearCV version 1 document. Choose a CV backup exported by ClearCV.');
@@ -76,13 +78,19 @@ export function validateDocument(value) {
   if (new Set(value.hiddenSections).size !== value.hiddenSections.length || value.hiddenSections.some(id => !sectionIds.includes(id))) fail('This backup has missing or repeated hidden sections. Choose another ClearCV backup.');
   keys(value.sectionTitles, ['profile', ...COLLECTIONS], 'Section titles');
   for (const title of Object.values(value.sectionTitles)) string(title, 'Section title', 100);
-  keys(value.layout, ['font', 'fontSize', 'lineHeight', 'spacing', 'margin', 'pageSize'], 'Layout');
-  if (!['sans', 'serif', 'mono'].includes(value.layout.font) || !['A4', 'Letter'].includes(value.layout.pageSize)) fail('Choose a supported font and page size.');
+  const layoutCore = ['font', 'fontSize', 'lineHeight', 'spacing', 'margin', 'pageSize'];
+  keys(value.layout, [...layoutCore, 'columns', 'columnRatio'], 'Layout', layoutCore);
+  value.layout = { ...documentDefaults().layout, ...value.layout };
+  if (!Object.hasOwn(FONT_FAMILIES, value.layout.font) || !['A4', 'Letter'].includes(value.layout.pageSize)) fail('Choose a supported font and page size.');
+  if (![1, 2].includes(value.layout.columns) || !['balanced', 'wide-main'].includes(value.layout.columnRatio)) fail('Choose one or two columns and a supported column width.');
   for (const [key, minimum, maximum] of [['fontSize', 9, 15], ['lineHeight', 1.2, 2.2], ['spacing', 8, 28], ['margin', 20, 60]]) if (typeof value.layout[key] !== 'number' || !Number.isFinite(value.layout[key]) || value.layout[key] < minimum || value.layout[key] > maximum) fail(`Layout ${key} must be between ${minimum} and ${maximum}.`);
   string(value.photo, 'Photo', 250000);
   if (value.photo && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(value.photo)) fail('Photo must be an embedded PNG, JPEG or WebP image.');
   keys(value.coverLetter, ['company', 'role', 'recipient', 'date', 'subject', 'salutation', 'body', 'closing'], 'Cover letter');
   for (const [key, text] of Object.entries(value.coverLetter)) string(text, `Cover letter ${key}`, key === 'body' ? 30000 : 300);
+  keys(value.sectionColumns, sectionIds, 'Column placement', []);
+  if (Object.values(value.sectionColumns).some(column => !['main', 'side'].includes(column))) fail('Place sections in the main or side column.');
+  value.richText = validateRichText(value.richText, key => resolveRichTextField(value, key));
 
   if (new TextEncoder().encode(JSON.stringify(value, null, 2)).length > MAX_DOCUMENT_BYTES) fail('This CV is too large (maximum 1 MB). Shorten its content before saving or exporting.');
   return structuredClone(value);
@@ -91,7 +99,8 @@ export function documentDefaults() {
   return {
     customSections: [], sectionOrder: ['profile', 'experience', 'education', 'skills'], hiddenSections: [],
     sectionTitles: { profile: 'Profile', experience: 'Experience', education: 'Education', skills: 'Skills' },
-    layout: { font: 'sans', fontSize: 11, lineHeight: 1.7, spacing: 20, margin: 46, pageSize: 'A4' }, photo: '',
+    layout: { font: 'sans', fontSize: 11, lineHeight: 1.7, spacing: 20, margin: 46, pageSize: 'A4', columns: 1, columnRatio: 'wide-main' }, photo: '',
+    richText: {}, sectionColumns: {},
     coverLetter: { company: '', role: '', recipient: '', date: '', subject: '', salutation: 'Dear hiring team,', body: '', closing: 'Kind regards,' }
   };
 }
@@ -140,6 +149,8 @@ export function updateItem(document, collection, id, field, value) {
   const item = next[collection].find(item => item.id === id);
   if (!item) fail('Entry not found.');
   item[field] = value;
+  const key = `${collection}.${id}.${field}`;
+  if (field === 'description' && Object.hasOwn(next.richText, key)) next.richText[key] = transformRuns(document[collection].find(item => item.id === id)[field], value, next.richText[key]);
   return validateDocument(next);
 }
 export function removeItem(document, collection, id) {
@@ -147,6 +158,7 @@ export function removeItem(document, collection, id) {
   const next = validateDocument(document);
   if (!next[collection].some(item => item.id === id)) fail('Entry not found.');
   next[collection] = next[collection].filter(item => item.id !== id);
+  for (const key of Object.keys(next.richText)) if (key.startsWith(`${collection}.${id}.`)) delete next.richText[key];
   return next;
 }
 export function moveItem(document, collection, id, direction) {
@@ -190,6 +202,8 @@ export function removeCustomSection(document, id) {
   next.customSections = next.customSections.filter(section => section.id !== id);
   next.sectionOrder = next.sectionOrder.filter(section => section !== id);
   next.hiddenSections = next.hiddenSections.filter(section => section !== id);
+  delete next.sectionColumns[id];
+  delete next.richText[`customSections.${id}.content`];
   return validateDocument(next);
 }
 export function moveSection(document, id, direction) {
@@ -217,4 +231,26 @@ export function plainTextDocument(document, kind = 'cv') {
     }
   }
   return parts.filter(Boolean).join('\n\n');
+}
+
+/** Stable formatting keys address existing plain-text fields, never object paths. */
+export function resolveRichTextField(doc, key) {
+  if (key === 'profile.summary') return doc.profile.summary;
+  if (key === 'coverLetter.body') return doc.coverLetter.body;
+  const match = /^(experience|education|customSections)\.([a-zA-Z0-9_-]{1,80})\.(description|content)$/.exec(key);
+  if (!match || (match[1] === 'customSections') !== (match[3] === 'content')) return undefined;
+  return doc[match[1]].find(item => item.id === match[2])?.[match[3]];
+}
+export function reconcileRichText(previous, candidate) {
+  const next = { ...candidate, richText: { ...(candidate.richText || {}) } };
+  for (const [key, runs] of Object.entries(previous.richText || {})) {
+    const oldText = resolveRichTextField(previous, key), newText = resolveRichTextField(next, key);
+    if (newText === undefined) delete next.richText[key];
+    else if (oldText !== newText) {
+      const shifted = transformRuns(oldText, newText, runs);
+      if (shifted.length) next.richText[key] = shifted;
+      else delete next.richText[key];
+    }
+  }
+  return next;
 }

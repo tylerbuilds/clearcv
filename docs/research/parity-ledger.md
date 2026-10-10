@@ -4,7 +4,7 @@ Research dates: 9 to 10 October 2026. This comparison covers Enhancv's free tool
 
 The sources are official product and Help Centre pages read without signing in. They show what Enhancv advertises, but don't prove how its editor works or how effective it is. This research used no private accounts, paid access, proprietary code or Enhancv templates. The [REA investigation record](rea-provenance.md) describes the separate browser observations.
 
-The table keeps the status recorded during development. Read its labels as follows:
+The table keeps the status recorded during earlier development. Later selected-text formatting, two-column design, page previews, reviewed whole-job drafts, reusable letters and the application board are described in [consumer workflows](../consumer-workflows.md). Those additions don't establish proprietary template, algorithm or service parity. Read the historical labels below as follows:
 
 - **Baseline implemented:** part of the initial ClearCV version, with checks recorded in [verification](../verification.md).
 - **Coordinator confirms implementation:** added during the expansion, with final browser, print, Linux and macOS checks still required before release.

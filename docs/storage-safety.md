@@ -18,7 +18,7 @@ You can import the backup afterwards to add its CVs to the library. Check for du
 
 If ClearCV can't read or write storage, or the browser store is full, your open edits stay in the tab. Download a workspace backup before closing it.
 
-The workspace can hold 25 CVs within 4 MB. Changes that exceed these limits don't replace the saved library. Back up before removing CVs, snapshots or photos to free space.
+The workspace can hold 100 CVs and 20 reusable letters within 4 MB. Changes that exceed these limits don't replace the saved library. Back up before removing CVs, snapshots or photos to free space.
 
 If saved data is unreadable, ClearCV keeps a recovery copy before replacing it. If the recovery copy can't be saved, autosave pauses. **Library** then offers the original data as a download and asks you to choose when to replace it.
 

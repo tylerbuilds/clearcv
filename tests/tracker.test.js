@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { sampleDocument } from '../src/model.js';
-import { TRACKER_CSV_COLUMNS, validateTrackerFields, filterApplications, applicationAnalytics, applicationsToCsv } from '../src/tracker.js';
+import { TRACKER_STATUSES, TRACKER_CSV_COLUMNS, validateTrackerFields, filterApplications, applicationAnalytics, applicationsToCsv, applicationBoard, moveTrackedApplication, applicationReminders, applicationCvMatch } from '../src/tracker.js';
 
 const application = (id = 'job', changes = {}) => ({ id, company: 'Example', role: 'Designer', url: 'https://example.com/job', status: 'wishlist', appliedDate: '', followUpDate: '', notes: '', cvId: 'cv', ...changes });
 const task = (id = 'task', changes = {}) => ({ id, title: 'Prepare examples', dueDate: '', done: false, ...changes });
@@ -45,7 +45,7 @@ test('legacy application values migrate with missing-only defaults and detached 
   assert.deepEqual(next.submissions, []);
   next.tasks.push(task());
   assert.equal(Object.hasOwn(legacy, 'tasks'), false);
-  assert.deepEqual(validateTrackerFields(legacy), { ...legacy, archived: false, tasks: [], customFields: [], submissions: [] });
+  assert.deepEqual(validateTrackerFields(legacy), { ...legacy, archived: false, tasks: [], customFields: [], submissions: [], description: '', location: '', salary: '' });
 });
 
 test('explicit malformed additions are rejected instead of being replaced with defaults', () => {
@@ -250,4 +250,98 @@ test('CSV includes task and submission metadata but excludes frozen snapshot doc
   assert.equal(row.submissionCount, '1');
   assert.deepEqual(JSON.parse(row.submissionMetadata), [{ id: snapshot.id, name: snapshot.name, submittedAt: snapshot.submittedAt, cvName: snapshot.cvName }]);
   assert.equal(Object.hasOwn(JSON.parse(row.submissionMetadata)[0], 'document'), false);
+});
+
+test('new advert fields have missing-only defaults, strict bounds and preserve literal text', () => {
+  const description = 'Role: Designer\r\nLiteral <script>alert(1)</script>\n日本語 café\n' + 'D'.repeat(49928);
+  const source = application('new-details', { description, location: ' Bristol — hybrid ', salary: ' £50,000–£65,000 ' });
+  const next = validateTrackerFields(source);
+  assert.equal(next.description, description);
+  assert.equal(next.location, source.location);
+  assert.equal(next.salary, source.salary);
+  for (const key of ['description', 'location', 'salary']) {
+    for (const value of [undefined, null, false, [], {}, 12]) assert.throws(() => validateTrackerFields(application('bad', { [key]: value })), /text/);
+    const limit = key === 'description' ? 50000 : 300;
+    assert.equal(validateTrackerFields(application('limit', { [key]: 'X'.repeat(limit) }))[key].length, limit);
+    assert.throws(() => validateTrackerFields(application('too-long', { [key]: 'X'.repeat(limit + 1) })), /at most/);
+    let reads = 0;
+    const accessor = application(); Object.defineProperty(accessor, key, { enumerable: true, get() { reads++; return ''; } });
+    assert.throws(() => validateTrackerFields(accessor), /unsupported/); assert.equal(reads, 0);
+  }
+  assert.deepEqual(filterApplications([source], { query: '日本語 café' }).map(app => app.id), ['new-details']);
+  assert.deepEqual(filterApplications([source], { query: 'HYBRID' }).map(app => app.id), ['new-details']);
+  assert.deepEqual(filterApplications([source], { query: '£65,000' }).map(app => app.id), ['new-details']);
+  const row = csvObjects(applicationsToCsv([source])).rows[0];
+  assert.equal(row.description, description); assert.equal(row.location, source.location); assert.equal(row.salary, source.salary);
+  assert.equal(csvObjects(applicationsToCsv([application('formula', { description: '=HYPERLINK("https://example.invalid")' })])).rows[0].description[0], "'");
+});
+
+test('board groups all stages in a stable order without changing caller state or dropping archived data', () => {
+  const apps = [application('second', { status: 'interview', tasks: [task()] }), application('first'), application('third', { status: 'interview', archived: true })];
+  const before = structuredClone(apps);
+  const board = applicationBoard(apps);
+  assert.deepEqual(board.map(column => column.status), [...TRACKER_STATUSES]);
+  assert.deepEqual(board.find(column => column.status === 'interview').applications.map(app => app.id), ['second', 'third']);
+  assert.deepEqual(board.find(column => column.status === 'applied').applications, []);
+  board.find(column => column.status === 'interview').applications[0].tasks[0].done = true;
+  assert.deepEqual(apps, before);
+  assert.throws(() => applicationBoard([application('same'), application('same')]), /unique/);
+  assert.throws(() => applicationBoard(new Array(2)), /dense/);
+});
+
+test('board move changes only stage, preserving tasks, descriptions, links, custom fields and submitted copies', () => {
+  const rich = validateTrackerFields(application('rich', { description: 'A saved original advert', location: 'Remote', salary: '£55,000', followUpDate: '2026-10-10', tasks: [task()], customFields: [field()], submissions: [submission()] }));
+  const apps = [rich, validateTrackerFields(application('other', { status: 'offer' }))];
+  const before = structuredClone(apps);
+  const moved = moveTrackedApplication(apps, 'rich', 'interview');
+  assert.deepEqual(moved, [{ ...rich, status: 'interview' }, apps[1]]);
+  assert.deepEqual(apps, before);
+  moved[0].submissions[0].document.profile.name = 'Edited returned copy';
+  assert.equal(apps[0].submissions[0].document.profile.name, before[0].submissions[0].document.profile.name);
+  assert.throws(() => moveTrackedApplication(apps, 'missing', 'applied'), /not found/);
+  assert.throws(() => moveTrackedApplication(apps, 'rich', 'invented'), /status/);
+  assert.throws(() => moveTrackedApplication(apps, '../rich', 'offer'), /valid ID/);
+  assert.throws(() => moveTrackedApplication([{ ...rich, archived: true }], 'rich', 'applied'), /Restore/);
+  assert.deepEqual(apps, before);
+});
+
+test('reminders cover only active pending dates, sorted by due date with explicit today and no clock assumption', () => {
+  const apps = analyticsFixture();
+  const before = structuredClone(apps);
+  const reminders = applicationReminders(apps, { today: '2026-10-10' });
+  assert.deepEqual(reminders, [
+    { applicationId: 'old', kind: 'followUp', taskId: '', title: 'Follow up', dueDate: '2026-10-09', state: 'overdue' },
+    { applicationId: 'old', kind: 'task', taskId: 'past', title: 'Prepare examples', dueDate: '2026-10-09', state: 'overdue' },
+    { applicationId: 'old', kind: 'task', taskId: 'today', title: 'Prepare examples', dueDate: '2026-10-10', state: 'today' },
+    { applicationId: 'boundary', kind: 'followUp', taskId: '', title: 'Follow up', dueDate: '2026-10-10', state: 'today' }
+  ]);
+  const upcoming = applicationReminders(apps, { today: '2026-10-10', includeUpcoming: true });
+  assert.equal(upcoming.length, 6); assert.equal(upcoming.at(-1).state, 'upcoming');
+  assert.ok(upcoming.every(row => row.applicationId !== 'archived' && row.taskId !== 'completed' && row.taskId !== 'done' && row.taskId !== 'undated'));
+  assert.equal(applicationReminders(apps, { today: '2026-10-08' }).length, 0);
+  assert.equal(applicationReminders([application('empty-title', { tasks: [task('t', { title: '', dueDate: '2026-10-10' })] })], { today: '2026-10-10' })[0].title, 'Unnamed task');
+  assert.throws(() => applicationReminders(apps), /missing/);
+  assert.throws(() => applicationReminders(apps, { today: '2026-02-30' }), /date/);
+  assert.throws(() => applicationReminders(apps, { today: '2026-10-10', includeUpcoming: 'true' }), /true or false/);
+  let reads = 0; const accessor = {}; Object.defineProperty(accessor, 'today', { enumerable: true, get() { reads++; return '2026-10-10'; } });
+  assert.throws(() => applicationReminders(apps, accessor), /unsupported/); assert.equal(reads, 0);
+  assert.deepEqual(apps, before);
+});
+
+test('local comparison uses the saved advert and visible linked CV, excluding hidden skills and submitted copies', () => {
+  const document = sampleDocument();
+  document.profile.headline = 'Designer'; document.profile.summary = 'Figma';
+  document.experience = []; document.education = []; document.skills = [{ id: 's', name: 'SecretSkill' }]; document.hiddenSections = ['skills'];
+  const snapshot = submission(); snapshot.document.profile.summary = 'Python snapshotonly';
+  const app = application('local-match', { description: 'Figma Figma Python SecretSkill snapshotonly', submissions: [snapshot] });
+  const before = structuredClone({ app, document });
+  const match = applicationCvMatch(app, document);
+  assert.deepEqual(match.found, ['figma']);
+  assert.deepEqual(new Set(match.missing), new Set(['python', 'secretskill', 'snapshotonly']));
+  assert.equal(match.percentage, 25);
+  assert.deepEqual({ app, document }, before);
+  assert.equal(applicationCvMatch(application('no-advert'), document).percentage, null);
+  const manyTerms = Array.from({ length: 50 }, (_, index) => `Term${index}`).join(' ');
+  assert.equal(applicationCvMatch(application('many', { description: manyTerms }), document).keywords.length, 24);
+  assert.throws(() => applicationCvMatch(app, { ...document, unsupported: true }), /unsupported/);
 });

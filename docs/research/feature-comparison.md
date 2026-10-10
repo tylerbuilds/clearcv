@@ -2,6 +2,8 @@
 
 This is the recorded 0.3.0 comparison. The source was fixed before the final checks.
 
+This table is a historical snapshot. Later selected-text formatting, two-column design, page previews, reviewed whole-job drafts, reusable letters and the application board are described in [consumer workflows](../consumer-workflows.md). Its original source hashes and classifications remain unchanged.
+
 The table compares 48 documented Enhancv workflows across free and premium tiers with ClearCV's independently written features. It records what worked and what was missing at 0.3.0. ClearCV doesn't claim to reproduce every feature, algorithm or template.
 
 | Classification | Rows |

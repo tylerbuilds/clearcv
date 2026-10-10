@@ -22,6 +22,7 @@ try {
   if (!ready || server.exitCode !== null) throw new Error(`Preview server failed: ${serverOutput}`);
   browser = await chromium.launch({headless:true, ...(process.env.BROWSER_EXECUTABLE ? {executablePath:process.env.BROWSER_EXECUTABLE} : {})});
   const page = await browser.newPage({viewport:{width:1440,height:960},locale:'en-GB'});
+  const clipboardShortcut = process.platform === 'darwin' ? 'Meta' : 'Control';
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   page.on('console', message => {if (message.type() === 'error') errors.push(message.text())});
@@ -62,6 +63,30 @@ try {
     expect(saved.style.template).toBe('classic');
     const pdf = await page.pdf({path:resolve(output,'cv.pdf'),format:'A4',printBackground:true});
     expect(pdf.subarray(0,4).toString()).toBe('%PDF');
+    await page.locator('#tab-content').click();
+    await page.locator('#profile-summary').fill('Designed useful services with users.');
+    await page.locator('#profile-summary').evaluate(node => {
+      node.focus(); node.setSelectionRange(0, 8);
+      node.dispatchEvent(new Event('select', {bubbles:true}));
+    });
+    await page.locator('#profile-summary').press(`${clipboardShortcut}+b`);
+    await expect(page.locator('#cv-preview .cv-summary strong')).toHaveText('Designed');
+    await page.locator('#tab-design').click();
+    await page.locator('#template-folio').click();
+    await expect(page.locator('#cv-preview .cv-columns')).toHaveClass(/columns-2/);
+    await page.locator('#accent-hex').fill('#214f63');
+    await page.locator('#accent-hex').press('Tab');
+    await page.reload({waitUntil:'networkidle'});
+    await expect(page.locator('#cv-preview .cv-summary strong')).toHaveText('Designed');
+    await expect(page.locator('#cv-preview')).toHaveClass(/template-folio/);
+    const formattedCV = JSON.parse((await download('#export-json','formatted-cv.json')).toString());
+    expect(formattedCV.layout.columns).toBe(2);
+    expect(formattedCV.style.accent).toBe('#214f63');
+    expect(formattedCV.richText['profile.summary']).toHaveLength(1);
+    await page.locator('#preview-pages').click();
+    await expect(page.locator('#page-preview-print')).toBeEnabled();
+    await expect(page.locator('#page-preview-count')).toContainText('1 page');
+    await page.locator('#page-preview-close').click();
     await page.locator('#tab-library').click();
     const originalId = await page.locator('#active-document').inputValue();
     await page.locator('#duplicate-cv').click();

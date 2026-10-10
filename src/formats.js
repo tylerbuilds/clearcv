@@ -1,5 +1,8 @@
 // Original, dependency-free OOXML text interchange. Imported content is reviewed
 // by the user; this module does not infer achievements or execute Word content.
+import { validateDocument } from './model.js';
+import { formatRuns } from './rich-text.js';
+import { FONT_FAMILIES } from './layout.js';
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', { fatal: true });
 export const DOCX_LIMIT = 2_000_000;
@@ -46,13 +49,31 @@ const paragraph = (text, style='Normal') => `<w:p><w:pPr><w:pStyle w:val="${styl
 const lines = (text, style='Normal') => String(text || '').split(/\r?\n/).map(line => paragraph(line,style)).join('');
 export function exportDocx(doc, {kind='cv'}={}) {
   if (!doc?.profile || !['cv','letter'].includes(kind)) throw new Error('Choose a CV or cover letter to export.');
+  doc = validateDocument(doc);
+  const links = new Map();
+  const formattedLines = (text, key, style = 'Normal') => {
+    let offset = 0;
+    return String(text || '').split('\n').map(raw => {
+      const line = raw.endsWith('\r') ? raw.slice(0, -1) : raw;
+      const pieces = formatRuns(text, doc.richText[key] || [], { start: offset, end: offset + line.length });
+      offset += raw.length + 1;
+      const runs = pieces.map(piece => {
+        const marks = `${piece.bold ? '<w:b/>' : ''}${piece.italic ? '<w:i/>' : ''}${piece.underline ? '<w:u w:val="single"/>' : ''}`;
+        const run = `<w:r>${marks ? `<w:rPr>${marks}</w:rPr>` : ''}<w:t xml:space="preserve">${esc(piece.text)}</w:t></w:r>`;
+        if (!piece.href) return run;
+        if (!links.has(piece.href)) links.set(piece.href, `rId${links.size + 2}`);
+        return `<w:hyperlink r:id="${links.get(piece.href)}">${run}</w:hyperlink>`;
+      }).join('') || '<w:r><w:t></w:t></w:r>';
+      return `<w:p><w:pPr><w:pStyle w:val="${style}"/></w:pPr>${runs}</w:p>`;
+    }).join('');
+  };
   let body='';
   if (kind === 'letter') {
     const letter=doc.coverLetter || {};
     body += paragraph(doc.profile.name,'Title');
     body += paragraph([doc.profile.email,doc.profile.phone,doc.profile.location,doc.profile.website].filter(Boolean).join(' · '));
     body += [letter.date,letter.recipient,letter.company,letter.subject || letter.role,letter.salutation].filter(Boolean).map(text => lines(text)).join('');
-    body += lines(letter.body);
+    body += formattedLines(letter.body, 'coverLetter.body');
     body += lines(letter.closing || 'Kind regards,');
     body += paragraph(doc.profile.name);
   } else {
@@ -62,7 +83,7 @@ export function exportDocx(doc, {kind='cv'}={}) {
     for (const section of sections) {
       if ((doc.hiddenSections || []).includes(section)) continue;
       if (section === 'profile') {
-        if(doc.profile.summary) body += paragraph(doc.sectionTitles?.profile || 'Summary','Heading1')+lines(doc.profile.summary);
+        if(doc.profile.summary) body += paragraph(doc.sectionTitles?.profile || 'Summary','Heading1')+formattedLines(doc.profile.summary, 'profile.summary');
       } else if (section === 'skills') {
         if (doc.skills.length) body += paragraph(doc.sectionTitles?.skills || 'Skills','Heading1')+paragraph(doc.skills.map(item => item.name).filter(Boolean).join(' · '));
       } else if (['experience','education'].includes(section)) {
@@ -71,26 +92,26 @@ export function exportDocx(doc, {kind='cv'}={}) {
         for (const item of doc[section]) {
           body += paragraph([item.title,item.organisation].filter(Boolean).join(' · '),'Heading2');
           body += paragraph([item.dates,item.location].filter(Boolean).join(' · '),'Subtitle');
-          body += lines(item.description);
+          body += formattedLines(item.description, `${section}.${item.id}.description`);
         }
       } else {
         const custom=(doc.customSections || []).find(item => item.id === section);
-        if (custom) body += paragraph(custom.title,'Heading1')+lines(custom.content);
+        if (custom) body += paragraph(custom.title,'Heading1')+formattedLines(custom.content, `customSections.${custom.id}.content`);
       }
     }
   }
-  const layout=doc.layout || {}, font={sans:'Arial',serif:'Georgia',mono:'Courier New'}[layout.font] || 'Arial';
+  const layout=doc.layout || {}, font=FONT_FAMILIES[layout.font]?.word || 'Arial';
   const size=Math.round(Math.max(8,Math.min(16,Number(layout.fontSize) || 11))*2);
   const margin=Math.round(Math.max(20,Math.min(80,Number(layout.margin) || 46))*15);
   const letterPage=layout.pageSize === 'Letter';
-  const xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="${WORD_NS}"><w:body>${body}<w:sectPr><w:pgSz w:w="${letterPage ? 12240 : 11906}" w:h="${letterPage ? 15840 : 16838}"/><w:pgMar w:top="${margin}" w:right="${margin}" w:bottom="${margin}" w:left="${margin}" w:header="360" w:footer="360" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="${WORD_NS}" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>${body}<w:sectPr><w:pgSz w:w="${letterPage ? 12240 : 11906}" w:h="${letterPage ? 15840 : 16838}"/><w:pgMar w:top="${margin}" w:right="${margin}" w:bottom="${margin}" w:left="${margin}" w:header="360" w:footer="360" w:gutter="0"/></w:sectPr></w:body></w:document>`;
   const styles=`<?xml version="1.0" encoding="UTF-8"?><w:styles xmlns:w="${WORD_NS}"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${font}" w:hAnsi="${font}"/><w:sz w:val="${size}"/></w:rPr></w:rPrDefault></w:docDefaults>${[['Normal',size],['Title',size+20],['Subtitle',size],['Heading1',size+5],['Heading2',size+2]].map(([name,points]) => `<w:style w:type="paragraph" w:styleId="${name}"${name==='Normal' ? ' w:default="1"' : ''}><w:name w:val="${name}"/><w:pPr><w:spacing w:after="120"/>${name.startsWith('Heading') ? '<w:keepNext/>' : ''}</w:pPr><w:rPr><w:sz w:val="${points}"/>${name.startsWith('Heading') ? '<w:b/>' : ''}</w:rPr></w:style>`).join('')}</w:styles>`;
   return zip({
     '[Content_Types].xml':'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>',
     '_rels/.rels':'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>',
     'word/document.xml':xml,
     'word/styles.xml':styles,
-    'word/_rels/document.xml.rels':'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'
+    'word/_rels/document.xml.rels':'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>' + [...links].map(([href, id]) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="${esc(href)}" TargetMode="External"/>`).join('') + '</Relationships>'
   });
 }
 export function normalisePlainText(text) {

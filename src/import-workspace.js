@@ -31,19 +31,31 @@ export function mergeReviewedDocument(current, imported, options = {}) {
   const modes = record(sectionModes, COLLECTIONS, 'Choose whether to add, replace or keep the entries in each section.');
   if (Object.values(modes).some(value => !MODES.includes(value))) throw new Error('Choose whether to add, replace or keep the entries in each section.');
   if (typeof idPrefix !== 'string' || !/^[a-zA-Z0-9_-]{1,55}$/.test(idPrefix)) throw new Error('Use a valid imported CV identifier.');
-  for (const key of profileFields) next.profile[key] = incoming.profile[key];
+  for (const key of profileFields) {
+    next.profile[key] = incoming.profile[key];
+    if (key === 'summary') {
+      delete next.richText['profile.summary'];
+      if (Object.hasOwn(incoming.richText, 'profile.summary')) next.richText['profile.summary'] = structuredClone(incoming.richText['profile.summary']);
+    }
+  }
   const used = new Set([...next.experience, ...next.education, ...next.skills, ...next.customSections].map(item => item.id));
   let sequence = 0;
   const identifier = () => { let id; do { id = `${idPrefix}-${++sequence}`; } while (used.has(id)); used.add(id); return id; };
   for (const collection of COLLECTIONS) {
     const mode = modes[collection] || 'append';
     if (mode === 'keep') continue;
-    if (mode === 'replace') next[collection] = [];
+    if (mode === 'replace') {
+      next[collection] = [];
+      for (const key of Object.keys(next.richText)) if (key.startsWith(`${collection}.`)) delete next.richText[key];
+    }
     const seen = new Set(next[collection].map(comparable));
     for (const item of incoming[collection]) {
       const key = comparable(item);
       if (seen.has(key)) continue;
-      next[collection].push({ ...item, id: identifier() }); seen.add(key);
+      const id = identifier();
+      next[collection].push({ ...item, id }); seen.add(key);
+      const formattingKey = `${collection}.${item.id}.description`;
+      if (Object.hasOwn(incoming.richText, formattingKey)) next.richText[`${collection}.${id}.description`] = structuredClone(incoming.richText[formattingKey]);
     }
   }
   // Keep source evidence and other imported sections even when a career list is
@@ -54,6 +66,9 @@ export function mergeReviewedDocument(current, imported, options = {}) {
     const id = identifier();
     next.customSections.push({ ...section, id }); next.sectionOrder.push(id);
     if (incoming.hiddenSections.includes(section.id)) next.hiddenSections.push(id);
+    if (Object.hasOwn(incoming.sectionColumns, section.id)) next.sectionColumns[id] = incoming.sectionColumns[section.id];
+    const key = `customSections.${section.id}.content`;
+    if (Object.hasOwn(incoming.richText, key)) next.richText[`customSections.${id}.content`] = structuredClone(incoming.richText[key]);
   }
   return validateDocument(next);
 }

@@ -1,4 +1,4 @@
-import { validateDocument } from './model.js';
+import { validateDocument, reconcileRichText } from './model.js';
 
 const PROFILE = ['headline', 'summary'];
 const LETTER = ['company', 'role', 'recipient', 'subject', 'salutation', 'body', 'closing'];
@@ -43,7 +43,7 @@ export function applyWritingSuggestion(document, issue, replacement) {
   if (typeof replacement !== 'string' || replacement.length > 100 || /[\r\n\u0000-\u001f]/.test(replacement)) throw new Error('Use a short plain-text replacement.');
   if (!Number.isInteger(issue.start) || !Number.isInteger(issue.end) || issue.start < 0 || issue.end <= issue.start || object[key].slice(issue.start, issue.end) !== issue.word) throw new Error('You’ve changed this field since the check. Check it again before making a correction.');
   object[key] = object[key].slice(0, issue.start) + replacement + object[key].slice(issue.end);
-  return validateDocument(next);
+  return validateDocument(reconcileRichText(document, next));
 }
 export function cleanupSuggestions(document, kind = 'cv') {
   return writingFields(document, kind).flatMap(field => {
@@ -56,5 +56,5 @@ export function applyCleanupSuggestion(document, suggestion) {
   if (object[key] !== suggestion.before) throw new Error('You’ve changed this field since checking the spacing. Choose Tidy spacing again.');
   if (typeof suggestion.replacement !== 'string' || suggestion.before.replace(/\s/g, '') !== suggestion.replacement.replace(/\s/g, '')) throw new Error('Spacing cleanup can only change spaces and blank lines. Your words, numbers and facts must stay the same.');
   object[key] = suggestion.replacement;
-  return validateDocument(next);
+  return validateDocument(reconcileRichText(document, next));
 }

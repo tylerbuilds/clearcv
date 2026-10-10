@@ -1,9 +1,9 @@
-import { validateDocument } from './model.js';
+import { validateDocument, keywordFeedback } from './model.js';
 
 export const TRACKER_STATUSES = Object.freeze(['wishlist', 'applied', 'interview', 'offer', 'rejected', 'withdrawn']);
 export const TRACKER_REQUIRED_FIELDS = Object.freeze(['id', 'company', 'role', 'url', 'status', 'appliedDate', 'followUpDate', 'notes', 'cvId']);
-export const TRACKER_OPTIONAL_FIELDS = Object.freeze(['archived', 'tasks', 'customFields', 'submissions']);
-export const TRACKER_CSV_COLUMNS = Object.freeze([...TRACKER_REQUIRED_FIELDS, 'archived', 'tasksTotal', 'tasksOpen', 'tasksDone', 'taskSummaries', 'submissionCount', 'submissionMetadata']);
+export const TRACKER_OPTIONAL_FIELDS = Object.freeze(['archived', 'tasks', 'customFields', 'submissions', 'description', 'location', 'salary']);
+export const TRACKER_CSV_COLUMNS = Object.freeze([...TRACKER_REQUIRED_FIELDS, 'archived', 'tasksTotal', 'tasksOpen', 'tasksDone', 'taskSummaries', 'submissionCount', 'submissionMetadata', 'location', 'salary', 'description']);
 
 function fail(message) { throw new Error(message); }
 function record(value, allowed, required, name) {
@@ -44,7 +44,7 @@ function nested(value, name, limit, keys, validate) {
 }
 
 /**
- * Accepts the legacy application fields plus four optional additions. Only
+ * Accepts the legacy application fields plus optional additions. Only
  * missing additions receive defaults; explicit null/undefined or wrong types
  * are rejected. IDs are unique within each nested list, not across list types.
  * Returns detached data, including validated/migrated submission documents.
@@ -60,6 +60,11 @@ export function validateTrackerFields(application) {
   date(application.followUpDate, 'Follow-up date');
   const archived = Object.hasOwn(application, 'archived') ? application.archived : false;
   if (typeof archived !== 'boolean') fail('Application archived must be true or false.');
+  const details = {};
+  for (const key of ['description', 'location', 'salary']) {
+    details[key] = Object.hasOwn(application, key) ? application[key] : '';
+    string(details[key], `Application ${key}`, key === 'description' ? 50000 : 300);
+  }
   const tasks = nested(Object.hasOwn(application, 'tasks') ? application.tasks : [], 'Tasks', 30, ['id', 'title', 'dueDate', 'done'], item => {
     string(item.title, 'Task title', 200);
     date(item.dueDate, 'Task due date');
@@ -77,7 +82,7 @@ export function validateTrackerFields(application) {
     timestamp(item.submittedAt, 'Submission date');
     return { ...item, document: validateDocument(item.document) };
   });
-  return structuredClone({ ...application, archived, tasks, customFields, submissions });
+  return structuredClone({ ...application, archived, tasks, customFields, submissions, ...details });
 }
 
 function applications(value) {
@@ -122,12 +127,61 @@ export function filterApplications(apps, options = {}) {
     if (followUp === 'open' && !application.followUpDate && !application.tasks.some(task => !task.done)) return false;
     if (followUp === 'done' && (application.followUpDate || !application.tasks.length || application.tasks.some(task => !task.done))) return false;
     if (!needle) return true;
-    const searchable = [...TRACKER_REQUIRED_FIELDS.map(key => application[key]),
+    const searchable = [...TRACKER_REQUIRED_FIELDS.map(key => application[key]), application.description, application.location, application.salary,
       ...application.tasks.map(task => task.title),
       ...application.customFields.flatMap(field => [field.label, field.value]),
       ...application.submissions.flatMap(submission => [submission.name, submission.cvName])].join('\n');
     return searchText(searchable).includes(needle);
   });
+}
+
+/** Six stage columns, in stage order; rows keep their input order and are detached. */
+export function applicationBoard(apps) {
+  const rows = applications(apps);
+  return TRACKER_STATUSES.map(status => ({ status, applications: rows.filter(application => application.status === status) }));
+}
+
+/** The board and keyboard Move control share this status-only operation. */
+export function moveTrackedApplication(apps, id, status) {
+  identifier(id, 'Application ID');
+  if (!TRACKER_STATUSES.includes(status)) fail('Choose a supported application status.');
+  const rows = applications(apps);
+  const application = rows.find(row => row.id === id);
+  if (!application) fail('Application not found.');
+  if (application.archived) fail('Restore this application from the archive before moving it.');
+  application.status = status;
+  return rows;
+}
+
+/**
+ * On-page reminders only: unfinished dated tasks and uncleared follow-up dates.
+ * Completed tasks and archived applications never generate reminders. Today is
+ * supplied by the caller; no timer, network call or notification is scheduled.
+ */
+export function applicationReminders(apps, options = {}) {
+  record(options, ['today', 'includeUpcoming'], ['today'], 'Tracker reminders');
+  date(options.today, 'Today', true);
+  const today = options.today;
+  const includeUpcoming = Object.hasOwn(options, 'includeUpcoming') ? options.includeUpcoming : false;
+  if (typeof includeUpcoming !== 'boolean') fail('Include upcoming reminders must be true or false.');
+  const reminders = [];
+  const append = (application, kind, title, dueDate, taskId = '') => {
+    if (!dueDate || (!includeUpcoming && dueDate > today)) return;
+    reminders.push({ applicationId: application.id, kind, taskId, title, dueDate, state: dueDate < today ? 'overdue' : dueDate === today ? 'today' : 'upcoming' });
+  };
+  for (const application of applications(apps)) {
+    if (application.archived) continue;
+    append(application, 'followUp', 'Follow up', application.followUpDate);
+    for (const task of application.tasks) if (!task.done) append(application, 'task', task.title || 'Unnamed task', task.dueDate, task.id);
+  }
+  // Modern stable sort retains the application/task order for equal dates.
+  return reminders.sort((left, right) => left.dueDate < right.dueDate ? -1 : left.dueDate > right.dueDate ? 1 : 0);
+}
+
+/** Literal local comparison of at most 24 advert terms with visible CV content. */
+export function applicationCvMatch(application, document) {
+  const row = validateTrackerFields(application);
+  return keywordFeedback(validateDocument(document), row.description);
 }
 
 /**
@@ -235,7 +289,7 @@ export function applicationsToCsv(apps) {
     const submissionMetadata = application.submissions.map(({ id, name, submittedAt, cvName }) => ({ id, name, submittedAt, cvName }));
     output.push([...TRACKER_REQUIRED_FIELDS.map(key => application[key]), application.archived,
       application.tasks.length, application.tasks.filter(task => !task.done).length, application.tasks.filter(task => task.done).length,
-      JSON.stringify(taskSummaries), application.submissions.length, JSON.stringify(submissionMetadata),
+      JSON.stringify(taskSummaries), application.submissions.length, JSON.stringify(submissionMetadata), application.location, application.salary, application.description,
       ...customLabels.map(label => (custom.get(label) || []).join('\n'))]);
   }
   return `${output.map(row => row.map(csvCell).join(',')).join('\r\n')}\r\n`;

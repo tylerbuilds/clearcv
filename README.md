@@ -21,21 +21,23 @@ Choose **Save as PDF**, or open **Export** for TXT, DOCX and JSON. Download a **
 ## What you can do
 
 - **Keep a CV for each role.** Create, name, duplicate and switch between CVs. Save reusable career history in a master CV and keep named snapshots to return to later.
-- **Choose how it looks.** Three original templates, editable sections, fonts, colours, spacing, margins, A4 or Letter paper and an optional photo. The preview updates as you write.
+- **Choose how it looks.** Five original templates, six local font families, custom colours, spacing, margins, A4 or Letter paper and an optional photo. Choose one or two columns and place sections in either column. The preview updates as you write; **Preview pages** arranges the current CV or letter into printable sheets.
+- **Format the words you select.** Add bold, italic, underline and links to profiles, descriptions, custom sections and letter bodies. Text stays editable, and unsafe link addresses are rejected.
 - **Bring in an existing CV.** Import PDF, DOCX, supported older Word files, ODT, RTF, text, Markdown or HTML. Local English OCR can read scans and images. Check the extracted text and suggested fields before creating a CV. See [supported formats and limits](docs/document-upgrades.md).
-- **Write a cover letter.** Keep a letter with each CV and export it as PDF, TXT or DOCX. A rule-based draft can give you a starting point using the facts you've entered.
-- **Check your writing.** Review British English spelling suggestions, tidy spaces and compare your CV with a job description. Suggested section ordering creates a separate tailored copy. These checks don't provide an ATS score or predict whether you'll get the job.
-- **Track applications.** Record jobs, stages, notes, dates, tasks and extra fields. Link a CV and letter, save the version you submitted, and export your records as CSV.
+- **Write a cover letter.** Keep a letter with each CV, save up to 20 reusable letters and export as PDF, TXT or DOCX. A local draft can give you a starting point using the visible facts you've entered.
+- **Prepare a CV for a job.** Use the current CV or saved master history to prepare a separate draft. Review the summary, included entries, skills and letter before creating a new copy. Requirement checks show exact matching and missing words, with evidence from visible CV text and prompts to check years of experience. These checks don't provide an ATS score or establish that you meet a requirement.
+- **Track applications.** Paste a job advertisement and review the extracted details before adding it. Move jobs on the board by dragging or using a stage selector, check due tasks in the app, and switch to a list. Link a CV and letter, save the version you submitted, and export records as CSV. Job URLs are saved links; the app doesn't fetch the page.
+- **Check your writing.** Review British English spelling suggestions and tidy spaces. Suggestions stay yours to accept or ignore.
 - **Use AI when a server is configured.** Request headline, profile, bullet and cover-letter suggestions, translate selected fields, or practise interview answers. Review suggestions before applying them. AI is unavailable on the static demo.
 - **Share a CV from your own server.** Create separate owner, editor and viewer links, with comments and history. Sharing requires the Node server. It shares the selected CV and letter; your other CVs and job records stay local.
 
-For PDF export, select the browser's PDF destination, match the A4 or Letter page size and turn off browser headers and footers. Check each page before saving, as pagination can vary between browsers. Valid email and HTTP(S) website addresses become clickable links. Word exports keep editable text and layout settings but don't include your photo or exactly match the browser template.
+For PDF export, select the browser's PDF destination, match the A4 or Letter page size and turn off browser headers and footers. Use **Preview pages** to inspect arranged sheets, then check the browser's final print preview before saving. The page view is bounded to 100 pages. Valid email and HTTP(S) website addresses become clickable links. Word exports preserve editable text, selected formatting, body links and some layout settings; they use a linear section order and don't reproduce photos, two-column placement or the browser template. See [the consumer workflow guide](docs/consumer-workflows.md).
 
 ## Keep your data safe
 
 CVs, photos, letters, job descriptions and application records save in this browser's `localStorage`. There are no analytics, telemetry or required accounts. Anyone with access to the same browser profile may be able to read them. The library doesn't automatically follow you to another device.
 
-Download workspace backups regularly and keep them private. They include every CV, letter, image, snapshot, submitted copy, master profile, job description, application, task and custom field. Current-CV JSON contains one CV and its letter. Importing a workspace adds its CVs with new IDs and keeps your existing library and master profile.
+Download workspace backups regularly and keep them private. They include every CV, letter, reusable letter, image, snapshot, submitted copy, master profile, job description, application, task and custom field. Current-CV JSON contains one CV and its letter. Importing a workspace adds its CVs and reusable letters with new IDs and keeps your existing library and master profile.
 
 Private browsing, restricted storage or a full browser store can prevent saves. ClearCV warns you and keeps the edits open so you can export them before closing. If another tab has saved changes, this tab asks you to download its open workspace and reload the newer library. Use one editing tab where possible; see [browser storage and recovery](docs/storage-safety.md).
 
@@ -47,7 +49,8 @@ Storage limits apply to keep the library within browser capacity:
 | --- | --- |
 | Document JSON | 1 MB |
 | Workspace JSON | 4 MB |
-| CVs | 25 |
+| CVs | 100 |
+| Reusable letters | 20 |
 | Named snapshots per CV | 10 |
 | Custom sections per CV | 20 |
 | Entries per standard section | 60 |
@@ -68,7 +71,7 @@ Open **Jobs**, add a role and choose its CV. The link opens the current editable
 
 Saved copies include the CV name and capture time, shown in your local timezone. Hidden sections and the pasted job description remain in the private saved document and JSON backups. PDF, TXT and DOCX exports show the content selected for the captured layout.
 
-Add tasks with due dates and mark them complete. The single follow-up date also stays available until you clear it. Tasks due today or earlier count as due; those before today count as overdue. There are no background reminders. Search covers job details, notes, task titles and custom fields. It doesn't search the text inside submitted copies.
+Add tasks with due dates and mark them complete. **Next steps due** shows due and overdue tasks while Jobs is open. The single follow-up date also stays available until you clear it. Tasks due today or earlier count as due; those before today count as overdue. There are no background reminders or notifications. Search covers job details, notes, task titles and custom fields. It doesn't search the text inside submitted copies.
 
 Archive a job to remove it from the active list and statistics while keeping its tasks and submitted copies. Restore it to bring it back. **Your search at a glance** shows current stages, open and completed tasks, due dates and the applied dates you've entered over the last seven local calendar days. Future and missing dates are listed separately. The figures describe your records as they stand, rather than historical conversion rates.
 
@@ -105,9 +108,9 @@ ClearCV is an independently written, MIT-licensed open-source app. It isn't affi
 - [REA investigation and sources](docs/research/rea-provenance.md)
 - [Development checks](docs/verification.md)
 
-The comparison retains the dated 0.3 audit. The [document-upgrade guide](docs/document-upgrades.md) describes the later import, OCR and spelling features. These records include gaps and unknowns; ClearCV doesn't claim to reproduce every feature of another product.
+The comparison retains the dated 0.3 audit. The [document-upgrade guide](docs/document-upgrades.md) describes the later import, OCR and spelling features; [consumer workflows](docs/consumer-workflows.md) covers selected formatting, page views, reviewed job drafts and the application board. These records include gaps and unknowns; ClearCV doesn't claim to reproduce every feature of another product.
 
-Current gaps include LinkedIn extraction, semantic ATS checks, whole-document AI translation, automatic merging of shared edits, whole-workspace cloud sync, job feeds and alerts, a browser extension, company research, voice interviews and team branding. Custom job stages, board dragging and sorting, spreadsheet import, interview and offer records, automatic reminders and native installers are also unavailable. AI needs a configured provider, and you need to check its suggestions before using them.
+Current gaps include fetched job-page or LinkedIn extraction, semantic ATS checks, whole-document AI translation, automatic merging of shared edits, whole-workspace cloud sync, job feeds and alerts, a browser extension, company research, voice interviews and team branding. Custom job stages, manual board sorting within a stage, spreadsheet import, interview and offer records, external reminders and native installers are also unavailable. The local tailored draft reorders supplied facts and offers editable text; it isn't an automatic AI rewrite. AI needs a configured provider, and you need to check its suggestions before using them.
 
 ## Contribute
 
