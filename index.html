@@ -6,13 +6,13 @@
   <meta name="theme-color" content="#a94f2e">
   <meta name="description" content="Write, style and download your CV. Your library stays in your browser, with no account needed.">
   <title>ClearCV | Write your next CV</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23a94f2e'/%3E%3Cpath d='M42 20a17 17 0 1 0 0 24M42 20v9h-9' stroke='%23fff' stroke-width='5' fill='none'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="public/brand/favicon.svg">
   <link rel="stylesheet" href="styles.css">
   <script type="module" src="src/app.js"></script>
 </head>
 <body>
   <header class="app-header">
-    <a class="brand" href="./" aria-label="ClearCV home"><span class="brand-mark">c<span>↗</span></span>ClearCV<span class="brand-tag">CV BUILDER</span></a>
+    <a class="brand" href="./" aria-label="ClearCV home"><img class="brand-mark" src="public/brand/clearcv-mark.svg" width="36" height="36" alt=""><span>ClearCV</span></a>
     <div class="header-actions">
       <span id="save-status" class="save-status" role="status">Saved on this device</span>
       <button id="new-cv" class="button button-new" type="button">+ New CV</button>
@@ -55,7 +55,7 @@
         <button id="tab-cloud" type="button" role="tab" data-tab="cloud" aria-selected="false" aria-controls="editor-panel" tabindex="-1">Share</button>
       </div>
       <div id="editor-panel" role="tabpanel" aria-labelledby="tab-content"></div>
-      <div class="editor-footer"><p>✧ Your library stays in this browser. Keep a workspace backup.</p><button id="load-example" class="text-button" type="button">Explore example</button></div>
+      <div class="editor-footer"><p>✧ Your library stays in this browser. Keep a workspace backup.</p><button id="load-example" class="text-button" type="button">Explore example</button><div class="open-source-links" aria-label="About ClearCV"><a href="https://github.com/tylerbuilds/clearcv" target="_blank" rel="noopener noreferrer">Open source <span aria-hidden="true">↗</span></a><span aria-hidden="true">·</span><a href="https://github.com/tylerbuilds/clearcv/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licence</a></div></div>
     </section>
     <section class="preview-area" aria-label="Live CV preview">
       <div class="preview-toolbar"><span><span class="live-dot"></span> LIVE PREVIEW</span><span id="preview-kind" class="page-size">A4 · CV preview</span></div>

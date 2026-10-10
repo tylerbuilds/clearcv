@@ -1,12 +1,14 @@
 # ClearCV
 
-Write your CV, keep versions for different jobs and export them as PDF or editable Word documents. ClearCV runs in your browser, with no account or subscription. Your CVs save on your device.
+![ClearCV wordmark](public/brand/clearcv-wordmark.svg)
 
-[Try ClearCV](https://tylerbuilds.github.io/clearcv/) · [Linux and macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
+Write your CV, keep versions for different jobs and export them as PDF or editable Word documents. ClearCV is free and open source. It runs in your browser, with no account or subscription. Your CVs save on your device.
 
-![Start a blank CV in ClearCV](docs/screenshots/blank-start-0.5.1.png)
+[Try ClearCV](https://tylerbuilds.github.io/clearcv/) · [MIT licence](LICENSE) · [Brand kit](docs/brand.md) · [Linux and macOS checks](https://github.com/tylerbuilds/clearcv/actions/workflows/verify.yml)
 
-[On a phone](docs/screenshots/blank-start-mobile-0.5.1.png)
+![Start a blank CV in ClearCV](docs/screenshots/blank-start-0.5.2.png)
+
+[On a phone](docs/screenshots/blank-start-mobile-0.5.2.png)
 
 ## Start your CV
 
