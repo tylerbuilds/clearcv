@@ -1,4 +1,4 @@
-import { createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument, resolveRichTextField, reconcileRichText } from './model.js';
+import { createDocument, validateDocument, parseDocument, serialiseDocument, addItem, updateItem, moveItem, removeItem, keywordFeedback, ACCENTS, addCustomSection, removeCustomSection, moveSection, plainTextDocument, resolveRichTextField, reconcileRichText, applyTemplate } from './model.js';
 
 import { createWorkspace, validateWorkspace, serialiseWorkspace, parseWorkspace, parseImport, activeEntry, updateActiveDocument, addDocument, duplicateDocument, deleteDocument, saveSnapshot, restoreSnapshot, addApplication, updateApplication, mergeWorkspace, JOB_STATUSES, MAX_CVS, saveReusableLetter, useReusableLetter, removeReusableLetter } from './workspace.js';
 import { reviewCV, tailoringSuggestions, coverLetterDraft } from './review.js';
@@ -12,7 +12,7 @@ import { createJobsUI } from './jobs-ui.js';
 import { applicationSubmission, copySubmissionToLibrary } from './workspace.js';
 import { initialWorkspace, addNewCV, isBlankCV, isFirstBlankWorkspace } from './new-cv.js';
 import { persistWorkspace, WorkspaceConflictError } from './storage.js';
-import { FONT_FAMILIES, TEMPLATE_CHOICES, sectionPlacement } from './layout.js';
+import { FONT_FAMILIES, TEMPLATE_CHOICES, TEMPLATE_DESCRIPTIONS, sectionPlacement } from './layout.js';
 import { renderRichText } from './rich-text.js';
 import { installRichTextToolbar } from './rich-text-ui.js';
 import { prepareTailoredCopy, reviewTailoredCopy, jobRequirementChecks } from './tailoring.js';
@@ -219,6 +219,7 @@ function renderContent() {
     } else if (['phone', 'website'].includes(key)) panel.lastElementChild.append(input);
     else panel.append(input);
   }
+  renderHeadshotControls(panel, 'content');
   panel.append(field('A little about you', state.profile.summary, 'profile-summary', { multiline: true, rows: '5', placeholder: 'What do you do, and what would you bring to this role?', data: { 'data-profile': 'summary' }, hint: 'Introduce yourself in a few sentences.' }));
   renderCollection('experience', 'Experience', '02 / WHAT YOU HAVE DONE');
   renderCollection('education', 'Education', '03 / WHAT YOU HAVE LEARNT');
@@ -270,10 +271,10 @@ function renderDesign() {
   panel.append(sectionTitle('Choose a layout', 'STYLE YOUR CV'));
   panel.append(element('p', { class: 'panel-intro', text: 'Choose a layout, then adjust the colour, type and spacing.' }));
   const grid = element('div', { class: 'template-grid' });
-  for (const [template, name, columns] of TEMPLATE_CHOICES) {
+  for (const [template, name] of TEMPLATE_CHOICES) {
     const thumbnail = element('span', { class: `template-thumbnail mini-${template}`, 'aria-hidden': 'true' }, [element('span', { class: 'mini-title' }), element('span', { class: 'mini-accent' })]);
     for (let i = 0; i < 10; i++) thumbnail.append(element('span', { class: `mini-line${i % 4 === 3 ? ' short' : ''}` }));
-    grid.append(element('button', { id: `template-${template}`, type: 'button', class: 'template-option', 'aria-pressed': String(state.style.template === template), 'aria-label': `${name} template`, onClick: () => change({ ...state, style: { ...state.style, template }, layout: { ...state.layout, columns } }, true) }, [thumbnail, element('span', { text: name })]));
+    grid.append(element('button', { id: `template-${template}`, type: 'button', class: 'template-option', 'aria-pressed': String(state.style.template === template), 'aria-label': `${name} template`, 'aria-describedby': `template-${template}-description`, onClick: () => change(applyTemplate(state, template), true) }, [thumbnail, element('span', { text: name }), element('span', { id: `template-${template}-description`, class: 'template-description', text: TEMPLATE_DESCRIPTIONS[template] })]));
   }
   panel.append(grid);
   panel.append(sectionTitle('Accent colour'));
@@ -410,7 +411,7 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
   }
   if (kind === 'letter') { renderLetterPreview(state, preview); return; }
   const profile = state.profile;
-  const header = element('header', { class: 'cv-header' }, [
+  const header = element('header', { class: `cv-header${state.photo ? ' has-headshot' : ''}` }, [
     element('h1', { class: `cv-name${profile.name ? '' : ' cv-placeholder'}`, text: profile.name || 'Your name' }),
     element('div', { class: `cv-headline${profile.headline ? '' : ' cv-placeholder'}`, text: profile.headline || 'Your next chapter' })
   ]);
@@ -649,30 +650,46 @@ function renderLayoutControls() {
     wrapper.querySelector('input').addEventListener('input', event => { output.textContent = event.target.value; });
     wrapper.append(output); section.append(wrapper);
   }
-  section.append(sectionTitle('Add a photo'));
-  const upload = element('input', { id: 'photo-upload', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload a portrait photo' });
-  upload.addEventListener('change', async event => {
-    const file = event.target.files?.[0]; if (!file) return;
-    event.target.value = '';
-    const request = ++portraitGeneration, docId = workspace.activeId, original = JSON.stringify(state);
-    let bitmap;
-    try {
-      bitmap = await decodePortrait(file, { isCurrent: () => request === portraitGeneration && workspace.activeId === docId && JSON.stringify(state) === original });
-      if (request !== portraitGeneration) return;
-      if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('Your CV changed while the photo was loading. Choose the photo again to add it here.', true); return; }
-      if (!bitmap) return;
-      const canvas = document.createElement('canvas');
-      canvas.width = 240; canvas.height = 240;
-      const side = Math.min(bitmap.width, bitmap.height);
-      canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
-      const saved = change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
-      announce(saved ? 'Photo added and cropped to a square. You can remove it below.' : 'The photo hasn’t saved. Download a workspace backup before closing. Check Library if another tab is open.', !saved);
-    } catch (error) { if (request === portraitGeneration) announce(error.message, true); }
-    finally { bitmap?.close(); }
-  });
-  section.append(upload, element('p', { class: 'field-hint', text: 'Optional. Check whether CV photos are expected where you’re applying. Your photo is resized in this browser.' }));
-  if (state.photo) section.append(element('button', { id: 'remove-photo', class: 'text-button', type: 'button', text: 'Remove portrait', onClick: () => { portraitGeneration++; change({ ...state, photo: '' }, true); } }));
   panel.append(section);
+  renderHeadshotControls(panel);
+}
+function renderHeadshotControls(target, context = 'design') {
+  const content = context === 'content', docId = workspace.activeId;
+  const uploadId = content ? 'content-photo-upload' : 'photo-upload';
+  const section = element(content ? 'details' : 'section', { id: `${context}-headshot`, class: 'headshot-controls' });
+  if (content) {
+    section.append(element('summary', { text: 'Headshot (optional)' }));
+    section.open = Boolean(state.photo);
+  } else section.append(sectionTitle('Headshot', 'OPTIONAL'));
+  if (state.photo) section.append(element('img', { class: 'headshot-preview', src: state.photo, alt: 'Your current headshot' }));
+  const upload = element('input', { id: uploadId, class: 'headshot-choice', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload an optional headshot' });
+  upload.addEventListener('change', uploadHeadshot);
+  section.append(upload, element('p', { class: 'field-hint', text: 'Use a photo if it suits where you’re applying. It is cropped and resized here, and stays in your browser.' }));
+  if (state.photo) section.append(element('button', { id: content ? 'content-remove-photo' : 'remove-photo', class: 'text-button', type: 'button', text: 'Remove headshot', onClick: () => safeAction(() => {
+    if (workspace.activeId !== docId) throw new Error('The open CV changed. Remove the headshot from the current CV instead.');
+    portraitGeneration++; change({ ...state, photo: '' }, true);
+    document.querySelector(content ? '#content-headshot > summary' : '#photo-upload')?.focus();
+  }) }));
+  target.append(section);
+}
+async function uploadHeadshot(event) {
+  const file = event.target.files?.[0]; if (!file) return;
+  event.target.value = '';
+  const request = ++portraitGeneration, docId = workspace.activeId, original = JSON.stringify(state);
+  let bitmap;
+  try {
+    bitmap = await decodePortrait(file, { isCurrent: () => request === portraitGeneration && workspace.activeId === docId && JSON.stringify(state) === original });
+    if (request !== portraitGeneration) return;
+    if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('Your CV changed while the headshot was loading. Choose it again to add it here.', true); return; }
+    if (!bitmap) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 240; canvas.height = 240;
+    const side = Math.min(bitmap.width, bitmap.height);
+    canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
+    const saved = change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
+    announce(saved ? 'Headshot added. You can change or remove it in Content or Design.' : 'The headshot hasn’t saved. Download a workspace backup before closing. Check Library if another tab is open.', !saved);
+  } catch (error) { if (request === portraitGeneration) announce(error.message, true); }
+  finally { bitmap?.close(); }
 }
 function renderSectionControls() {
   const section = element('section', { class: 'form-section' }, [sectionTitle('Your section order'), element('p', { class: 'panel-intro', text: 'Rename, hide or move sections. Hidden content stays in your CV but is excluded from printing and keyword comparison.' })]);

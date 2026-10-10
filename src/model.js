@@ -1,4 +1,4 @@
-import { FONT_FAMILIES, TEMPLATE_CHOICES } from './layout.js';
+import { FONT_FAMILIES, TEMPLATE_CHOICES, TEMPLATE_LAYOUTS } from './layout.js';
 import { validateRichText, transformRuns } from './rich-text.js';
 import { checkDeclaredRasterSize } from './raster-size.js';
 export const SCHEMA = 'clearcv';
@@ -113,6 +113,13 @@ export function documentDefaults() {
     richText: {}, sectionColumns: {},
     coverLetter: { company: '', role: '', recipient: '', date: '', subject: '', salutation: 'Dear hiring team,', body: '', closing: 'Kind regards,' }
   };
+}
+export function applyTemplate(document, template) {
+  const current = validateDocument(document);
+  const choice = TEMPLATE_CHOICES.find(([id]) => id === template);
+  if (!choice) fail('Choose a supported template.');
+  return validateDocument({ ...current, style: { ...current.style, template },
+    layout: { ...current.layout, ...(TEMPLATE_LAYOUTS[template] || {}), columns: choice[2] } });
 }
 export function createDocument() {
   return {

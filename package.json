@@ -1,6 +1,6 @@
 {
   "name": "clearcv",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "private": true,
   "description": "A local-first, open-source CV workspace.",
   "type": "module",

@@ -89,6 +89,57 @@ try {
     const pdf = await page.pdf({path:resolve(output,'cv.pdf'),format:'A4',printBackground:true});
     expect(pdf.subarray(0,4).toString()).toBe('%PDF');
     await page.locator('#tab-content').click();
+    const headshotDisclosure = page.locator('#content-headshot');
+    await expect(headshotDisclosure.locator('summary')).toHaveText('Headshot (optional)');
+    await expect(headshotDisclosure).toHaveJSProperty('open', false);
+    await headshotDisclosure.locator('summary').click();
+    await expect(page.locator('#content-photo-upload')).toBeVisible();
+    const portraitPng = Buffer.from(await page.evaluate(() => {
+      const canvas = document.createElement('canvas'); canvas.width = 24; canvas.height = 32;
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#dfe6dc'; context.fillRect(0, 0, 24, 32);
+      context.fillStyle = '#577160'; context.beginPath(); context.arc(12, 10, 6, 0, Math.PI * 2); context.fill();
+      context.fillRect(5, 18, 14, 14);
+      return canvas.toDataURL('image/png').split(',')[1];
+    }), 'base64');
+    await page.locator('#content-photo-upload').setInputFiles({name:'synthetic-headshot.png',mimeType:'image/png',buffer:portraitPng});
+    const portraitPreview = page.locator('#cv-preview .cv-photo');
+    await expect(portraitPreview).toBeVisible();
+    await expect(portraitPreview).toHaveAttribute('alt', 'Portrait of Avery Test');
+    await expect.poll(() => portraitPreview.evaluate(image => [image.complete, image.naturalWidth, image.naturalHeight])).toEqual([true, 240, 240]);
+    const storedPortrait = await portraitPreview.getAttribute('src');
+    expect(storedPortrait).toMatch(/^data:image\/jpeg;base64,/);
+    await page.locator('#tab-design').click();
+    for (const [id, label] of [['atlas','Atlas'],['letterpress','Letterpress'],['signal','Signal'],['outline','Outline'],['typewriter','Typewriter'],['margin','Margin']]) {
+      const choice = page.locator(`#template-${id}`);
+      await expect(choice).toHaveAccessibleName(`${label} template`);
+      await expect(choice.locator('.template-description')).toBeVisible();
+      await choice.click();
+      await expect(choice).toHaveAttribute('aria-pressed', 'true');
+      await expect(page.locator('.template-option[aria-pressed="true"]')).toHaveCount(1);
+      await expect(page.locator('#cv-preview')).toHaveClass(new RegExp(`template-${id}`));
+      await expect(page.locator('#cv-preview .cv-name')).toHaveText('Avery Test');
+      await expect(page.locator('#cv-preview .cv-header')).toHaveClass(/has-headshot/);
+      await expect(portraitPreview).toBeVisible();
+      await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+    }
+    await page.reload({waitUntil:'networkidle'});
+    await expect(page.locator('#cv-preview')).toHaveClass(/template-margin/);
+    await expect(page.locator('#cv-preview .cv-name')).toHaveText('Avery Test');
+    await expect(portraitPreview).toBeVisible();
+    await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+    await page.locator('#tab-content').click();
+    await expect(headshotDisclosure).toHaveJSProperty('open', true);
+    await page.locator('#content-remove-photo').click();
+    await expect(portraitPreview).toHaveCount(0);
+    await expect(page.locator('#cv-preview .cv-header')).not.toHaveClass(/has-headshot/);
+    await page.reload({waitUntil:'networkidle'});
+    await expect(portraitPreview).toHaveCount(0);
+    await expect(page.locator('#cv-preview .cv-header')).not.toHaveClass(/has-headshot/);
+    await expect(page.locator('#cv-preview .cv-name')).toHaveText('Avery Test');
+    await expect(page.locator('#cv-preview')).toHaveClass(/template-margin/);
+    await page.locator('#tab-content').click();
+    await expect(page.locator('#content-remove-photo')).toHaveCount(0);
     await page.locator('#profile-summary').fill('Designed useful services with users.');
     await page.locator('#profile-summary').evaluate(node => {
       node.focus(); node.setSelectionRange(0, 8);

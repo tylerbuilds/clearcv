@@ -21,7 +21,7 @@ Choose **Save as PDF**, or open **Export** for TXT, DOCX and JSON. Download a **
 ## What you can do
 
 - **Keep a CV for each role.** Create, name, duplicate and switch between CVs. Save reusable career history in a master CV and keep named snapshots to return to later.
-- **Choose how it looks.** Five original templates, six local font families, custom colours, spacing, margins, A4 or Letter paper and an optional photo. Choose one or two columns and place sections in either column. The preview updates as you write; **Preview pages** arranges the current CV or letter into printable sheets.
+- **Choose how it looks.** Eleven original templates, six local font families, custom colours, spacing, margins and A4 or Letter paper. Add an optional headshot in Content or Design. Choose one or two columns and place sections in either column. The preview updates as you write; **Preview pages** arranges the current CV or letter into printable sheets.
 - **Format the words you select.** Add bold, italic, underline and links to profiles, descriptions, custom sections and letter bodies. Text stays editable, and unsafe link addresses are rejected.
 - **Bring in an existing CV.** Import PDF, DOCX, supported older Word files, ODT, RTF, text, Markdown or HTML. Local English OCR can read scans and images. Check the extracted text and suggested fields before creating a CV. See [supported formats and limits](docs/document-upgrades.md).
 - **Write a cover letter.** Keep a letter with each CV, save up to 20 reusable letters and export as PDF, TXT or DOCX. A local draft can give you a starting point using the visible facts you've entered.
