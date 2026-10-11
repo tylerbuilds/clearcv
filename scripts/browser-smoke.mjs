@@ -224,6 +224,44 @@ try {
     await expect(page.locator('#cv-preview')).toHaveClass(/template-margin/);
     await page.locator('#tab-content').click();
     await expect(page.locator('#content-remove-photo')).toHaveCount(0);
+    const photoPhone = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'en-GB'});
+    try {
+      const phonePage = await photoPhone.newPage();
+      phonePage.on('pageerror', error => errors.push(error.message));
+      phonePage.on('console', message => {if (message.type() === 'error') errors.push(message.text())});
+      await phonePage.goto(`http://127.0.0.1:${port}/`, {waitUntil:'networkidle'});
+      await phonePage.locator('#welcome-start-blank').click();
+      await phonePage.locator('#profile-name').fill('Avery Phone');
+      await phonePage.locator('#content-headshot > summary').click();
+      await phonePage.locator('#content-photo-upload').setInputFiles({name:'synthetic-phone-headshot.png',mimeType:'image/png',buffer:portraitPng});
+      await expect(phonePage.locator('#content-edit-photo')).toBeVisible();
+      const beforePhoneEdit = await phonePage.evaluate(() => localStorage.getItem('clearcv.workspace.v1'));
+      await phonePage.locator('#content-edit-photo').click();
+      await expect(phonePage.locator('#headshot-apply')).toBeEnabled();
+      const phoneDialog = await phonePage.locator('#headshot-editor').boundingBox();
+      expect(phoneDialog.x).toBeGreaterThanOrEqual(0);
+      expect(phoneDialog.y).toBeGreaterThanOrEqual(0);
+      expect(phoneDialog.x + phoneDialog.width).toBeLessThanOrEqual(390);
+      expect(phoneDialog.y + phoneDialog.height).toBeLessThanOrEqual(844);
+      await phonePage.locator('#headshot-rotate-right').click();
+      await phonePage.locator('#headshot-cancel').click();
+      await expect(phonePage.locator('#headshot-editor')).toHaveCount(0);
+      expect(await phonePage.evaluate(() => localStorage.getItem('clearcv.workspace.v1'))).toBe(beforePhoneEdit);
+      await phonePage.locator('#content-edit-photo').click();
+      await expect(phonePage.locator('#headshot-apply')).toBeEnabled();
+      await phonePage.locator('#headshot-rotate-right').click();
+      await phonePage.locator('#headshot-apply').click();
+      await expect(phonePage.locator('#headshot-editor')).toHaveCount(0);
+      const phonePortrait = JSON.parse(await phonePage.evaluate(() => localStorage.getItem('clearcv.workspace.v1')));
+      const phoneDocument = phonePortrait.documents.find(entry => entry.id === phonePortrait.activeId).document;
+      expect(phoneDocument.photoSettings.rotation).toBe(90);
+      expect(phoneDocument.photo).not.toBe(JSON.parse(beforePhoneEdit).documents[0].document.photo);
+      await phonePage.locator('#content-edit-photo').click();
+      await expect(phonePage.locator('#headshot-apply')).toBeEnabled();
+      await phonePage.locator('#headshot-cancel').focus();
+      await phonePage.locator('#headshot-cancel').press('Enter');
+      await expect(phonePage.locator('#headshot-editor')).toHaveCount(0);
+    } finally { await photoPhone.close(); }
     await page.locator('#profile-email').fill('');
     await page.locator('#profile-summary').fill('Designed useful services with users.');
     await page.locator('#profile-summary').evaluate(node => {
