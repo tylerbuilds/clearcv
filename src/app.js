@@ -16,7 +16,9 @@ import { FONT_FAMILIES, TEMPLATE_CHOICES, TEMPLATE_DESCRIPTIONS, sectionPlacemen
 import { renderRichText } from './rich-text.js';
 import { installRichTextToolbar } from './rich-text-ui.js';
 import { prepareTailoredCopy, reviewTailoredCopy, jobRequirementChecks } from './tailoring.js';
-import { decodePortrait } from './portrait.js';
+import { preparePortrait } from './portrait.js';
+import { defaultPhotoSettings, normalisePhotoSettings } from './model.js';
+import { openHeadshotEditor } from './headshot-ui.js';
 import { buildPagePreview } from './page-preview.js';
 const STORAGE_KEY = 'clearcv.workspace.v1';
 const LEGACY_STORAGE_KEY = 'clearcv.document.v1';
@@ -37,6 +39,7 @@ let rawWorkspace = null;
 let savedWorkspaceBaseline = null;
 let storageConflict = false;
 let portraitGeneration = 0;
+let headshotEditor = null;
 let recoveryRaw = '';
 let recoveryBackedUp = false;
 let recoveryDownloaded = false;
@@ -131,7 +134,9 @@ function save() {
   }
 }
 function changeWorkspace(next, rerender = true) {
-  workspace = validateWorkspace(next);
+  const validated = validateWorkspace(next);
+  if (workspace.activeId !== validated.activeId || photoFingerprint(state) !== photoFingerprint(activeEntry(validated).document)) cancelPendingHeadshot();
+  workspace = validated;
   state = activeEntry(workspace).document;
   const saved = save();
   renderDocumentSwitcher();
@@ -403,6 +408,15 @@ function renderPreview(documentOverride = state, kind = activeTab === 'letter' ?
   const preview = target;
   preview.replaceChildren();
   preview.className = `paper template-${state.style.template}`;
+  const photoSize = state.photo ? state.photoSettings?.size || 0 : 0;
+  preview.classList.toggle('has-sized-headshot', photoSize > 0);
+  if (photoSize) {
+    preview.style.setProperty('--headshot-size', `${photoSize}px`);
+    preview.style.setProperty('--headshot-mobile-size', `${photoSize}px`);
+  } else {
+    preview.style.removeProperty('--headshot-size');
+    preview.style.removeProperty('--headshot-mobile-size');
+  }
   preview.style.setProperty('--paper-accent', state.style.accent);
   for (const [key, value] of Object.entries({ 'font-size': `${state.layout.fontSize}px`, 'line-height': state.layout.lineHeight, 'spacing': `${state.layout.spacing}px`, 'margin': `${state.layout.margin}px`, 'font': FONT_FAMILIES[state.layout.font].css })) preview.style.setProperty(`--cv-${key}`, value);
   if (target.id === 'cv-preview') {
@@ -591,7 +605,8 @@ function openNewCVEditor() {
   const input = document.querySelector('#profile-name'); input.focus({ preventScroll: true });
   if (matchMedia('(max-width: 700px)').matches) input.scrollIntoView({ block: 'center', behavior: 'auto' });
 }
-function cancelPendingLocalWork() { portraitGeneration++; documentImportUI?.cancelPending(); writingUI?.cancelPending(); }
+function cancelPendingHeadshot() { portraitGeneration++; headshotEditor?.close(); headshotEditor = null; }
+function cancelPendingLocalWork() { cancelPendingHeadshot(); documentImportUI?.cancelPending(); writingUI?.cancelPending(); }
 function createCV(kind) {
   return safeAction(() => {
     const next = addNewCV(workspace, crypto.randomUUID(), kind);
@@ -656,40 +671,80 @@ function renderLayoutControls() {
 function renderHeadshotControls(target, context = 'design') {
   const content = context === 'content', docId = workspace.activeId;
   const uploadId = content ? 'content-photo-upload' : 'photo-upload';
+  const editId = `${context}-edit-photo`, sizeId = `${context}-photo-size`;
   const section = element(content ? 'details' : 'section', { id: `${context}-headshot`, class: 'headshot-controls' });
   if (content) {
     section.append(element('summary', { text: 'Headshot (optional)' }));
     section.open = Boolean(state.photo);
   } else section.append(sectionTitle('Headshot', 'OPTIONAL'));
   if (state.photo) section.append(element('img', { class: 'headshot-preview', src: state.photo, alt: 'Your current headshot' }));
-  const upload = element('input', { id: uploadId, class: 'headshot-choice', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': 'Upload an optional headshot' });
+  const upload = element('input', { id: uploadId, class: 'headshot-choice', type: 'file', accept: 'image/png,image/jpeg,image/webp', 'aria-label': state.photo ? 'Replace your headshot' : 'Upload an optional headshot' });
   upload.addEventListener('change', uploadHeadshot);
-  section.append(upload, element('p', { class: 'field-hint', text: 'Use a photo if it suits where you’re applying. It is cropped and resized here, and stays in your browser.' }));
-  if (state.photo) section.append(element('button', { id: content ? 'content-remove-photo' : 'remove-photo', class: 'text-button', type: 'button', text: 'Remove headshot', onClick: () => safeAction(() => {
-    if (workspace.activeId !== docId) throw new Error('The open CV changed. Remove the headshot from the current CV instead.');
-    portraitGeneration++; change({ ...state, photo: '' }, true);
-    document.querySelector(content ? '#content-headshot > summary' : '#photo-upload')?.focus();
-  }) }));
+  section.append(element('label', { class: 'headshot-upload-label', for: uploadId, text: state.photo ? 'Replace photo' : 'Upload photo' }), upload);
+  if (state.photo) {
+    const photo = state.photo, settings = normalisePhotoSettings(state.photoSettings), source = settings.source;
+    const ownsPhoto = () => {
+      if (workspace.activeId !== docId || state.photo !== photo || (state.photoSettings?.source || '') !== source) throw new Error('The open headshot changed. Use the controls on your current CV.');
+    };
+    const size = settings.size;
+    const visiblePhoto = preview.querySelector('.cv-photo');
+    const displayedSize = size || (visiblePhoto ? Math.round(parseFloat(getComputedStyle(visiblePhoto).width)) : 0) || (['atlas', 'letterpress', 'signal', 'outline', 'typewriter', 'margin'].includes(state.style.template) ? 72 : 70);
+    const sizeText = value => `${value}px · about ${Math.round(value * 25.4 / 96)} mm${size ? '' : ' · layout default'}`;
+    const wrapper = field('Size on CV', Math.max(48, Math.min(144, displayedSize)), sizeId, { type: 'range', data: { min: 48, max: 144, step: 1 } });
+    const output = element('output', { for: sizeId, text: sizeText(displayedSize) });
+    wrapper.classList.add('headshot-size-control'); wrapper.append(output);
+    wrapper.querySelector('input').addEventListener('input', event => safeAction(() => {
+      ownsPhoto(); const nextSize = Number(event.target.value);
+      change({ ...state, photoSettings: { ...normalisePhotoSettings(state.photoSettings), size: nextSize } });
+      output.textContent = `${nextSize}px · about ${Math.round(nextSize * 25.4 / 96)} mm`;
+    }));
+    section.append(element('div', { class: 'headshot-actions' }, [
+      element('button', { id: editId, class: 'button button-quiet', type: 'button', text: 'Edit photo', onClick: () => safeAction(() => { ownsPhoto(); editHeadshot(editId); }) }),
+      element('button', { id: `${context}-reset-photo-size`, class: 'text-button', type: 'button', text: 'Reset size', onClick: () => safeAction(() => {
+        ownsPhoto(); change({ ...state, photoSettings: { ...normalisePhotoSettings(state.photoSettings), size: 0 } }, true);
+        document.querySelector(`#${context}-reset-photo-size`)?.focus({ preventScroll: true });
+      }) }),
+      element('button', { id: content ? 'content-remove-photo' : 'remove-photo', class: 'text-button', type: 'button', text: 'Remove', 'aria-label': 'Remove headshot', onClick: () => safeAction(() => {
+        ownsPhoto(); cancelPendingHeadshot(); change({ ...state, photo: '', photoSettings: defaultPhotoSettings() }, true);
+        document.querySelector(content ? '#content-headshot > summary' : '#photo-upload')?.focus({ preventScroll: true });
+      }) })
+    ]), wrapper);
+  }
+  section.append(element('p', { class: 'field-hint', text: state.photo ? 'Adjust the crop in Edit photo. Change its size here. Your photo stays in this browser.' : 'A headshot is optional. Choose a PNG, JPEG or WebP photo under 5 MB.' }));
   target.append(section);
+}
+function photoFingerprint(doc) { return JSON.stringify([doc.photo, doc.photoSettings || defaultPhotoSettings()]); }
+function editHeadshot(buttonId) {
+  cancelPendingHeadshot();
+  const request = ++portraitGeneration, docId = workspace.activeId, originalPhoto = state.photo;
+  const settings = normalisePhotoSettings(state.photoSettings), source = settings.source || state.photo;
+  const current = () => request === portraitGeneration && workspace.activeId === docId && state.photo === originalPhoto && Object.entries(settings).every(([key, value]) => (state.photoSettings || defaultPhotoSettings())[key] === value);
+  headshotEditor = openHeadshotEditor({
+    element, source, settings, isCurrent: current,
+    onApply: (photo, photoSettings) => {
+      if (!current()) throw new Error('The open CV changed. Adjust the headshot on your current CV.');
+      const saved = change({ ...state, photo, photoSettings }, true);
+      announce(saved ? 'Your headshot is updated.' : 'Your headshot is updated in this tab but hasn’t saved. Download a workspace backup before closing.', !saved);
+      return saved;
+    },
+    onClose: () => { if (request === portraitGeneration) { portraitGeneration++; headshotEditor = null; } },
+    restoreFocus: () => { if (workspace.activeId === docId && !document.querySelector('#headshot-editor[open]')) document.querySelector(`#${buttonId}`)?.focus({ preventScroll: true }); }
+  });
 }
 async function uploadHeadshot(event) {
   const file = event.target.files?.[0]; if (!file) return;
   event.target.value = '';
+  cancelPendingHeadshot();
   const request = ++portraitGeneration, docId = workspace.activeId, original = JSON.stringify(state);
-  let bitmap;
+  const current = () => request === portraitGeneration && workspace.activeId === docId && JSON.stringify(state) === original;
   try {
-    bitmap = await decodePortrait(file, { isCurrent: () => request === portraitGeneration && workspace.activeId === docId && JSON.stringify(state) === original });
+    const prepared = await preparePortrait(file, { isCurrent: current });
     if (request !== portraitGeneration) return;
-    if (workspace.activeId !== docId || JSON.stringify(state) !== original) { announce('Your CV changed while the headshot was loading. Choose it again to add it here.', true); return; }
-    if (!bitmap) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = 240; canvas.height = 240;
-    const side = Math.min(bitmap.width, bitmap.height);
-    canvas.getContext('2d').drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, 240, 240);
-    const saved = change({ ...state, photo: canvas.toDataURL('image/jpeg', .82) }, true);
-    announce(saved ? 'Headshot added. You can change or remove it in Content or Design.' : 'The headshot hasn’t saved. Download a workspace backup before closing. Check Library if another tab is open.', !saved);
+    if (!current()) { announce('Your CV changed while the headshot was loading. Choose it again to add it here.', true); return; }
+    if (!prepared) return;
+    const saved = change({ ...state, photo: prepared.photo, photoSettings: { ...prepared.settings, size: normalisePhotoSettings(state.photoSettings).size } }, true);
+    announce(saved ? 'Headshot added. Use Edit photo to adjust the crop, or change its size on your CV.' : 'The headshot hasn’t saved. Download a workspace backup before closing. Check Library if another tab is open.', !saved);
   } catch (error) { if (request === portraitGeneration) announce(error.message, true); }
-  finally { bitmap?.close(); }
 }
 function renderSectionControls() {
   const section = element('section', { class: 'form-section' }, [sectionTitle('Your section order'), element('p', { class: 'panel-intro', text: 'Rename, hide or move sections. Hidden content stays in your CV but is excluded from printing and keyword comparison.' })]);

@@ -21,7 +21,7 @@ Choose **Save as PDF**, or open **Export** for TXT, DOCX and JSON. Download a **
 ## What you can do
 
 - **Keep a CV for each role.** Create, name, duplicate and switch between CVs. Save reusable career history in a master CV and keep named snapshots to return to later.
-- **Choose how it looks.** Eleven original templates, six local font families, custom colours, spacing, margins and A4 or Letter paper. Add an optional headshot in Content or Design. Choose one or two columns and place sections in either column. The preview updates as you write; **Preview pages** arranges the current CV or letter into printable sheets.
+- **Choose how it looks.** Eleven original templates, six local font families, custom colours, spacing, margins and A4 or Letter paper. Add an optional headshot in Content or Design, adjust its crop and rotation, and resize it on the CV. Choose one or two columns and place sections in either column. The preview updates as you write; **Preview pages** arranges the current CV or letter into printable sheets.
 - **Format the words you select.** Add bold, italic, underline and links to profiles, descriptions, custom sections and letter bodies. Text stays editable, and unsafe link addresses are rejected.
 - **Bring in an existing CV.** Import PDF, DOCX, supported older Word files, ODT, RTF, text, Markdown or HTML. Local English OCR can read scans and images. Check the extracted text and suggested fields before creating a CV. See [supported formats and limits](docs/document-upgrades.md).
 - **Write a cover letter.** Keep a letter with each CV, save up to 20 reusable letters and export as PDF, TXT or DOCX. A local draft can give you a starting point using the visible facts you've entered.
@@ -63,7 +63,7 @@ These are storage limits, with no paid tiers. Imports are checked before they ch
 
 Document imports, OCR and spelling checks run locally. Optional AI sends the source text and context shown in the writing panel when you choose **Generate suggestion**. The server operator configures the provider and keeps its credentials outside the browser and repository. The provider's own data handling applies. The static demo makes no AI calls.
 
-Optional sharing sends the full editable selected CV when you create or save a shared document. That includes hidden sections, retained import-source text, the cover letter and the pasted job description. Other CVs, application records and submitted copies aren't shared. Anyone holding an owner, editor or viewer link can use the access it grants. Keep the owner link private; the access tokens are held in the open tab and URL fragment and aren't included in backups. Server files also contain private CV data. See [self-hosting](docs/self-hosting.md) before enabling either service.
+Optional sharing sends the full editable selected CV when you create or save a shared document. That includes hidden sections, retained import-source text, the headshot and its retained uncropped source, the cover letter and the pasted job description. Other CVs, application records and submitted copies aren't shared. Anyone holding an owner, editor or viewer link can use the access it grants. Keep the owner link private; the access tokens are held in the open tab and URL fragment and aren't included in backups. Server files also contain private CV data. See [self-hosting](docs/self-hosting.md) before enabling either service.
 
 ## Track a job application
 

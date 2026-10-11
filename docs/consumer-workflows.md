@@ -16,7 +16,11 @@ Design offers eleven original presets. Studio, Editorial, Concise, Folio and Led
 
 Adjust colour, columns, type, spacing, margins and paper afterwards. In two-column mode, place and order sections in either column. Hidden sections stay saved and out of exports. Local fonts may vary between devices. The six new presets start at 14–14.5 CSS pixels: 10.5–10.875 points on paper. Signal prints its masthead in ink on white without requiring background graphics.
 
-Open **Headshot (optional)** in Content, or **Headshot** in Design. Add, replace or remove a PNG, JPEG or WebP photo. Uploads stay local and become 240-pixel squares. Limits are 5 MB, 16,384 pixels per edge and 40 megapixels, checked before and after decoding. Photos appear in the browser and PDF; leaving one out reserves no empty space.
+Open **Headshot (optional)** in Content, or **Headshot** in Design. Upload a PNG, JPEG or WebP photo, then choose **Edit photo** to drag it into place, zoom or rotate it. The position sliders also work with the keyboard. **Apply photo** updates the CV; **Cancel** keeps the previous crop.
+
+Use **Size on CV** to make the headshot smaller or larger. The preview updates immediately, and the selected size carries through to measured pages and PDF. **Reset size** returns to the template’s original size. Reopen **Edit photo** whenever you want another crop; **Remove headshot** removes the photo and its retained source.
+
+Uploads stay in your browser. ClearCV keeps a resized copy of the uncropped image, strips its metadata, and makes a 240-pixel square for the CV. Existing headshots from older releases contain only their saved square crop: replace the photo if you need edges that were already trimmed. Upload limits remain 5 MB, 16,384 pixels per edge and 40 megapixels, checked before and after decoding. Photos appear in the browser and PDF; leaving one out reserves no empty space.
 
 Choose **Preview pages** to arrange the current CV or letter into sheets, keeping blocks together where they fit and continuing long text. The limit is 100 pages. Choose **Print / Save as PDF**, match the paper size, turn off browser headers and footers, and check the final print preview. Browser settings can affect the result. Manual page breaks aren't available.
 
@@ -46,6 +50,6 @@ In Letter, enter a name and choose **Save this letter**. Keep up to 20 reusable 
 
 The library holds up to 100 CVs within the existing 4 MB workspace limit. Photos, long descriptions, letters and snapshots all count towards that byte limit. A count allowance doesn't guarantee that every possible library fits. Quota or save errors leave the open changes available for export.
 
-Workspace backups include reusable letters, CVs, range formatting, placements, master history, snapshots, applications and submitted copies. Older version 1 exports still import with default columns and empty formatting. These optional fields extend the version 1 format: an older ClearCV release may reject a newer export, so keep an original backup when moving between releases. Storage keys, recovery copies and conflict warnings remain in place; local storage doesn't provide account sync or automatic merging between tabs.
+Workspace backups include reusable letters, CVs, range formatting, placements, headshot adjustments and retained photo sources, master history, snapshots, applications and submitted copies. Older version 1 exports still import with default columns and empty formatting. These optional fields extend the version 1 format: an older ClearCV release may reject a newer export, so keep an original backup when moving between releases. Storage keys, recovery copies and conflict warnings remain in place; local storage doesn't provide account sync or automatic merging between tabs.
 
 AI suggestions and shared editing remain optional services configured on your own Node server. The static demo doesn't provide hosted AI, account storage or cross-device sync. See [self-hosting](self-hosting.md) and [storage safety](storage-safety.md).

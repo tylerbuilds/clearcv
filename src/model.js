@@ -41,9 +41,36 @@ function string(value, label, limit = 10000) {
   if (value.length > limit) fail(`${label} is too long (maximum ${limit} characters).`);
   return value;
 }
+export function defaultPhotoSettings() {
+  return { source: '', size: 0, zoom: 1, x: 50, y: 50, rotation: 0 };
+}
+/** Imports fail on invalid values rather than silently moving or resizing a photo. */
+export function normalisePhotoSettings(value = {}) {
+  keys(value, ['source', 'size', 'zoom', 'x', 'y', 'rotation'], 'Photo settings', []);
+  const settings = { ...defaultPhotoSettings(), ...value };
+  string(settings.source, 'Photo source', 250000);
+  if (settings.source) {
+    if (!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(settings.source)) fail('Photo source must be an embedded PNG, JPEG or WebP image.');
+    let encoded;
+    try { encoded = atob(settings.source.slice(settings.source.indexOf(',') + 1)); }
+    catch { fail('Choose a readable PNG, JPEG or WebP photo source.'); }
+    const bytes = Uint8Array.from(encoded, character => character.charCodeAt(0));
+    const type = settings.source.slice(5, settings.source.indexOf(';'));
+    const matchesType = type === 'image/png' ? [137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => bytes[index] === byte)
+      : type === 'image/jpeg' ? bytes[0] === 255 && bytes[1] === 216
+        : bytes.length >= 12 && String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP';
+    if (!matchesType || !checkDeclaredRasterSize(bytes, type)) fail('Choose a readable PNG, JPEG or WebP photo source with the correct image type.');
+  }
+  if (!Number.isInteger(settings.size) || (settings.size !== 0 && (settings.size < 48 || settings.size > 144))) fail('Photo size must use the template default or be between 48 and 144 pixels.');
+  for (const [key, minimum, maximum] of [['zoom', 1, 4], ['x', 0, 100], ['y', 0, 100]]) {
+    if (typeof settings[key] !== 'number' || !Number.isFinite(settings[key]) || settings[key] < minimum || settings[key] > maximum) fail(`Photo ${key} must be between ${minimum} and ${maximum}.`);
+  }
+  if (![0, 90, 180, 270].includes(settings.rotation)) fail('Photo rotation must be 0, 90, 180 or 270 degrees.');
+  return settings;
+}
 export function validateDocument(value) {
   const core = ['schema', 'version', 'profile', 'experience', 'education', 'skills', 'style', 'jobAd'];
-  keys(value, [...core, 'customSections', 'sectionOrder', 'hiddenSections', 'sectionTitles', 'layout', 'photo', 'coverLetter', 'richText', 'sectionColumns'], 'CV', core);
+  keys(value, [...core, 'customSections', 'sectionOrder', 'hiddenSections', 'sectionTitles', 'layout', 'photo', 'photoSettings', 'coverLetter', 'richText', 'sectionColumns'], 'CV', core);
   value = { ...documentDefaults(), ...value };
 
   if (value.schema !== SCHEMA || value.version !== VERSION) fail('This backup isn’t a supported ClearCV version 1 document. Choose a CV backup exported by ClearCV.');
@@ -96,6 +123,7 @@ export function validateDocument(value) {
       checkDeclaredRasterSize(bytes, value.photo.slice(5, value.photo.indexOf(';')));
     }
   }
+  value.photoSettings = normalisePhotoSettings(value.photoSettings);
   keys(value.coverLetter, ['company', 'role', 'recipient', 'date', 'subject', 'salutation', 'body', 'closing'], 'Cover letter');
   for (const [key, text] of Object.entries(value.coverLetter)) string(text, `Cover letter ${key}`, key === 'body' ? 30000 : 300);
   keys(value.sectionColumns, sectionIds, 'Column placement', []);
@@ -109,7 +137,7 @@ export function documentDefaults() {
   return {
     customSections: [], sectionOrder: ['profile', 'experience', 'education', 'skills'], hiddenSections: [],
     sectionTitles: { profile: 'Profile', experience: 'Experience', education: 'Education', skills: 'Skills' },
-    layout: { font: 'sans', fontSize: 11, lineHeight: 1.7, spacing: 20, margin: 46, pageSize: 'A4', columns: 1, columnRatio: 'wide-main' }, photo: '',
+    layout: { font: 'sans', fontSize: 11, lineHeight: 1.7, spacing: 20, margin: 46, pageSize: 'A4', columns: 1, columnRatio: 'wide-main' }, photo: '', photoSettings: defaultPhotoSettings(),
     richText: {}, sectionColumns: {},
     coverLetter: { company: '', role: '', recipient: '', date: '', subject: '', salutation: 'Dear hiring team,', body: '', closing: 'Kind regards,' }
   };

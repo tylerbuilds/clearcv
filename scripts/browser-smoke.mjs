@@ -96,11 +96,12 @@ try {
     await headshotDisclosure.locator('summary').click();
     await expect(page.locator('#content-photo-upload')).toBeVisible();
     const portraitPng = Buffer.from(await page.evaluate(() => {
-      const canvas = document.createElement('canvas'); canvas.width = 24; canvas.height = 32;
+      const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 48;
       const context = canvas.getContext('2d');
-      context.fillStyle = '#dfe6dc'; context.fillRect(0, 0, 24, 32);
-      context.fillStyle = '#577160'; context.beginPath(); context.arc(12, 10, 6, 0, Math.PI * 2); context.fill();
-      context.fillRect(5, 18, 14, 14);
+      for (const [x, y, colour] of [[0, 0, '#e12f3f'], [32, 0, '#23a55e'], [0, 24, '#285ed0'], [32, 24, '#f5b429']]) {
+        context.fillStyle = colour; context.fillRect(x, y, 32, 24);
+      }
+      context.fillStyle = '#000'; context.fillRect(12, 8, 4, 6);
       return canvas.toDataURL('image/png').split(',')[1];
     }), 'base64');
     await page.locator('#content-photo-upload').setInputFiles({name:'synthetic-headshot.png',mimeType:'image/png',buffer:portraitPng});
@@ -108,8 +109,73 @@ try {
     await expect(portraitPreview).toBeVisible();
     await expect(portraitPreview).toHaveAttribute('alt', 'Portrait of Avery Test');
     await expect.poll(() => portraitPreview.evaluate(image => [image.complete, image.naturalWidth, image.naturalHeight])).toEqual([true, 240, 240]);
-    const storedPortrait = await portraitPreview.getAttribute('src');
+    let storedPortrait = await portraitPreview.getAttribute('src');
     expect(storedPortrait).toMatch(/^data:image\/jpeg;base64,/);
+    const openCV = () => page.evaluate(() => {
+      const workspace = JSON.parse(localStorage.getItem('clearcv.workspace.v1'));
+      return workspace.documents.find(entry => entry.id === workspace.activeId).document;
+    });
+    const retainedSource = (await openCV()).photoSettings.source;
+    expect(retainedSource).toMatch(/^data:image\/jpeg;base64,/);
+    expect(retainedSource).not.toBe(storedPortrait);
+    const portraitBeforeEdit = await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1'));
+    await page.locator('#content-edit-photo').click();
+    await expect(page.locator('#headshot-editor')).toHaveAccessibleName('Adjust your photo');
+    await expect(page.locator('#headshot-apply')).toBeEnabled();
+    const cropPixels = () => page.locator('#headshot-crop').evaluate(canvas => {
+      const context = canvas.getContext('2d');
+      return [[.2,.2],[.8,.2],[.2,.8],[.8,.8]].map(([x,y]) => [...context.getImageData(Math.floor(x * canvas.width), Math.floor(y * canvas.height), 1, 1).data]);
+    });
+    const centredPixels = await cropPixels();
+    await page.locator('#headshot-rotate-right').click();
+    const rotatedPixels = await cropPixels();
+    expect(rotatedPixels).not.toEqual(centredPixels);
+    for (const [index, expected] of [[0,[40,94,208]],[1,[225,47,63]],[2,[245,180,41]],[3,[35,165,94]]]) {
+      expect(rotatedPixels[index].slice(0,3).every((value, channel) => Math.abs(value - expected[channel]) <= 24)).toBe(true);
+    }
+    await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+    await page.locator('#headshot-cancel').click();
+    await expect(page.locator('#headshot-editor')).toHaveCount(0);
+    await expect(page.locator('#content-edit-photo')).toBeFocused();
+    expect(await page.evaluate(() => localStorage.getItem('clearcv.workspace.v1'))).toBe(portraitBeforeEdit);
+    await page.locator('#content-edit-photo').click();
+    await expect(page.locator('#headshot-apply')).toBeEnabled();
+    await page.locator('#headshot-rotate-right').click();
+    await page.locator('#headshot-apply').click();
+    await expect(page.locator('#headshot-editor')).toHaveCount(0);
+    await expect(portraitPreview).not.toHaveAttribute('src', storedPortrait);
+    storedPortrait = await portraitPreview.getAttribute('src');
+    expect((await openCV()).photoSettings.source).toBe(retainedSource);
+    expect((await openCV()).photoSettings.rotation).toBe(90);
+    await page.locator('#content-photo-size').focus();
+    await page.locator('#content-photo-size').press('Home');
+    await expect(portraitPreview).toHaveCSS('width', '48px');
+    await expect(portraitPreview).toHaveCSS('height', '48px');
+    expect((await openCV()).photoSettings.size).toBe(48);
+    await page.locator('#content-photo-size').press('End');
+    await expect(portraitPreview).toHaveCSS('width', '144px');
+    await expect(portraitPreview).toHaveCSS('height', '144px');
+    expect((await openCV()).photoSettings.size).toBe(144);
+    await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+    await page.reload({waitUntil:'networkidle'});
+    await expect(portraitPreview).toHaveAttribute('src', storedPortrait);
+    await expect(portraitPreview).toHaveCSS('width', '144px');
+    expect((await openCV()).photoSettings.source).toBe(retainedSource);
+    await page.locator('#tab-content').click();
+    await page.locator('#content-edit-photo').click();
+    await expect(page.locator('#headshot-apply')).toBeEnabled();
+    await expect(page.locator('#headshot-rotation')).toHaveText('90°');
+    await page.locator('#headshot-reset-crop').click();
+    await expect(page.locator('#headshot-rotation')).toHaveText('0°');
+    expect(await cropPixels()).toEqual(centredPixels);
+    await page.locator('#headshot-cancel').click();
+    expect((await openCV()).photoSettings.rotation).toBe(90);
+    await page.locator('#content-reset-photo-size').click();
+    expect((await openCV()).photoSettings.size).toBe(0);
+    await expect(portraitPreview).toHaveCSS('width', '70px');
+    await page.locator('#content-photo-size').focus();
+    await page.locator('#content-photo-size').press('End');
+    await expect(portraitPreview).toHaveCSS('width', '144px');
     await page.locator('#tab-design').click();
     for (const [id, label] of [['atlas','Atlas'],['letterpress','Letterpress'],['signal','Signal'],['outline','Outline'],['typewriter','Typewriter'],['margin','Margin']]) {
       const choice = page.locator(`#template-${id}`);
@@ -149,6 +215,7 @@ try {
     await expect(headshotDisclosure).toHaveJSProperty('open', true);
     await page.locator('#content-remove-photo').click();
     await expect(portraitPreview).toHaveCount(0);
+    expect((await openCV()).photoSettings.source).toBe('');
     await expect(page.locator('#cv-preview .cv-header')).not.toHaveClass(/has-headshot/);
     await page.reload({waitUntil:'networkidle'});
     await expect(portraitPreview).toHaveCount(0);
